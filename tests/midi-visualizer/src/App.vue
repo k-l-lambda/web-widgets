@@ -1,12 +1,12 @@
 <template>
 	<div id="app">
 		<img alt="Vue logo" src="./assets/logo.png">
-		<MidiRoll midiURL="test" />
+		<MidiRoll :midiURL="midiURL" />
 	</div>
 </template>
 
 <script>
-	import {MidiRoll} from "@k-l-lambda/web-widgets";
+	import { MidiRoll } from "@k-l-lambda/web-widgets";
 
 
 
@@ -16,6 +16,19 @@
 
 		components: {
 			MidiRoll,
+		},
+
+
+		data () {
+			return {
+				midiURL: null,
+			};
+		},
+
+
+		async created () {
+			const {default: url} = await import("./assets/C_major_scale.mid");
+			this.midiURL = url;
 		},
 	};
 </script>
