@@ -1,11 +1,11 @@
 {
-  "name": "web-widgets",
+  "name": "@k-l-lambda/web-widgets",
   "version": "0.0.0",
   "description": "A package contains utility vue.js components.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"hello.\""
   },
-  "author": "k-l-lambda",
+  "author": "K.L.",
   "license": "ISC"
 }
