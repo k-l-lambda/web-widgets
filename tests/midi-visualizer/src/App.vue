@@ -1,17 +1,21 @@
 <template>
 	<div id="app">
 		<img alt="Vue logo" src="./assets/logo.png">
-		<!--TODO-->
+		<MidiRoll />
 	</div>
 </template>
 
 <script>
+	import {MidiRoll} from "@k-l-lambda/web-widgets";
+
+
+
 	export default {
 		name: "App",
 
 
 		components: {
-			//HelloWorld,
+			MidiRoll,
 		},
 	};
 </script>
