@@ -3,9 +3,22 @@
   "version": "0.0.0",
   "description": "A package contains utility vue.js components.",
   "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"hello.\""
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k-l-lambda/web-widgets.git"
+  },
   "author": "K.L.",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/k-l-lambda/web-widgets/issues"
+  },
+  "homepage": "https://github.com/k-l-lambda/web-widgets#readme"
 }
