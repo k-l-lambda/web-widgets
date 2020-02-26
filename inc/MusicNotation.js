@@ -14,7 +14,7 @@ const PedalControllerTypes = {
 
 
 
-const midiToEvents = (midiFile, timeWarp) => {
+const midiToEvents = (midiFile, timeWarp = 1) => {
 	const trackStates = [];
 	let beatsPerMinute = 120;
 	const ticksPerBeat = midiFile.header.ticksPerBeat;
@@ -35,7 +35,7 @@ const midiToEvents = (midiFile, timeWarp) => {
 		let nextEventTrack = null;
 		let nextEventIndex = null;
 
-		for (var i = 0; i < trackStates.length; i++) {
+		for (let i = 0; i < trackStates.length; i++) {
 			if (
 				trackStates[i].ticksToNextEvent != null
 				&& (ticksToNextEvent == null || trackStates[i].ticksToNextEvent < ticksToNextEvent)
@@ -47,7 +47,7 @@ const midiToEvents = (midiFile, timeWarp) => {
 		}
 		if (nextEventTrack != null) {
 			/* consume event from that track */
-			var nextEvent = midiFile.tracks[nextEventTrack][nextEventIndex];
+			const nextEvent = midiFile.tracks[nextEventTrack][nextEventIndex];
 			if (midiFile.tracks[nextEventTrack][nextEventIndex + 1]) {
 				trackStates[nextEventTrack].ticksToNextEvent += midiFile.tracks[nextEventTrack][nextEventIndex + 1].deltaTime;
 			} else {
@@ -55,7 +55,7 @@ const midiToEvents = (midiFile, timeWarp) => {
 			}
 			trackStates[nextEventTrack].nextEventIndex += 1;
 			/* advance timings on all tracks by ticksToNextEvent */
-			for (var i = 0; i < trackStates.length; i++) {
+			for (let i = 0; i < trackStates.length; i++) {
 				if (trackStates[i].ticksToNextEvent != null) {
 					trackStates[i].ticksToNextEvent -= ticksToNextEvent
 				}
@@ -77,7 +77,7 @@ const midiToEvents = (midiFile, timeWarp) => {
 		function processNext() {
 			if ( midiEvent.event.type == "meta" && midiEvent.event.subtype == "setTempo" ) {
 				// tempo change events can occur anywhere in the middle and affect events that follow
-				beatsPerMinute = 60000000 / midiEvent.event.microsecondsPerBeat;
+				beatsPerMinute = 60e+6 / midiEvent.event.microsecondsPerBeat;
 			}
 			let secondsToGenerate = 0;
 			if (midiEvent.ticksToEvent > 0) {
@@ -91,7 +91,7 @@ const midiToEvents = (midiFile, timeWarp) => {
 		//
 		if (midiEvent = getNextEvent()) {
 			while (midiEvent)
-				processNext(true);
+				processNext();
 		}
 	};
 
