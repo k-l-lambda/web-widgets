@@ -101,7 +101,7 @@
 					const midi = parseMidiData(chars.map(b => String.fromCharCode(b)).join(""));
 
 					this.notations = Notation.parseMidi(midi);
-					console.log("notations:", this.notations);
+					//console.log("notations:", this.notations);
 				}
 			},
 		},
