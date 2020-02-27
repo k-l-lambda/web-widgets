@@ -6,7 +6,11 @@
 		@drop.prevent="onDrop"
 	>
 		<p><img alt="Vue logo" src="./assets/logo.png"></p>
-		<MidiRoll :midiURL="midiURL" />
+		<p>
+			Height: <input type="number" v-model.number="viewHieght" />
+			TimeScale: <input type="number" v-model.number="viewTimeScale" />
+		</p>
+		<MidiRoll :midiURL="midiURL" :height="viewHieght" :timeScale="viewTimeScale" />
 	</div>
 </template>
 
@@ -28,6 +32,8 @@
 			return {
 				midiURL: null,
 				dragHover: false,
+				viewHieght: 200,
+				viewTimeScale: 1e-3,
 			};
 		},
 

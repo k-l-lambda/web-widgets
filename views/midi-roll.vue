@@ -124,6 +124,7 @@
 	{
 		font-size: 1px;
 		text-anchor: middle;
+		user-select: none;
 	}
 
 	.bar line
