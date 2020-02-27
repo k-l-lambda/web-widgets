@@ -20,10 +20,5 @@
   "bugs": {
     "url": "https://github.com/k-l-lambda/web-widgets/issues"
   },
-  "homepage": "https://github.com/k-l-lambda/web-widgets#readme",
-  "files": [
-    "/inc",
-    "/components",
-    "/views"
-  ]
+  "homepage": "https://github.com/k-l-lambda/web-widgets#readme"
 }
