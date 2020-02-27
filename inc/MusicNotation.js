@@ -1,8 +1,4 @@
 
-//import "./utils.mjs";
-
-
-
 //const DEFAULT_TICKS_PER_BEATS = 480;
 
 const PedalControllerTypes = {
@@ -138,16 +134,18 @@ export class Notation {
 		for (const ev of events) {
 			rawTicks += ev.deltaTicks;
 			ticks = Math.round(rawTicks * ticksNormal);
-			beats = ticks / ticksPerBeat;
 
-			if (ev.deltaTime > 0) {
-				let deltaBeats = ev.deltaTime / millisecondsPerBeat;
-				for (let b = Math.ceil(beats) ; b < beats + deltaBeats; ++b) {
+			if (ev.deltaTicks > 0) {
+				// append bars
+				const deltaBeats = ev.deltaTicks / ticksPerBeat;
+				for (let b = Math.ceil(beats); b < beats + deltaBeats; ++b) {
 					let t = time + (b - beats) * millisecondsPerBeat;
 					bars.push({ time: t, index: barIndex % numerator });
 
 					++barIndex;
 				}
+
+				beats += deltaBeats;
 			}
 
 			time += ev.deltaTime;
