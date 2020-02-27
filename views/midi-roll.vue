@@ -10,12 +10,12 @@
 				/>
 			</g>
 			<g class="pitch-bar" v-for="pitch of pitchScales" :key="`p-${pitch}`">
-				<line x1="-.6" x2="0" :y1="-pitch + 0.5" :y2="-pitch + 0.5" />
-				<text x="-1.5" :y="-pitch + 1" >{{pitch}}</text>
+				<line x1="-.8" x2="0" :y1="-pitch + 0.5" :y2="-pitch + 0.5" />
+				<text x="-2" :y="-pitch + 1" >{{pitch}}</text>
 			</g>
 			<g class="time-bar" v-for="time of timeScales" :key="`t-${time}`">
-				<line :x1="time * timeScale" :x2="time * timeScale" :y1="-notations.keyRange.low + 1" :y2="-notations.keyRange.low + 1.6" />
-				<text :x="time * timeScale" :y="-notations.keyRange.low + 3">{{time * 1e-3}}s</text>
+				<line :x1="time * timeScale" :x2="time * timeScale" :y1="-notations.keyRange.low + 1" :y2="-notations.keyRange.low + 1.8" />
+				<text :x="time * timeScale" :y="-notations.keyRange.low + 4">{{time * 1e-3}}s</text>
 			</g>
 		</g>
 	</svg>	
@@ -65,7 +65,7 @@
 
 				const {low, high} = this.notations.keyRange;
 
-				return `-3 ${-high} ${this.notations.endTime * this.timeScale + 4} ${high - low + 4}`;
+				return `-3 ${-high - 1} ${this.notations.endTime * this.timeScale + 4} ${high - low + 5}`;
 			},
 
 
@@ -122,7 +122,7 @@
 
 	.scales text
 	{
-		font-size: 1px;
+		font-size: 2px;
 		text-anchor: middle;
 		user-select: none;
 	}

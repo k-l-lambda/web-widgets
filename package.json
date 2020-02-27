@@ -1,6 +1,6 @@
 {
   "name": "@k-l-lambda/web-widgets",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A package contains utility vue.js components.",
   "main": "index.js",
   "directories": {
