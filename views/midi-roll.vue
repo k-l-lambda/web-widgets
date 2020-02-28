@@ -124,6 +124,9 @@
 
 
 			updateNoteStatus () {
+				if (!this.notations)
+					return;
+
 				const valid = Number.isFinite(this.progressTime);
 				for (const note of this.notations.notes)
 					Vue.set(note, "on", valid && (note.start < this.progressTime) && (note.start + note.duration > this.progressTime));
@@ -169,7 +172,7 @@
 
 	.progress rect
 	{
-		fill: #afa2;
+		fill: #afa1;
 	}
 
 	.progress line
