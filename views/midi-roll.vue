@@ -97,8 +97,7 @@
 
 				if (this.midiURL) {
 					const buffer = await (await fetch(this.midiURL)).arrayBuffer();
-					const chars = Array.from(new Uint8Array(buffer));
-					const midi = parseMidiData(chars.map(b => String.fromCharCode(b)).join(""));
+					const midi = parseMidiData(buffer);
 
 					this.notations = Notation.parseMidi(midi);
 					//console.log("notations:", this.notations);

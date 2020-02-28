@@ -1,7 +1,7 @@
 {
   "name": "@k-l-lambda/web-widgets",
   "version": "0.0.2",
-  "description": "A package contains utility vue.js components.",
+  "description": "A package contains some utility vue.js components and modules.",
   "keywords": [
     "midi",
     "svg"
