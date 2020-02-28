@@ -11,3 +11,4 @@ A package contains some utility vue.js components and modules.
 
 * MIDI
 * MusicNotation
+* MidiPlayer

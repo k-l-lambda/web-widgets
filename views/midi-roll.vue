@@ -1,5 +1,5 @@
 <template>
-	<svg xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox" :height="height">
+	<svg xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox" :height="height" @click="onClickCanvas">
 		<g v-if="progressTime" class="progress">
 			<rect :x="0" :y="-120" :height="121 - notations.keyRange.low" :width="progressTime * timeScale" />
 			<line :x1="progressTime * timeScale" :x2="progressTime * timeScale" :y1="-notations.keyRange.low + 1" y2="-120" />
@@ -32,6 +32,12 @@
 	import { Notation } from "../inc/MusicNotation.js";
 
 	import SvgPianoRoll from "../components/svg-piano-roll.vue";
+
+
+
+	const PADDINGS = {
+		left: 3,
+	};
 
 
 
@@ -72,7 +78,7 @@
 
 				const {low, high} = this.notations.keyRange;
 
-				return `-3 ${-high - 1} ${this.notations.endTime * this.timeScale + 4} ${high - low + 5}`;
+				return `-${PADDINGS.left} ${-high - 1} ${this.notations.endTime * this.timeScale + 4} ${high - low + 5}`;
 			},
 
 
@@ -130,6 +136,19 @@
 				const valid = Number.isFinite(this.progressTime);
 				for (const note of this.notations.notes)
 					Vue.set(note, "on", valid && (note.start < this.progressTime) && (note.start + note.duration > this.progressTime));
+			},
+
+
+			onClickCanvas (event) {
+				//console.log("click:", event.offsetX, event.offsetY);
+
+				if (this.player) {
+					const docToCanvas = (this.notations.keyRange.high - this.notations.keyRange.low + 5) / this.height;
+					const x = event.offsetX * docToCanvas - PADDINGS.left;
+					const time = x / this.timeScale;
+
+					this.player.turnCursor(time);
+				}
 			},
 		},
 
