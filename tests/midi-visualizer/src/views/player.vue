@@ -1,10 +1,12 @@
 <template>
 	<div>
 		<p>
+			<button @click="togglePlayer" :disabled="!player">{{player && player.isPlaying ? "pause" : "play"}}</button>
+			<em v-if="player">{{player.progressTime.toFixed(1)}}</em>ms
 			Height: <input type="number" v-model.number="viewHieght" />
 			TimeScale: <input type="number" v-model.number="viewTimeScale" />
 		</p>
-		<MidiRoll :midiURL="midiURL" :height="viewHieght" :timeScale="viewTimeScale" />
+		<MidiRoll :height="viewHieght" :timeScale="viewTimeScale" />
 	</div>
 </template>
 
@@ -14,7 +16,7 @@
 
 
 	export default {
-		name: "simple",
+		name: "player",
 
 
 		props: {
@@ -31,7 +33,59 @@
 			return {
 				viewHieght: 200,
 				viewTimeScale: 1e-3,
+				player: null,
 			};
+		},
+
+
+		created () {
+			this.load();
+		},
+
+
+		methods: {
+			async load () {
+				if (this.player) {
+					this.player.dispose();
+					this.player = null;
+				}
+
+				if (this.midiURL) {
+					const buffer = await (await fetch(this.midiURL)).arrayBuffer();
+					const midi = MIDI.parseMidiData(buffer);
+
+					this.player = new MidiPlayer(midi, {
+						onMidi: data => this.onMidi(data),
+						onPlayFinish: () => this.onFinish(),
+					});
+					//console.log("notations:", this.notations);
+				}
+			},
+
+
+			onMidi (data) {
+				console.log("onMidi:", data.subtype, data);
+			},
+
+
+			onFinish () {
+				this.player.turnCursor(0);
+			},
+
+
+			togglePlayer () {
+				if (this.player) {
+					if (this.player.isPlaying)
+						this.player.pause();
+					else
+						this.player.play();
+				}
+			},
+		},
+
+
+		watch: {
+			midiURL: "load",
 		},
 	};
 </script>
