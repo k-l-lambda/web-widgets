@@ -6,16 +6,12 @@
 		@drop.prevent="onDrop"
 	>
 		<p><img alt="Vue logo" src="./assets/logo.png"></p>
-		<p>
-			Height: <input type="number" v-model.number="viewHieght" />
-			TimeScale: <input type="number" v-model.number="viewTimeScale" />
-		</p>
-		<MidiRoll :midiURL="midiURL" :height="viewHieght" :timeScale="viewTimeScale" />
+		<ViewSimple :midiURL="midiURL" />
 	</div>
 </template>
 
 <script>
-	import { MidiRoll } from "@k-l-lambda/web-widgets";
+	import ViewSimple from "./views/simple.vue";
 
 
 
@@ -24,7 +20,7 @@
 
 
 		components: {
-			MidiRoll,
+			ViewSimple,
 		},
 
 
