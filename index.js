@@ -1,9 +1,10 @@
 
-import MidiRoll from "./views/midi-roll.vue";
+import MidiRoll from "./source/views/midi-roll.vue";
 
-import * as MIDI from "./inc/MIDI";
-import * as MusicNotation from "./inc/MusicNotation.js";
-import MidiPlayer from "./inc/MidiPlayer.js";
+import * as MIDI from "./source/inc/MIDI";
+import * as MusicNotation from "./source/inc/MusicNotation.js";
+import MidiPlayer from "./source/inc/MidiPlayer.js";
+import MidiAudio from "./source/MidiAudio";
 
 
 
@@ -12,4 +13,5 @@ export {
 	MIDI,
 	MusicNotation,
 	MidiPlayer,
+	MidiAudio,
 };
