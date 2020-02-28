@@ -13,6 +13,7 @@ export default class MidiPlayer {
 		this.onPlayFinish = onPlayFinish;
 
 		const notations = Notation.parseMidi(midiData);
+		this.notations = notations;
 		this.events = notations.events;
 		//console.log("events:", this.events);
 

@@ -2,11 +2,11 @@
 	<div>
 		<p>
 			<button @click="togglePlayer" :disabled="!player">{{player && player.isPlaying ? "pause" : "play"}}</button>
-			<em v-if="player">{{player.progressTime.toFixed(1)}}</em>ms
+			<em v-if="player">{{(player.progressTime / 1000).toFixed(2)}}</em>s
 			Height: <input type="number" v-model.number="viewHieght" />
 			TimeScale: <input type="number" v-model.number="viewTimeScale" />
 		</p>
-		<MidiRoll :height="viewHieght" :timeScale="viewTimeScale" />
+		<MidiRoll :player="player" :height="viewHieght" :timeScale="viewTimeScale" />
 	</div>
 </template>
 

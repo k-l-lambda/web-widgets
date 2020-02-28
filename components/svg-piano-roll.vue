@@ -7,7 +7,10 @@
 			:width="note.duration * timeScale"
 			:height="pitchScale"
 			@click="onClickNote(note)"
-			:class="{focus: note.index === focusNoteIndex, ...(note.classes || {})}"
+			:class="{
+				focus: note.index === focusNoteIndex, ...(note.classes || {}),
+				on: note.on,
+			}"
 		/>
 	</g>
 </template>
@@ -53,5 +56,10 @@
 		opacity: 0.9;
 		stroke: orange;
 		stroke-width: 0.08px;
+	}
+
+	.note.on
+	{
+		fill: #2a2;
 	}
 </style>

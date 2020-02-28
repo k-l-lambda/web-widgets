@@ -1,5 +1,9 @@
 <template>
 	<svg xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox" :height="height">
+		<g v-if="progressTime" class="progress">
+			<rect :x="0" :y="-120" :height="121 - notations.keyRange.low" :width="progressTime * timeScale" />
+			<line :x1="progressTime * timeScale" :x2="progressTime * timeScale" :y1="-notations.keyRange.low + 1" y2="-120" />
+		</g>
 		<SvgPianoRoll v-if="notations" :notations="notations" :timeScale="timeScale" />
 		<g class="scales" v-if="notations">
 			<line x1="0" x2="0" :y1="-notations.keyRange.low + 1" y2="-120" />
@@ -22,6 +26,8 @@
 </template>
 
 <script>
+	import Vue from "vue";
+
 	import { parseMidiData } from "../inc/MIDI";
 	import { Notation } from "../inc/MusicNotation.js";
 
@@ -35,6 +41,7 @@
 
 		props: {
 			midiURL: String,
+			player: Object,
 			height: {
 				type: Number,
 				default: 200,
@@ -83,6 +90,11 @@
 
 				return Array(Math.ceil(this.notations.endTime / 15e+3)).fill().map((_, i) => i * 15e+3);
 			},
+
+
+			progressTime () {
+				return this.player ? this.player.progressTime : null;
+			},
 		},
 
 
@@ -95,7 +107,13 @@
 			async load () {
 				this.notations = null;
 
-				if (this.midiURL) {
+				if (this.player) {
+					this.notations = this.player.notations;
+
+					this.updateNoteStatus();
+					this.$forceUpdate();
+				}
+				else if (this.midiURL) {
 					const buffer = await (await fetch(this.midiURL)).arrayBuffer();
 					const midi = parseMidiData(buffer);
 
@@ -103,11 +121,22 @@
 					//console.log("notations:", this.notations);
 				}
 			},
+
+
+			updateNoteStatus () {
+				const valid = Number.isFinite(this.progressTime);
+				for (const note of this.notations.notes)
+					Vue.set(note, "on", valid && (note.start < this.progressTime) && (note.start + note.duration > this.progressTime));
+			},
 		},
 
 
 		watch: {
 			midiURL: "load",
+			player: "load",
+
+
+			progressTime: "updateNoteStatus",
 		},
 	};
 </script>
@@ -136,5 +165,16 @@
 	{
 		stroke: black;
 		stroke-width: 0.06;
+	}
+
+	.progress rect
+	{
+		fill: #afa2;
+	}
+
+	.progress line
+	{
+		stroke: #0a0;
+		stroke-width: 0.04;
 	}
 </style>
