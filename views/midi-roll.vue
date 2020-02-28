@@ -147,7 +147,8 @@
 					const x = event.offsetX * docToCanvas - PADDINGS.left;
 					const time = x / this.timeScale;
 
-					this.player.turnCursor(time);
+					if (time >= 0 && time < this.notations.endTime)
+						this.player.turnCursor(time);
 				}
 			},
 		},
