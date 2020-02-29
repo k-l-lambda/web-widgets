@@ -41,7 +41,8 @@ MIDI.loadPlugin = function (conf = {}) {
 	}
 	/// Get the instrument name.
 	var instruments = conf.instruments || conf.instrument || "acoustic_grand_piano";
-	if (typeof (instruments) !== "object") instruments = [ instruments ];
+	if (typeof (instruments) !== "object")
+		instruments = [ instruments ];
 	///
 	for (var n = 0; n < instruments.length; n++) {
 		var instrument = instruments[n];
@@ -106,44 +107,63 @@ connect.flash = function (filetype, instruments, conf) {
 };
 
 connect.audiotag = function (filetype, instruments, conf) {
-	if (MIDI.loader) MIDI.loader.message("HTML5 Audio API...");
+	if (MIDI.loader)
+		MIDI.loader.message("HTML5 Audio API...");
 	// works ok, kinda like a drunken tuna fish, across the board.
-	var queue = createQueue({
+	const queue = createQueue({
 		items: instruments,
-		getNext: function (instrumentId) {
-			DOMLoader.sendRequest({
-				url: MIDI.soundfontUrl + instrumentId + "-" + filetype + ".js",
-				onprogress: getPercent,
-				onload: function (response) {
-					addSoundfont(response.responseText);
-					if (MIDI.loader) MIDI.loader.update(null, "Downloading", 100);
-					queue.getNext();
-				},
-			});
+		getNext (instrumentId) {
+			if (MIDI.Soundfont[instrumentId])
+				queue.getNext();
+			else
+				DOMLoader.sendRequest({
+					url: MIDI.soundfontUrl + instrumentId + "-" + filetype + ".js",
+					onprogress: getPercent,
+					onload (response) {
+						addSoundfont(response.responseText);
+						if (MIDI.loader)
+							MIDI.loader.update(null, "Downloading", 100);
+						queue.getNext();
+					},
+				});
 		},
-		onComplete: function () {
+		onComplete () {
 			MIDI.AudioTag.connect(conf);
 		},
 	});
 };
 
 connect.webaudio = function (filetype, instruments, conf) {
-	if (MIDI.loader) MIDI.loader.message("Web Audio API...");
+	if (MIDI.loader)
+		MIDI.loader.message("Web Audio API...");
 	// works awesome! safari, chrome and firefox support.
-	var queue = createQueue({
+	const queue = createQueue({
 		items: instruments,
-		getNext: function (instrumentId) {
+		getNext (instrumentId) {
+			if (MIDI.Soundfont[instrumentId]) {
+				queue.getNext();
+				return;
+			}
+
+			MIDI.WebAudio.pendingInstruments[instruments] = true;
+
 			DOMLoader.sendRequest({
 				url: MIDI.soundfontUrl + instrumentId + "-" + filetype + ".js",
 				onprogress: getPercent,
-				onload: function (response) {
+				onload (response) {
 					addSoundfont(response.responseText);
-					if (MIDI.loader) MIDI.loader.update(null, "Downloading...", 100);
+					if (MIDI.loader)
+						MIDI.loader.update(null, "Downloading...", 100);
 					queue.getNext();
+
+					delete MIDI.WebAudio.pendingInstruments[instruments];
+				},
+				onerror (err) {
+					delete MIDI.WebAudio.pendingInstruments[instruments];
 				},
 			});
 		},
-		onComplete: function () {
+		onComplete () {
 			//console.log("connect.webaudio.onComplete", MIDI.WebAudio.connect);
 			MIDI.WebAudio.connect(conf);
 		},
@@ -188,7 +208,8 @@ const createQueue = function (conf) {
 			self.queue.push(conf.items[key]);
 	}
 	self.getNext = function () {
-		if (!self.queue.length) return conf.onComplete();
+		if (!self.queue.length)
+			return conf.onComplete();
 		conf.getNext(self.queue.shift());
 	};
 	setTimeout(self.getNext, 1);

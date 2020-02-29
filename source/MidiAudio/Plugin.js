@@ -120,15 +120,12 @@ if (window.AudioContext || window.webkitAudioContext) {
 
 		const root = MIDI.WebAudio = {
 			api: "webaudio",
-
-			empty () {
-				return !Object.keys(MIDI.Soundfont).length;
-			},
+			pendingInstruments: {},
 		};
 		var ctx;
-		var sources = {};
+		const sources = {};
 		var masterVolume = 127;
-		var audioBuffers = {};
+		const audioBuffers = {};
 		const audioLoader = function (instrument, urlList, index, bufferList, callback) {
 			var synth = MIDI.GeneralMIDI.byName[instrument];
 			var instrumentId = synth.number;
@@ -161,6 +158,10 @@ if (window.AudioContext || window.webkitAudioContext) {
 
 		root.setVolume = function (channel, volume) {
 			masterVolume = volume;
+		};
+
+		root.empty = function () {
+			return !Object.keys(audioBuffers).length && !Object.keys(root.pendingInstruments).length;
 		};
 
 		root.programChange = function (channel, program) {

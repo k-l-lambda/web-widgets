@@ -11,6 +11,6 @@ export default function sendRequest (conf) {
 		console.warn("DOMLoader.sendRequest error:", e);
 
 		if (conf.onerror)
-			conf.onerror(event, false);
+			conf.onerror(e, false);
 	});
 };
