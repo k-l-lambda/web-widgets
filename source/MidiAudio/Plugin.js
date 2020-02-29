@@ -161,7 +161,11 @@ if (window.AudioContext || window.webkitAudioContext) {
 		};
 
 		root.empty = function () {
-			return !Object.keys(audioBuffers).length && !Object.keys(root.pendingInstruments).length;
+			return !Object.keys(audioBuffers).length;
+		};
+
+		root.hasPending = function () {
+			return !Object.keys(root.pendingInstruments).length;
 		};
 
 		root.programChange = function (channel, program) {
