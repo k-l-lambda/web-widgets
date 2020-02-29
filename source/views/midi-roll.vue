@@ -1,25 +1,32 @@
 <template>
 	<svg xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox" :height="height" @click="onClickCanvas">
-		<g v-if="progressTime" class="progress">
-			<rect :x="0" :y="-120" :height="121 - notations.keyRange.low" :width="progressTime * timeScale" />
-			<line :x1="progressTime * timeScale" :x2="progressTime * timeScale" :y1="-notations.keyRange.low + 1" y2="-120" />
-		</g>
-		<SvgPianoRoll v-if="notations" :notations="notations" :timeScale="timeScale" />
-		<g class="scales" v-if="notations">
-			<line x1="0" x2="0" :y1="-notations.keyRange.low + 1" y2="-120" />
-			<line x1="0" :x2="timeScale * notations.endTime" :y1="-notations.keyRange.low + 1" :y2="-notations.keyRange.low + 1" />
-			<g class="bar" v-for="(bar, i) of notations.bars" :key="i">
-				<line v-if="bar.index === 0"
-					:x1="bar.time * timeScale" :x2="bar.time * timeScale" :y1="-notations.keyRange.low + 1" y2="-120"
-				/>
+		<g :transform="`translate(${-xScroll}, 0)`">
+			<g v-if="progressTime" class="progress">
+				<rect :x="0" :y="-120" :height="121 - notations.keyRange.low" :width="progressTime * timeScale" />
+				<line :x1="progressTime * timeScale" :x2="progressTime * timeScale" :y1="-notations.keyRange.low + 1" y2="-120" />
 			</g>
+			<g v-if="notations">
+				<g class="bar" v-for="(bar, i) of notations.bars" :key="i">
+					<line v-if="bar.index === 0"
+						:x1="bar.time * timeScale" :x2="bar.time * timeScale" :y1="-notations.keyRange.low + 1" y2="-120"
+					/>
+				</g>
+			</g>
+			<SvgPianoRoll v-if="notations" :notations="notations" :timeScale="timeScale" />
+		</g>
+		<g class="scales" v-if="notations">
+			<rect class="pitch-padding" :x="-10" :y="-120" :width="10" :height="-notations.keyRange.low + 121" />
+			<line x1="0" x2="0" :y1="-notations.keyRange.low + 1" y2="-120" />
+			<line x1="0" :x2="timeScale * notations.endTime - xScroll" :y1="-notations.keyRange.low + 1" :y2="-notations.keyRange.low + 1" />
 			<g class="pitch-bar" v-for="pitch of pitchScales" :key="`p-${pitch}`">
 				<line x1="-.8" x2="0" :y1="-pitch + 0.5" :y2="-pitch + 0.5" />
 				<text x="-2" :y="-pitch + 1" >{{pitch}}</text>
 			</g>
-			<g class="time-bar" v-for="time of timeScales" :key="`t-${time}`">
-				<line :x1="time * timeScale" :x2="time * timeScale" :y1="-notations.keyRange.low + 1" :y2="-notations.keyRange.low + 1.8" />
-				<text :x="time * timeScale" :y="-notations.keyRange.low + 4">{{time * 1e-3}}s</text>
+			<g :transform="`translate(${-xScroll}, 0)`">
+				<g class="time-bar" v-for="time of timeScales" :key="`t-${time}`">
+					<line :x1="time * timeScale" :x2="time * timeScale" :y1="-notations.keyRange.low + 1" :y2="-notations.keyRange.low + 1.8" />
+					<text :x="time * timeScale" :y="-notations.keyRange.low + 4">{{time * 1e-3}}s</text>
+				</g>
 			</g>
 		</g>
 	</svg>	
@@ -37,6 +44,7 @@
 
 	const PADDINGS = {
 		left: 3,
+		right: 1,
 	};
 
 
@@ -52,6 +60,7 @@
 				type: Number,
 				default: 200,
 			},
+			width: Number,
 			timeScale: {
 				type: Number,
 				default: 1e-3,
@@ -67,18 +76,46 @@
 		data () {
 			return {
 				notations: null,
+				timeScroll: 0,
 			};
 		},
 
 
 		computed: {
+			widthLimited () {
+				return Number.isFinite(this.width);
+			},
+
+
+			aspectRatio () {
+				return this.widthLimited ? this.width / this.height : 1.6;
+			},
+
+
+			viewHeight () {
+				if (this.notations) {
+					const {low, high} = this.notations.keyRange;
+
+					return high - low + 5;
+				}
+
+				return 90;
+			},
+
+
+			viewWidth () {
+				const duration = this.notations ? this.notations.endTime : this.height * this.aspectRatio;
+				const justifyWidth = duration * this.timeScale + PADDINGS.left + PADDINGS.right;
+
+				if (this.widthLimited)
+					return Math.min(justifyWidth, this.width * this.viewHeight / this.height);
+
+				return justifyWidth;
+			},
+
+
 			viewBox () {
-				if (!this.notations)
-					return "0 -110 1000 90";
-
-				const {low, high} = this.notations.keyRange;
-
-				return `-${PADDINGS.left} ${-high - 1} ${this.notations.endTime * this.timeScale + 4} ${high - low + 5}`;
+				return `-${PADDINGS.left} ${this.notations ? -this.notations.keyRange.high - 1 : 0} ${this.viewWidth} ${this.viewHeight}`;
 			},
 
 
@@ -100,6 +137,19 @@
 
 			progressTime () {
 				return this.player ? this.player.progressTime : null;
+			},
+
+
+			visibleTimeSpan () {
+				if (this.widthLimited)
+					return (this.viewWidth - (PADDINGS.left + PADDINGS.right)) / this.timeScale;
+
+				return Infinity;
+			},
+
+
+			xScroll () {
+				return this.timeScroll * this.timeScale;
 			},
 		},
 
@@ -144,12 +194,20 @@
 
 				if (this.player) {
 					const docToCanvas = (this.notations.keyRange.high - this.notations.keyRange.low + 5) / this.height;
-					const x = event.offsetX * docToCanvas - PADDINGS.left;
+					const x = event.offsetX * docToCanvas - PADDINGS.left + this.xScroll;
 					const time = x / this.timeScale;
 
 					if (time >= 0 && time < this.notations.endTime)
 						this.player.turnCursor(time);
 				}
+			},
+
+
+			adjustTimeScroll () {
+				if (this.progressTime - this.timeScroll > this.visibleTimeSpan * 0.6)
+					this.timeScroll = Math.min(this.progressTime - this.visibleTimeSpan * 0.6, this.notations.endTime - this.visibleTimeSpan);
+				else if (this.progressTime - this.timeScroll < this.visibleTimeSpan * 0.4)
+					this.timeScroll = Math.max(this.progressTime - this.visibleTimeSpan * 0.4, 0);
 			},
 		},
 
@@ -159,7 +217,12 @@
 			player: "load",
 
 
-			progressTime: "updateNoteStatus",
+			progressTime () {
+				this.updateNoteStatus();
+
+				if (this.widthLimited)
+					this.adjustTimeScroll();
+			},
 		},
 	};
 </script>
@@ -188,6 +251,11 @@
 	{
 		stroke: black;
 		stroke-width: 0.06;
+	}
+
+	.pitch-padding
+	{
+		fill: #fffc;
 	}
 
 	.progress rect

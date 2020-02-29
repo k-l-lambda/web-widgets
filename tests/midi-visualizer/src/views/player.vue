@@ -4,9 +4,10 @@
 			<button @click="togglePlayer" :disabled="!player">{{player && player.isPlaying ? "pause" : "play"}}</button>
 			<em v-if="player">{{(player.progressTime / 1000).toFixed(2)}}</em>s
 			Height: <input type="number" v-model.number="viewHieght" />
+			Width: <input type="number" v-model.number="viewWidth" />
 			TimeScale: <input type="number" v-model.number="viewTimeScale" />
 		</p>
-		<MidiRoll :player="player" :height="viewHieght" :timeScale="viewTimeScale" />
+		<MidiRoll :player="player" :height="viewHieght" :width="viewWidth" :timeScale="viewTimeScale" />
 	</div>
 </template>
 
@@ -32,6 +33,7 @@
 		data () {
 			return {
 				viewHieght: 200,
+				viewWidth: 600,
 				viewTimeScale: 1e-3,
 				player: null,
 				midiAudioLoaded: false,
@@ -116,3 +118,10 @@
 		},
 	};
 </script>
+
+<style scoped>
+	input[type=number]
+	{
+		width: 4em;
+	}
+</style>
