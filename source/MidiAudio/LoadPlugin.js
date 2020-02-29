@@ -159,6 +159,9 @@ connect.webaudio = function (filetype, instruments, conf) {
 					delete MIDI.WebAudio.pendingInstruments[instruments];
 				},
 				onerror (err) {
+					if (MIDI.loader)
+						MIDI.loader.update(err, "Download failed.");
+
 					delete MIDI.WebAudio.pendingInstruments[instruments];
 				},
 			});
