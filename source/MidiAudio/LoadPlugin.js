@@ -17,11 +17,13 @@ import sendRequest from "./Window/DOMLoader.XMLHttp.js";
 const DOMLoader = { script, sendRequest };
 
 
+// inherit global soundfont resource
+MIDI.Soundfont = window.MIDI && window.MIDI.Soundfont || {};
+
+
 // This is required, because soundfont script suppose window.MIDI is the MIDI API root.
 window.MIDI = MIDI;
 
-
-MIDI.Soundfont = {};
 
 MIDI.audioDetect = audioDetect;
 

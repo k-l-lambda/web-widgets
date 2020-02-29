@@ -42,7 +42,10 @@
 		created () {
 			this.loadPlayer();
 
-			MidiAudio.loadPlugin({ soundfontUrl: "/soundfont/", api: "webaudio" }).then(() => this.midiAudioLoaded = true);
+			if (MidiAudio.WebAudio.empty())
+				MidiAudio.loadPlugin({ soundfontUrl: "/soundfont/", api: "webaudio" }).then(() => this.midiAudioLoaded = true);
+			else
+				this.midiAudioLoaded = true;
 		},
 
 

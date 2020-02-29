@@ -110,15 +110,26 @@ const setPlugin = function (root) {
 
 if (window.AudioContext || window.webkitAudioContext) {
 	(function () {
-		//var AudioContext = window.AudioContext || window.webkitAudioContext;
-		var root = MIDI.WebAudio = {
+		// inherit global API
+		if (window.MIDI && window.MIDI.WebAudio) {
+			MIDI.WebAudio = window.MIDI.WebAudio;
+			return;
+		}
+
+		const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+		const root = MIDI.WebAudio = {
 			api: "webaudio",
+
+			empty () {
+				return !Object.keys(MIDI.Soundfont).length;
+			},
 		};
 		var ctx;
 		var sources = {};
 		var masterVolume = 127;
 		var audioBuffers = {};
-		var audioLoader = function (instrument, urlList, index, bufferList, callback) {
+		const audioLoader = function (instrument, urlList, index, bufferList, callback) {
 			var synth = MIDI.GeneralMIDI.byName[instrument];
 			var instrumentId = synth.number;
 			var url = urlList[index];
@@ -248,20 +259,22 @@ if (window.AudioContext || window.webkitAudioContext) {
 			//
 			ctx = new AudioContext();
 			///
-			var urlList = [];
-			var keyToNote = MIDI.keyToNote;
-			for (var key in keyToNote) urlList.push(key);
-			var bufferList = [];
-			var pending = {};
-			var oncomplete = function (instrument) {
+			const urlList = [];
+			for (const key in MIDI.keyToNote)
+				urlList.push(key);
+			const bufferList = [];
+			const pending = {};
+			const oncomplete = function (instrument) {
 				delete pending[instrument];
-				for (var key in pending) break;
-				if (!key && conf.callback) conf.callback();
+				for (var key in pending)
+					break;
+				if (!key && conf.callback)
+					conf.callback();
 			};
 				//console.log("WebAudio.connect.2", MIDI, window.MIDI, urlList);
-			for (var instrument in MIDI.Soundfont) {
+			for (const instrument in MIDI.Soundfont) {
 				pending[instrument] = true;
-				for (var i = 0; i < urlList.length; i++)
+				for (let i = 0; i < urlList.length; i++)
 					audioLoader(instrument, urlList, i, bufferList, oncomplete);
 			}
 		};
