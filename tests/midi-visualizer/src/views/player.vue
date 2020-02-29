@@ -11,7 +11,7 @@
 </template>
 
 <script>
-	import { MidiRoll, MIDI, MidiPlayer } from "@k-l-lambda/web-widgets";
+	import { MidiRoll, MIDI, MidiPlayer, MidiAudio } from "@k-l-lambda/web-widgets";
 
 
 
@@ -34,17 +34,20 @@
 				viewHieght: 200,
 				viewTimeScale: 1e-3,
 				player: null,
+				midiAudioLoaded: false,
 			};
 		},
 
 
 		created () {
-			this.load();
+			this.loadPlayer();
+
+			MidiAudio.loadPlugin({ soundfontUrl: "/soundfont/", api: "webaudio" }).then(() => this.midiAudioLoaded = true);
 		},
 
 
 		methods: {
-			async load () {
+			async loadPlayer () {
 				if (this.player) {
 					this.player.dispose();
 					this.player = null;
@@ -55,7 +58,7 @@
 					const midi = MIDI.parseMidiData(buffer);
 
 					this.player = new MidiPlayer(midi, {
-						onMidi: data => this.onMidi(data),
+						onMidi: (data, timestamp) => this.onMidi(data, timestamp),
 						onPlayFinish: () => this.onFinish(),
 					});
 					//console.log("notations:", this.notations);
@@ -63,8 +66,23 @@
 			},
 
 
-			onMidi (data) {
-				console.log("onMidi:", data.subtype, data);
+			onMidi (data, timestamp) {
+				//console.log("onMidi:", data.subtype, timestamp, data);
+
+				if (this.midiAudioLoaded) {
+					const delay = (timestamp - performance.now()) * 1e-3;	// in seconds
+
+					switch (data.subtype) {
+					case "noteOn":
+						MidiAudio.noteOn(data.channel, data.noteNumber, data.velocity, delay);
+
+						break;
+					case "noteOff":
+						MidiAudio.noteOff(data.channel, data.noteNumber, delay);
+
+						break;
+					}
+				}
 			},
 
 
@@ -85,7 +103,13 @@
 
 
 		watch: {
-			midiURL: "load",
+			midiURL: "loadPlayer",
+
+
+			midiAudioLoaded (value) {
+				if (value)
+					console.log("soundfound loaded.");
+			},
 		},
 	};
 </script>
