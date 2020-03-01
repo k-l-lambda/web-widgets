@@ -73,6 +73,7 @@ module.exports = {
 				],
 			},
 		],
+		"no-debugger": "off",
 	},
 	plugins: [
 		//"eslint-plugin-html",

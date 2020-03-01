@@ -122,22 +122,23 @@ if (window.AudioContext || window.webkitAudioContext) {
 			api: "webaudio",
 			pendingInstruments: {},
 		};
-		var ctx;
+		let ctx;
 		const sources = {};
-		var masterVolume = 127;
+		let masterVolume = 127;
 		const audioBuffers = {};
 		const audioLoader = function (instrument, urlList, index, bufferList, callback) {
-			var synth = MIDI.GeneralMIDI.byName[instrument];
-			var instrumentId = synth.number;
-			var url = urlList[index];
+			const synth = MIDI.GeneralMIDI.byName[instrument];
+			const instrumentId = synth.number;
+			const url = urlList[index];
 			if (!MIDI.Soundfont[instrument][url]) { // missing soundfont
 				return callback(instrument);
 			}
-			var base64 = MIDI.Soundfont[instrument][url].split(",")[1];
-			var buffer = Base64Binary.decodeArrayBuffer(base64);
+			const base64 = MIDI.Soundfont[instrument][url].split(",")[1];
+			const buffer = Base64Binary.decodeArrayBuffer(base64);
 			ctx.decodeAudioData(buffer, function (buffer) {
-				var msg = url;
-				while (msg.length < 3) msg += "&nbsp;";
+				let msg = url;
+				while (msg.length < 3)
+					msg += "&nbsp;";
 				if (typeof (MIDI.loader) !== "undefined")
 					MIDI.loader.update(null, synth.instrument + "<br>Processing: " + (index / 87 * 100 >> 0) + "%<br>" + msg);
 
@@ -147,14 +148,17 @@ if (window.AudioContext || window.webkitAudioContext) {
 				if (bufferList.length === urlList.length) {
 					while (bufferList.length) {
 						buffer = bufferList.pop();
-						if (!buffer) continue;
-						var nodeId = MIDI.keyToNote[buffer.id];
+						if (!buffer)
+							continue;
+						const nodeId = MIDI.keyToNote[buffer.id];
 						audioBuffers[instrumentId + "" + nodeId] = buffer;
 					}
 					callback(instrument);
 				}
 			});
 		};
+
+		const performanceTimeToCtx = timestamp => (timestamp - performance.now()) * 1e-3 + ctx.currentTime;
 
 		root.setVolume = function (channel, volume) {
 			masterVolume = volume;
@@ -172,58 +176,61 @@ if (window.AudioContext || window.webkitAudioContext) {
 			MIDI.channels[channel].instrument = program;
 		};
 
-		root.noteOn = function (channel, note, velocity, delay) {
+		root.noteOn = function (channel, note, velocity, timestamp = 0) {
 			/// check whether the note exists
-			if (!MIDI.channels[channel]) return;
-			var instrument = MIDI.channels[channel].instrument;
-			if (!audioBuffers[instrument + "" + note]) return;
-			/// convert relative delay to absolute delay
-			if (delay < ctx.currentTime) delay += ctx.currentTime;
+			if (!MIDI.channels[channel])
+				return;
+			const instrument = MIDI.channels[channel].instrument;
+			if (!audioBuffers[instrument + "" + note])
+				return;
+
+			const when = performanceTimeToCtx(timestamp);
+
 			/// crate audio buffer
-			var source = ctx.createBufferSource();
+			const source = ctx.createBufferSource();
 			sources[channel + "" + note] = source;
 			source.buffer = audioBuffers[instrument + "" + note];
 			source.connect(ctx.destination);
 			///
-			if (ctx.createGain) { // firefox
+			if (ctx.createGain) { // firefox, chrome
 				source.gainNode = ctx.createGain();
 			}
-			else { // chrome
+			else { // old chrome
 				source.gainNode = ctx.createGainNode();
 			}
-			var value = (velocity / 127) * (masterVolume / 127) * 2 - 1;
+			const value = (velocity / 127) * (masterVolume / 127) * 2 - 1;
 			source.gainNode.connect(ctx.destination);
 			//source.gainNode.gain.value = Math.max(-1, value);
 			//	[Deprecation] GainNode.gain.value setter smoothing is deprecated and will be removed in M64, around January 2018. Please use setTargetAtTime() instead if smoothing is needed. See https://www.chromestatus.com/features/5287995770929152 for more details.
 			source.gainNode.gain.setTargetAtTime(Math.max(-1, value), ctx.currentTime, 0);
 			source.connect(source.gainNode);
 			if (source.noteOn) { // old api
-				source.noteOn(delay || 0);
+				source.noteOn(when);
 			}
 			else { // new api
-				source.start(delay || 0);
+				source.start(when);
 			}
 			return source;
 		};
 
-		root.noteOff = function (channel, note, delay) {
-			delay = delay || 0;
-			if (delay < ctx.currentTime) delay += ctx.currentTime;
-			var source = sources[channel + "" + note];
+		root.noteOff = function (channel, note, timestamp = 0) {
+			const when = performanceTimeToCtx(timestamp);
+
+			const source = sources[channel + "" + note];
 			if (!source) return;
 			if (source.gainNode) {
 				// @Miranet: "the values of 0.2 and 0.3 could ofcourse be used as
 				// a 'release' parameter for ADSR like time settings."
 				// add { "metadata": { release: 0.3 } } to soundfont files
-				var gain = source.gainNode.gain;
-				gain.linearRampToValueAtTime(gain.value, delay);
-				gain.linearRampToValueAtTime(-1, delay + 0.2);
+				const gain = source.gainNode.gain;
+				gain.linearRampToValueAtTime(gain.value, when);
+				gain.linearRampToValueAtTime(-1, when + 0.2);
 			}
 			if (source.noteOff) { // old api
-				source.noteOff(delay + 0.3);
+				source.noteOff(when + 0.3);
 			}
 			else
-				source.stop(delay + 0.3);
+				source.stop(when + 0.3);
 
 			///
 			delete sources[channel + "" + note];

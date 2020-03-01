@@ -75,15 +75,13 @@
 				//console.log("onMidi:", data.subtype, timestamp, data);
 
 				if (this.midiAudioLoaded) {
-					const delay = (Math.max(timestamp - performance.now(), 0)) * 1e-3;	// in seconds
-
 					switch (data.subtype) {
 					case "noteOn":
-						MidiAudio.noteOn(data.channel, data.noteNumber, data.velocity, delay);
+						MidiAudio.noteOn(data.channel, data.noteNumber, data.velocity, timestamp);
 
 						break;
 					case "noteOff":
-						MidiAudio.noteOff(data.channel, data.noteNumber, delay);
+						MidiAudio.noteOff(data.channel, data.noteNumber, timestamp);
 
 						break;
 					}
