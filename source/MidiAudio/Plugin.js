@@ -158,7 +158,7 @@ if (window.AudioContext || window.webkitAudioContext) {
 			});
 		};
 
-		const performanceTimeToCtx = timestamp => (timestamp - performance.now()) * 1e-3 + ctx.currentTime;
+		const performanceTimeToCtx = timestamp => Math.max((timestamp - performance.now()) * 1e-3 + ctx.currentTime, 0);
 
 		root.setVolume = function (channel, volume) {
 			masterVolume = volume;

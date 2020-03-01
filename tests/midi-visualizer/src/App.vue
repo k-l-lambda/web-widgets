@@ -48,7 +48,7 @@
 				this.dragHover = false;
 
 				const file = event.dataTransfer.files[0];
-				if (file && file.type === "audio/midi") {
+				if (file && ["audio/midi", "audio/mid"].includes(file.type)) {
 					this.midiURL = await new Promise(resolve => {
 						const fr = new FileReader();
 						fr.onload = () => resolve(fr.result);
