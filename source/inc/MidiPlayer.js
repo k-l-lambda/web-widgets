@@ -35,7 +35,7 @@ export default class MidiPlayer {
 		if (this.progressTime >= this.duration)
 			this.progressTime = 0;
 
-		const now = performance.now();
+		let now = performance.now();
 		this.startTime = now - this.progressTime;
 
 		this.isPlaying = true;
@@ -43,8 +43,6 @@ export default class MidiPlayer {
 		let currentEventIndex = this.events.findIndex(event => event.time >= now - this.startTime);
 
 		while (this.isPlaying) {
-			const now = performance.now();
-
 			for (; currentEventIndex < this.events.length; ++currentEventIndex) {
 				const event = this.events[currentEventIndex];
 				//console.log("play event:", currentEventIndex, event.time, this.progressTime + this.cacheSpan);
@@ -73,8 +71,9 @@ export default class MidiPlayer {
 				}
 			}
 
-			//console.log("this.progressTime:", this.progressTime, this.startTime);
-			this.progressTime = performance.now() - this.startTime;
+			now = performance.now();
+
+			this.progressTime = now - this.startTime;
 
 			if (this.progressTime > this.duration) {
 				this.isPlaying = false;

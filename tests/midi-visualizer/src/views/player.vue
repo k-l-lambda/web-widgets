@@ -75,7 +75,7 @@
 				//console.log("onMidi:", data.subtype, timestamp, data);
 
 				if (this.midiAudioLoaded) {
-					const delay = (timestamp - performance.now()) * 1e-3;	// in seconds
+					const delay = (Math.max(timestamp - performance.now(), 0)) * 1e-3;	// in seconds
 
 					switch (data.subtype) {
 					case "noteOn":
