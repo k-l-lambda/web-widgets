@@ -12,7 +12,7 @@
 					/>
 				</g>
 			</g>
-			<SvgPianoRoll v-if="notations" :notations="notations" :timeScale="timeScale" />
+			<SvgPianoRoll v-if="notations" :notations="notations" :timeScale="timeScale" :pitchScale="1" />
 		</g>
 		<g class="scales" v-if="notations">
 			<rect class="pitch-padding" :x="-10" :y="-120" :width="10" :height="-notations.keyRange.low + 121" />

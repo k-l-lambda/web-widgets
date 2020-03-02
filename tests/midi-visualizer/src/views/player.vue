@@ -34,7 +34,7 @@
 			return {
 				viewHieght: 200,
 				viewWidth: 600,
-				viewTimeScale: 1e-3,
+				viewTimeScale: 4e-3,
 				player: null,
 				midiAudioLoaded: false,
 			};
