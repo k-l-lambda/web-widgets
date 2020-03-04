@@ -3,7 +3,8 @@ import Base64Binary from "./base64binary.js";
 
 
 
-const MIDI = {};
+const MIDI = window.MIDI || {};
+window.MIDI = MIDI;
 
 
 const setPlugin = function (root) {
