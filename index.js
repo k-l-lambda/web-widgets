@@ -1,15 +1,12 @@
 
-import MidiRoll from "./source/views/midi-roll.vue";
-
-import * as MIDI from "./source/inc/MIDI";
-import * as MusicNotation from "./source/inc/MusicNotation.js";
-import MidiPlayer from "./source/inc/MidiPlayer.js";
-import MidiAudio from "./source/MidiAudio";
+const MIDI = require("./source/inc/MIDI");
+const MusicNotation = require("./source/inc/MusicNotation");
+const MidiPlayer = require("./source/inc/MidiPlayer.js").default;
+const MidiAudio = require("./source/inc/MidiAudio").default;
 
 
 
-export {
-	MidiRoll,
+module.export = {
 	MIDI,
 	MusicNotation,
 	MidiPlayer,
