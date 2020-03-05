@@ -11,10 +11,10 @@
   "directories": {
     "test": "tests"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "vue": "^2.6.11"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"hello.\""
   },

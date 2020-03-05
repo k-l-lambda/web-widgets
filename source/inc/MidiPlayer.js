@@ -1,12 +1,12 @@
 
-import { Notation } from "./MusicNotation.js";
+const { Notation } = require("./MusicNotation.js");
 
 
 
 const msDelay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 
-export default class MidiPlayer {
+class MidiPlayer {
 	constructor (midiData, {cacheSpan = 600, onMidi, onPlayFinish} = {}) {
 		this.cacheSpan = cacheSpan;
 		this.onMidi = onMidi;
@@ -98,3 +98,7 @@ export default class MidiPlayer {
 			this.progressTime = time;
 	}
 };
+
+
+
+module.exports = MidiPlayer;

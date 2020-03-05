@@ -98,7 +98,7 @@ const midiToEvents = (midiFile, timeWarp = 1) => {
 
 
 
-export class Notation {
+class Notation {
 	static parseMidi(data) {
 		const channelStatus = [];
 		const pedalStatus = {};
@@ -502,4 +502,10 @@ export class Notation {
 			timeRange,
 		};
 	}
+};
+
+
+
+module.exports = {
+	Notation,
 };
