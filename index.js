@@ -1,11 +1,11 @@
 
 const MIDI = require("./source/inc/MIDI");
 const MusicNotation = require("./source/inc/MusicNotation");
-const MidiPlayer = require("./source/inc/MidiPlayer.js").default;
+const MidiPlayer = require("./source/inc/MidiPlayer.js");
 
 
 
-module.export = {
+module.exports = {
 	MIDI,
 	MusicNotation,
 	MidiPlayer,
