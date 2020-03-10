@@ -6,10 +6,13 @@
 				<line :x1="progressTime * timeScale" :x2="progressTime * timeScale" :y1="-notations.keyRange.low + 1" y2="-120" />
 			</g>
 			<g v-if="notations">
-				<g class="bar" v-for="(bar, i) of notations.bars" :key="i">
+				<g class="bar measure" v-for="(bar, i) of notations.bars" :key="i">
 					<line v-if="bar.index === 0"
 						:x1="bar.time * timeScale" :x2="bar.time * timeScale" :y1="-notations.keyRange.low + 1" y2="-120"
 					/>
+				</g>
+				<g class="bar pitch-group" v-for="pitch of pitchScales" :key="`p-${pitch}`">
+					<line :x1="0" :x2="timeScale * notations.endTime" :y1="-pitch + 1" :y2="-pitch + 1" />
 				</g>
 			</g>
 			<SvgPianoRoll v-if="notations" :notations="notations" :timeScale="timeScale" :pitchScale="1" />
