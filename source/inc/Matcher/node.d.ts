@@ -3,6 +3,8 @@ declare module Matcher {
 	interface Note {
 		start: number;
 		pitch: number;
+		softIndex?: number;
+		deltaSi?: number;
 	}
 
 

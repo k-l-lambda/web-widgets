@@ -40,8 +40,8 @@ const makeMatchNodes = function (note, criterion, zeroNode = Node.zero()) {
 
 	const targetList = criterion.pitchMap[note.pitch];
 	if (targetList) {
-		for (const ii in targetList) {
-			const node = new Node(note, targetList[ii]);
+		for (const targetNote of targetList) {
+			const node = new Node(note, targetNote);
 			if (zeroNode)
 				node.evaluatePrev(zeroNode);
 
@@ -52,7 +52,7 @@ const makeMatchNodes = function (note, criterion, zeroNode = Node.zero()) {
 
 
 const genNotationContext = function (notation) {
-	for (const i in notation.notes)
+	for (let i = 0; i < notation.notes.length; ++i)
 		makeNoteSoftIndex(notation.notes, i);
 };
 
