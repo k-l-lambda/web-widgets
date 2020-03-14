@@ -5,7 +5,10 @@
 
 
 declare module Matcher {
-	function makeMatchNodes(note: Note, criterion: Notation, zeroNode?: object);
-	function genNotationContext(notation: Notation);
-	function runNavigation(criterion: Notation, sample: Notation, onStep: (i: number, navigator: Navigator) => Symbol | Promise<Symbol>): Promise<Navigator>;
+	export function makeMatchNodes(note: Note, criterion: Notation, zeroNode?: object);
+	export function genNotationContext(notation: Notation);
+	export function runNavigation(criterion: Notation, sample: Notation, onStep: (i: number, navigator: Navigator) => Symbol | Promise<Symbol>): Promise<Navigator>;
 }
+
+
+declare module "@k-l-lambda/web-widgets/source/inc/Matcher";

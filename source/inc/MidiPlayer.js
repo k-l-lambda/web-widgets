@@ -12,7 +12,12 @@ class MidiPlayer {
 		this.onMidi = onMidi;
 		this.onPlayFinish = onPlayFinish;
 
-		const notations = Notation.parseMidi(midiData);
+		let notations;
+		if (midiData.notes && midiData.endTime)
+			notations = midiData;
+		else
+			notations = Notation.parseMidi(midiData);
+
 		this.notations = notations;
 		this.events = notations.events;
 		//console.log("events:", this.events);
