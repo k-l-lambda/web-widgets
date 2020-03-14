@@ -1,5 +1,6 @@
 
-const Navigator = require("./Navigator.js");
+const Node = require("./node.js");
+const Navigator = require("./navigator.js");
 
 
 
@@ -30,6 +31,22 @@ const makeNoteSoftIndex = function (notes, index) {
 	else {
 		note.softIndex = 0;
 		note.deltaSi = 0;
+	}
+};
+
+
+const makeMatchNodes = function (note, criterion, zeroNode = Node.zero()) {
+	note.matches = [];
+
+	const targetList = criterion.pitchMap[note.pitch];
+	if (targetList) {
+		for (const ii in targetList) {
+			const node = new Node(note, targetList[ii]);
+			if (zeroNode)
+				node.evaluatePrev(zeroNode);
+
+			note.matches.push(node);
+		}
 	}
 };
 
@@ -70,6 +87,7 @@ const runNavigation = async function(criterion, sample, onStep) {
 
 
 module.exports = {
+	makeMatchNodes,
 	genNotationContext,
 	runNavigation,
 };

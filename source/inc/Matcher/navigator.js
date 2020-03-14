@@ -1,5 +1,6 @@
 
-const Node = require("./Node.js");
+const Config = require("./config.js");
+const Node = require("./node.js");
 
 
 

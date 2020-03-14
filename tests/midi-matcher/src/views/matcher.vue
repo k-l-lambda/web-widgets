@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<p>
+			<button @click="match" :disabled="!criterion || !sample">match</button>
 		</p>
 		<svg xmlns="http://www.w3.org/2000/svg" height="480" viewBox="-20 -20 1000 160">
 			<g transform="translate(0, 90)">
@@ -15,6 +16,7 @@
 
 <script>
 	import PinaoRoll from "@k-l-lambda/web-widgets/source/components/svg-piano-roll.vue";
+	import Matcher from "@k-l-lambda/web-widgets/source/inc/Matcher";
 
 
 
@@ -37,6 +39,20 @@
 			return {
 				timeScale: 8e-3,
 			};
+		},
+
+
+		methods: {
+			async match () {
+				Matcher.genNotationContext(this.criterion);
+				Matcher.genNotationContext(this.sample);
+
+				for (const note of this.sample.notes)
+					Matcher.makeMatchNodes(note, this.criterion);
+
+				const navigator = await Matcher.runNavigation(this.criterion, this.sample);
+				console.log("path:", navigator.path());
+			},
 		},
 	};
 </script>

@@ -24,6 +24,7 @@ module.exports = {
 		"vue/require-default-prop": "off",
 		"vue/html-self-closing": "off",
 		"vue/attribute-hyphenation": ["warn", "never"],
+		"vue/singleline-html-element-content-newline": "off",
 		"no-multiple-empty-lines": "off",
 		"no-return-assign": "off",
 		"no-sequences": "off",
@@ -39,10 +40,10 @@ module.exports = {
 		"vue/html-indent": [
 			"warn",
 			"tab",
-			{"baseIndent": 1},
+			{ "baseIndent": 1 },
 		],
 		"vue/script-indent": [
-			"warn", "tab", {"baseIndent": 1},
+			"warn", "tab", { "baseIndent": 1 },
 		],
 		"no-tabs": "off",
 		"comma-dangle": ["warn", "always-multiline"],
@@ -54,7 +55,7 @@ module.exports = {
 		"brace-style": ["error", "stroustrup"],
 		"camelcase": "off",
 		"no-useless-escape": "warn",
-		"no-unused-vars": ["warn", {varsIgnorePattern: "_"}],
+		"no-unused-vars": ["warn", { varsIgnorePattern: "_" }],
 		"quote-props": ["warn", "as-needed"],
 		"prefer-const": "warn",
 		"no-fallthrough": [

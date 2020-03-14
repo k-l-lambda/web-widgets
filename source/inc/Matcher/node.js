@@ -1,4 +1,8 @@
 
+const Config = require("./config.js");
+
+
+
 class Node {
 	constructor (s_note, c_note) {
 		this.s_note = s_note;
