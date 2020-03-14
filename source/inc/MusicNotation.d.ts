@@ -17,15 +17,15 @@ declare class Notation {
 
 	constructor (fields: object);
 
-	findChordBySoftindex(softIndex: number, radius?: number): Note[];
+	findChordBySoftindex (softIndex: number, radius?: number): Note[];
 
-	averageTempo(tickRange: {from: number, to: number}): number;
+	averageTempo (tickRange: {from: number, to: number}): number;
 
-	ticksToTime(ticks: number): number;
+	ticksToTime (ticks: number): number;
 
-	tickRangeToTimeRange(tickRange: {from: number, to: number}): object;
+	tickRangeToTimeRange (tickRange: {from: number, to: number}): object;
 
-	getMeasureRange(measureRange: {start: number, end: number}): {
+	getMeasureRange (measureRange: {start: number, end: number}): {
 		tickRange: object,
 		timeRange: object,
 	};
