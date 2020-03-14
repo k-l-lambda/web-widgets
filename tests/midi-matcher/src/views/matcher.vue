@@ -14,8 +14,8 @@
 				<line v-for="link of links" :key="link.s.index"
 					:x1="positionS.x + link.s.start * timeScale"
 					:x2="positionC.x + link.c.start * timeScale"
-					:y1="positionS.y - link.s.pitch"
-					:y2="positionC.y - link.c.pitch"
+					:y1="positionS.y - link.s.pitch + 0.5"
+					:y2="positionC.y - link.c.pitch + 0.5"
 				/>
 			</g>
 		</svg>
