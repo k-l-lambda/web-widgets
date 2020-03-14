@@ -1,12 +1,8 @@
 
-import * as MIDI from "./inc/MIDI.index.d.ts";
-import * as MusicNotation from "./inc/MusicNotation.d.ts";
-import MidiPlayer from "./inc/MidiPlayer.d.ts";
+/// <reference path="./source/inc/MIDI/index.d.ts" />
+/// <reference path="./source/inc/MusicNotation.d.ts" />
+/// <reference path="./source/inc/MidiPlayer.d.ts" />
 
 
 
-export {
-	MIDI,
-	MusicNotation,
-	MidiPlayer,
-};
+declare module "@k-l-lambda/web-widgets";

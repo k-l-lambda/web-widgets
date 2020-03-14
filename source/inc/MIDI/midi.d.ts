@@ -1,48 +1,48 @@
 
 interface MidiHeader {
-	formatType: number,
-	trackCount: number,
-	ticksPerBeat: number,
-};
+	formatType: number;
+	trackCount: number;
+	ticksPerBeat: number;
+}
 
 
 interface MidiEvent {
-	type: string,
-	subtype: string,
+	type: string;
+	subtype: string;
 
-	text?: string,
+	text?: string;
 
-	frameRate?: object,
-	hour?: number,
-	min?: number,
-	sec?: number,
-	frame?: number,
-	subframe?: number,
+	frameRate?: object;
+	hour?: number;
+	min?: number;
+	sec?: number;
+	frame?: number;
+	subframe?: number;
 
-	numerator?: number,
-	denominator?: number,
-	metronome?: number,
-	thirtyseconds?: number,
+	numerator?: number;
+	denominator?: number;
+	metronome?: number;
+	thirtyseconds?: number;
 
-	key?: number,
-	scale?: number,
+	key?: number;
+	scale?: number;
 
-	data?: string,
+	data?: string;
 
-	noteNumber: number,
-	velocity: number,
+	noteNumber: number;
+	velocity: number;
 
-	amount: number,
+	amount: number;
 
-	controllerType: number,
+	controllerType: number;
 
-	programNumber: number,
+	programNumber: number;
 
-	value: number,
-};
+	value: number;
+}
 
 
 interface MidiData {
-	header: MidiHeader,
-	traces: MidiEvent[][],
-};
+	header: MidiHeader;
+	traces: MidiEvent[][];
+}

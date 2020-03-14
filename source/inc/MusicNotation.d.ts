@@ -1,15 +1,15 @@
 
-import "./MIDI/midi.d.ts";
+/// <reference path="./MIDI/midi.d.ts" />
 
 
 
 interface Note {
-	start: number,
-	duration: number,
-	startTick: number,
-	pitch: number,
-	velocity?: number,
-};
+	start: number;
+	duration: number;
+	startTick: number;
+	pitch: number;
+	velocity?: number;
+}
 
 
 declare class Notation {
@@ -29,10 +29,4 @@ declare class Notation {
 		tickRange: object,
 		timeRange: object,
 	};
-};
-
-
-
-export {
-	Notation,
-};
+}

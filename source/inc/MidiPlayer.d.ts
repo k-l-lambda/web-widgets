@@ -1,5 +1,5 @@
 
-import "./MIDI/midi.d.ts";
+/// <reference path="./MIDI/midi.d.ts" />
 
 
 
@@ -16,13 +16,9 @@ declare class MidiPlayer {
 
 	dispose ();
 
-	async play ();
+	play () : Promise<void>;
 
 	pause ();
 
 	turnCursor (time: number);
-};
-
-
-
-export default MidiPlayer;
+}
