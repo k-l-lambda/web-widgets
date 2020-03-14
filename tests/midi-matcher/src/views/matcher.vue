@@ -1,13 +1,20 @@
 <template>
 	<div>
 		<p>
-			matcher
 		</p>
+		<svg xmlns="http://www.w3.org/2000/svg" height="480" viewBox="-20 -20 1000 160">
+			<g transform="translate(0, 90)">
+				<PinaoRoll v-if="criterion" :notations="criterion" :timeScale="timeScale" :pitchScale="1" />
+			</g>
+			<g transform="translate(0, 160)">
+				<PinaoRoll v-if="sample" :notations="sample" :timeScale="timeScale" :pitchScale="1" />
+			</g>
+		</svg>
 	</div>
 </template>
 
 <script>
-	//import { MidiRoll } from "@k-l-lambda/web-widgets";
+	import PinaoRoll from "@k-l-lambda/web-widgets/source/components/svg-piano-roll.vue";
 
 
 
@@ -16,18 +23,19 @@
 
 
 		props: {
-			midiURL: String,
+			criterion: Object,
+			sample: Object,
 		},
 
 
 		components: {
+			PinaoRoll,
 		},
 
 
 		data () {
 			return {
-				viewHieght: 200,
-				viewTimeScale: 1e-3,
+				timeScale: 8e-3,
 			};
 		},
 	};

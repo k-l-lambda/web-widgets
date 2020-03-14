@@ -5,13 +5,21 @@
 		@dragleave="dragHover = false"
 		@drop.prevent="onDrop"
 	>
-		<p><img alt="Vue logo" src="./assets/logo.png"></p>
-		<Matcher />
+		<Matcher :criterion="criterion" :sample="sample" />
 	</div>
 </template>
 
 <script>
+	import { MIDI, MusicNotation } from "@k-l-lambda/web-widgets";
+
 	import Matcher from "./views/matcher.vue";
+
+
+
+	const loadMidiNotation = buffer => {
+		const midi = MIDI.parseMidiData(buffer);
+		return MusicNotation.Notation.parseMidi(midi);
+	};
 
 
 
@@ -26,7 +34,8 @@
 
 		data () {
 			return {
-				midiURL: null,
+				criterion: null,
+				sample: null,
 				dragHover: false,
 				viewHieght: 200,
 				viewTimeScale: 1e-3,
@@ -35,6 +44,13 @@
 
 
 		async created () {
+			const { default: urlC } = await import("./assets/criterion.mid");
+			const bufferC = await (await fetch(urlC)).arrayBuffer();
+			this.criterion = loadMidiNotation(bufferC);
+
+			const { default: urlS } = await import("./assets/sample.mid");
+			const bufferS = await (await fetch(urlS)).arrayBuffer();
+			this.sample = loadMidiNotation(bufferS);
 		},
 
 
@@ -42,14 +58,15 @@
 			async onDrop (event) {
 				this.dragHover = false;
 
-				const file = event.dataTransfer.files[0];
+				console.log("event:", event);
+				/*const file = event.dataTransfer.files[0];
 				if (file && ["audio/midi", "audio/mid"].includes(file.type)) {
 					this.midiURL = await new Promise(resolve => {
 						const fr = new FileReader();
 						fr.onload = () => resolve(fr.result);
 						fr.readAsDataURL(file);
 					});
-				}
+				}*/
 			},
 		},
 	};
