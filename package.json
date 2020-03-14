@@ -7,6 +7,7 @@
     "svg"
   ],
   "main": "index.js",
+  "types": "index.d.ts",
   "browser": "index.browser.js",
   "directories": {
     "test": "tests"
