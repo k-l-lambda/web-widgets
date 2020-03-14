@@ -4,6 +4,6 @@
 
 
 declare module MIDI {
-	function parseMidiData(data: string | object): MidiData;
-	function encodeMidiFile(data: MidiData): string;
+	export function parseMidiData(data: string | object): MidiData;
+	export function encodeMidiFile(data: MidiData): string;
 }
