@@ -12,8 +12,21 @@ interface Note {
 }
 
 
+interface Tempo {
+	tempo: number;
+	tick: number;
+	time: number;
+};
+
+
 declare class Notation {
 	static parseMidi(data: MidiData): Notation;
+
+	notes: Note[];
+	tempos: Tempo[];
+
+	endTime: number;
+	endTick: number;
 
 	constructor (fields: object);
 

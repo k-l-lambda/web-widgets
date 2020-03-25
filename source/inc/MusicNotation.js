@@ -250,7 +250,8 @@ class Notation {
 						case "setTempo":
 							millisecondsPerBeat = event.microsecondsPerBeat / 1000;
 							//beats = Math.round(beats);
-							tempos.push({tempo: event.microsecondsPerBeat, ticks, time});
+							//console.assert(Number.isFinite(time), "invalid time:", time);
+							tempos.push({tempo: event.microsecondsPerBeat, tick: ticks, time});
 
 							break;
 						case "timeSignature":
