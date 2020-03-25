@@ -7,10 +7,11 @@ const msDelay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 
 class MidiPlayer {
-	constructor (midiData, {cacheSpan = 600, onMidi, onPlayFinish} = {}) {
+	constructor (midiData, {cacheSpan = 600, onMidi, onPlayFinish, onTurnCursor} = {}) {
 		this.cacheSpan = cacheSpan;
 		this.onMidi = onMidi;
 		this.onPlayFinish = onPlayFinish;
+		this.onTurnCursor = onTurnCursor;
 
 		let notations;
 		if (midiData.notes && midiData.endTime)
@@ -106,6 +107,9 @@ class MidiPlayer {
 			this.cursorTurnDelta += time - this.progressTime;
 		else
 			this.progressTime = time;
+
+		if (this.onTurnCursor)
+			this.onTurnCursor(time);
 	}
 };
 
