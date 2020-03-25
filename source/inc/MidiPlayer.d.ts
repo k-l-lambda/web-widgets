@@ -16,7 +16,9 @@ declare class MidiPlayer {
 
 	dispose ();
 
-	play () : Promise<void>;
+	get progressTicks (): number;
+
+	play (): Promise<void>;
 
 	pause ();
 

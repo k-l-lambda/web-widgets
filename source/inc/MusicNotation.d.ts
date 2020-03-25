@@ -22,6 +22,8 @@ interface Tempo {
 declare class Notation {
 	static parseMidi(data: MidiData): Notation;
 
+	ticksPerBeat: number;
+
 	notes: Note[];
 	tempos: Tempo[];
 
@@ -35,6 +37,7 @@ declare class Notation {
 	averageTempo (tickRange: {from: number, to: number}): number;
 
 	ticksToTime (ticks: number): number;
+	timeToTicks (time: number): number;
 
 	tickRangeToTimeRange (tickRange: {from: number, to: number}): object;
 

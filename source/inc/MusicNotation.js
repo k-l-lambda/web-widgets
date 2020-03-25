@@ -467,6 +467,20 @@ class Notation {
 	}
 
 
+	timeToTicks (time) {
+		console.assert(Number.isFinite(time), "invalid time value:", time);
+		console.assert(this.tempos && this.tempos.length, "no tempos.");
+
+		let tempo_index = this.tempos.findIndex(tempo => tempo.time > time) - 1;
+		if (tempo_index < 0)
+			tempo_index = this.tempos.length - 1;
+
+		const tempo = this.tempos[tempo_index];
+
+		return tempo.tick + (time - tempo.time) * this.ticksPerBeat / (tempo.tempo * 1e-3);
+	}
+
+
 	tickRangeToTimeRange (tickRange) {
 		console.assert(tickRange.to >= tickRange.from, "invalid tick range:", tickRange);
 
