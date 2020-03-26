@@ -106,14 +106,18 @@
 			},
 
 
-			viewWidth () {
+			justifyWidth () {
 				const duration = this.notations ? this.notations.endTime : this.height * this.aspectRatio;
-				const justifyWidth = duration * this.timeScale + PADDINGS.left + PADDINGS.right;
+				return duration * this.timeScale + PADDINGS.left + PADDINGS.right;
+			},
 
+
+			viewWidth () {
 				if (this.widthLimited)
-					return Math.min(justifyWidth, this.width * this.viewHeight / this.height);
+					//return Math.min(justifyWidth, this.width * this.viewHeight / this.height);
+					return this.width * this.viewHeight / this.height;
 
-				return justifyWidth;
+				return this.justifyWidth;
 			},
 
 
