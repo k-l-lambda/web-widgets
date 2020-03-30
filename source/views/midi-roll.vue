@@ -212,7 +212,7 @@
 
 			adjustTimeScroll () {
 				if (this.progressTime - this.timeScroll > this.visibleTimeSpan * 0.6)
-					this.timeScroll = Math.min(this.progressTime - this.visibleTimeSpan * 0.6, this.notations.endTime - this.visibleTimeSpan);
+					this.timeScroll = Math.max(Math.min(this.progressTime - this.visibleTimeSpan * 0.6, this.notations.endTime - this.visibleTimeSpan), 0);
 				else if (this.progressTime - this.timeScroll < this.visibleTimeSpan * 0.4)
 					this.timeScroll = Math.max(this.progressTime - this.visibleTimeSpan * 0.4, 0);
 			},
