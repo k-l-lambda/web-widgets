@@ -228,5 +228,5 @@ module.exports = function OMidiFile ({ header, tracks }) {
 		writeChunk(stream, "MTrk", trackChunk.getBuffer());
 	}
 
-	return stream.getBuffer();
+	return stream.getArrayBuffer();
 };

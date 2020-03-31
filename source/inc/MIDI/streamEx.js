@@ -52,4 +52,8 @@ module.exports = class OStream {
 	getBuffer () {
 		return this.buffer;
 	}
+
+	getArrayBuffer () {
+		return Uint8Array.from(this.buffer.split("").map(c => c.charCodeAt(0))).buffer;
+	}
 };
