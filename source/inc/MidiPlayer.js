@@ -3,7 +3,8 @@ const { Notation } = require("./MusicNotation.js");
 
 
 
-const msDelay = ms => new Promise(resolve => setTimeout(resolve, ms));
+//const msDelay = ms => new Promise(resolve => setTimeout(resolve, ms));
+const animationDelay = () => new Promise(resolve => requestAnimationFrame(resolve));
 
 
 class MidiPlayer {
@@ -65,7 +66,8 @@ class MidiPlayer {
 						this.onMidi(event.data, this.startTime + event.time);
 			}
 
-			await msDelay(this.cacheSpan * 0.1);
+			//await msDelay(this.cacheSpan * 0.1);
+			await animationDelay();
 
 			if (this.cursorTurnDelta !== 0) {
 				const backturn = this.cursorTurnDelta < 0;
