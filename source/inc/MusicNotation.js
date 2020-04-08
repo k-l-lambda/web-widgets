@@ -26,7 +26,7 @@ const midiToEvents = (midiFile, timeWarp = 1) => {
 		};
 	}
 
-	function getNextEvent() {
+	function getNextEvent () {
 		let ticksToNextEvent = null;
 		let nextEventTrack = null;
 		let nextEventIndex = null;
@@ -44,33 +44,33 @@ const midiToEvents = (midiFile, timeWarp = 1) => {
 		if (nextEventTrack != null) {
 			/* consume event from that track */
 			const nextEvent = midiFile.tracks[nextEventTrack][nextEventIndex];
-			if (midiFile.tracks[nextEventTrack][nextEventIndex + 1]) {
+			if (midiFile.tracks[nextEventTrack][nextEventIndex + 1]) 
 				trackStates[nextEventTrack].ticksToNextEvent += midiFile.tracks[nextEventTrack][nextEventIndex + 1].deltaTime;
-			} else {
+			else 
 				trackStates[nextEventTrack].ticksToNextEvent = null;
-			}
+
 			trackStates[nextEventTrack].nextEventIndex += 1;
 			/* advance timings on all tracks by ticksToNextEvent */
 			for (let i = 0; i < trackStates.length; i++) {
-				if (trackStates[i].ticksToNextEvent != null) {
-					trackStates[i].ticksToNextEvent -= ticksToNextEvent
-				}
+				if (trackStates[i].ticksToNextEvent != null) 
+					trackStates[i].ticksToNextEvent -= ticksToNextEvent;
 			}
 			return {
-				"ticksToEvent": ticksToNextEvent,
-				"event": nextEvent,
-				"track": nextEventTrack
-			}
-		} else {
-			return null;
+				ticksToEvent: ticksToNextEvent,
+				event: nextEvent,
+				track: nextEventTrack,
+			};
 		}
+		else 
+			return null;
+		
 	};
 	//
 	let midiEvent;
 	const events = [];
 	//
-	function processEvents() {
-		function processNext() {
+	function processEvents () {
+		function processNext () {
 			if ( midiEvent.event.type == "meta" && midiEvent.event.subtype == "setTempo" ) {
 				// tempo change events can occur anywhere in the middle and affect events that follow
 				beatsPerMinute = 60e+6 / midiEvent.event.microsecondsPerBeat;
@@ -99,7 +99,7 @@ const midiToEvents = (midiFile, timeWarp = 1) => {
 
 
 class Notation {
-	static parseMidi(data) {
+	static parseMidi (data) {
 		const channelStatus = [];
 		const pedalStatus = {};
 		const pedals = {};
@@ -139,8 +139,8 @@ class Notation {
 				// append bars
 				const deltaBeats = ev.deltaTicks / ticksPerBeat;
 				for (let b = Math.ceil(beats); b < beats + deltaBeats; ++b) {
-					let t = time + (b - beats) * millisecondsPerBeat;
-					bars.push({ time: t, index: barIndex % numerator });
+					const t = time + (b - beats) * millisecondsPerBeat;
+					bars.push({time: t, index: barIndex % numerator});
 
 					++barIndex;
 				}
@@ -158,135 +158,135 @@ class Notation {
 
 			const event = ev.data;
 			switch (event.type) {
-				case "channel":
-					//channelStatus[event.channel] = channelStatus[event.channel] || [];
+			case "channel":
+				//channelStatus[event.channel] = channelStatus[event.channel] || [];
 
-					switch (event.subtype) {
-						case "noteOn":
-							{
-								const pitch = event.noteNumber;
-								//channelStatus[event.channel][pitch] = {
-								channelStatus.push({
-									channel: event.channel,
-									pitch,
-									startTick: ticks,
-									start: time,
-									velocity: event.velocity,
-									beats: beats,
-									track: ev.track,
-								});
+				switch (event.subtype) {
+				case "noteOn":
+					{
+						const pitch = event.noteNumber;
+						//channelStatus[event.channel][pitch] = {
+						channelStatus.push({
+							channel: event.channel,
+							pitch,
+							startTick: ticks,
+							start: time,
+							velocity: event.velocity,
+							beats: beats,
+							track: ev.track,
+						});
 
-								keyRange.low = Math.min(keyRange.low || pitch, pitch);
+						keyRange.low = Math.min(keyRange.low || pitch, pitch);
 
-								ev.index = index;
-								++index;
-							}
-
-							break;
-						case "noteOff":
-							{
-								const pitch = event.noteNumber;
-
-								channels[event.channel] = channels[event.channel] || [];
-
-								const statusIndex = channelStatus.findIndex(status => status.channel == event.channel && status.pitch == pitch);
-								if (statusIndex >= 0) {
-									const status = channelStatus.splice(statusIndex, 1)[0];
-
-									channels[event.channel].push({
-										startTick: status.startTick,
-										endTick: ticks,
-										pitch,
-										start: status.start,
-										duration: time - status.start,
-										velocity: status.velocity,
-										beats: status.beats,
-										track: status.track,
-										finger: status.finger,
-									});
-								}
-								else
-									console.warn("unexpected noteOff: ", time, event);
-
-								keyRange.high = Math.max(keyRange.high || pitch, pitch);
-							}
-
-							break;
-						case "controller":
-							switch (event.controllerType) {
-								// pedal controllers
-								case 64:
-								case 65:
-								case 66:
-								case 67:
-									const pedalType = PedalControllerTypes[event.controllerType];
-
-									pedalStatus[event.channel] = pedalStatus[event.channel] || {};
-									pedals[event.channel] = pedals[event.channel] || [];
-
-									const status = pedalStatus[event.channel][pedalType];
-
-									if (event.value > 0) {
-										if (!status)
-											pedalStatus[event.channel][pedalType] = { start: time, value: event.value };
-									}
-									else {
-										if (status) {
-											pedals[event.channel].push({ type: pedalType, start: status.start, duration: time - status.start, value: status.value });
-
-											pedalStatus[event.channel][pedalType] = null;
-										}
-									}
-
-									break;
-							}
-
-							break;
+						ev.index = index;
+						++index;
 					}
 
 					break;
-				case "meta":
-					switch (event.subtype) {
-						case "setTempo":
-							millisecondsPerBeat = event.microsecondsPerBeat / 1000;
-							//beats = Math.round(beats);
-							//console.assert(Number.isFinite(time), "invalid time:", time);
-							tempos.push({tempo: event.microsecondsPerBeat, tick: ticks, time});
+				case "noteOff":
+					{
+						const pitch = event.noteNumber;
 
-							break;
-						case "timeSignature":
-							numerator = event.numerator;
-							barIndex = 0;
+						channels[event.channel] = channels[event.channel] || [];
 
-							break;
-						case "text":
-							if (!correspondences && /^find-corres:/.test(event.text)) {
-								const captures = event.text.match(/:([\d\,-]+)/);
-								const str = captures && captures[1] || "";
-								correspondences = str.split(",").map(s => Number(s));
-							}
-							else if (/fingering\(.*\)/.test(event.text)) {
-								const [_, fingers] = event.text.match(/\((.+)\)/);
-								const finger = Number(fingers);
-								if (!Number.isNaN(finger)) {
-									const status = channelStatus[channelStatus.length - 1];
-									if (status)
-										status.finger = finger;
+						const statusIndex = channelStatus.findIndex(status => status.channel == event.channel && status.pitch == pitch);
+						if (statusIndex >= 0) {
+							const status = channelStatus.splice(statusIndex, 1)[0];
 
-									const event = events.find(e => e.index == index - 1);
-									if (event)
-										event.data.finger = finger;
-								}
-							}
+							channels[event.channel].push({
+								startTick: status.startTick,
+								endTick: ticks,
+								pitch,
+								start: status.start,
+								duration: time - status.start,
+								velocity: status.velocity,
+								beats: status.beats,
+								track: status.track,
+								finger: status.finger,
+							});
+						}
+						else
+							console.warn("unexpected noteOff: ", time, event);
 
-							break;
-						case "copyrightNotice":
-							console.log("MIDI copyright:", event.text);
-
-							break;
+						keyRange.high = Math.max(keyRange.high || pitch, pitch);
 					}
 
 					break;
+				case "controller":
+					switch (event.controllerType) {
+					// pedal controllers
+					case 64:
+					case 65:
+					case 66:
+					case 67:
+						const pedalType = PedalControllerTypes[event.controllerType];
+
+						pedalStatus[event.channel] = pedalStatus[event.channel] || {};
+						pedals[event.channel] = pedals[event.channel] || [];
+
+						const status = pedalStatus[event.channel][pedalType];
+
+						if (event.value > 0) {
+							if (!status)
+								pedalStatus[event.channel][pedalType] = {start: time, value: event.value};
+						}
+						else {
+							if (status) {
+								pedals[event.channel].push({type: pedalType, start: status.start, duration: time - status.start, value: status.value});
+
+								pedalStatus[event.channel][pedalType] = null;
+							}
+						}
+
+						break;
+					}
+
+					break;
+				}
+
+				break;
+			case "meta":
+				switch (event.subtype) {
+				case "setTempo":
+					millisecondsPerBeat = event.microsecondsPerBeat / 1000;
+					//beats = Math.round(beats);
+					//console.assert(Number.isFinite(time), "invalid time:", time);
+					tempos.push({tempo: event.microsecondsPerBeat, tick: ticks, time});
+
+					break;
+				case "timeSignature":
+					numerator = event.numerator;
+					barIndex = 0;
+
+					break;
+				case "text":
+					if (!correspondences && /^find-corres:/.test(event.text)) {
+						const captures = event.text.match(/:([\d\,-]+)/);
+						const str = captures && captures[1] || "";
+						correspondences = str.split(",").map(s => Number(s));
+					}
+					else if (/fingering\(.*\)/.test(event.text)) {
+						const [_, fingers] = event.text.match(/\((.+)\)/);
+						const finger = Number(fingers);
+						if (!Number.isNaN(finger)) {
+							const status = channelStatus[channelStatus.length - 1];
+							if (status)
+								status.finger = finger;
+
+							const event = events.find(e => e.index == index - 1);
+							if (event)
+								event.data.finger = finger;
+						}
+					}
+
+					break;
+				case "copyrightNotice":
+					console.log("MIDI copyright:", event.text);
+
+					break;
+				}
+
+				break;
 			}
 		}
 
@@ -322,15 +322,17 @@ class Notation {
 	}
 
 
-	constructor(fields) {
+	constructor (fields) {
 		Object.assign(this, fields);
 
 		// channels to notes
 		this.notes = [];
-		for (const channel of this.channels)
-			if (channel)
+		for (const channel of this.channels) {
+			if (channel) {
 				for (const note of channel)
 					this.notes.push(note);
+			}
+		}
 		this.notes.sort(function (n1, n2) {
 			return n1.start - n2.start;
 		});
@@ -349,7 +351,7 @@ class Notation {
 		this.pitchMap = [];
 		for (const c in this.channels) {
 			for (const n in this.channels[c]) {
-				const pitch = this.channels[c][n].pitch
+				const pitch = this.channels[c][n].pitch;
 				this.pitchMap[pitch] = this.pitchMap[pitch] || [];
 
 				this.pitchMap[pitch].push(this.channels[c][n]);
@@ -426,12 +428,12 @@ class Notation {
 	}
 
 
-	findChordBySoftindex(softIndex, radius = 0.8) {
+	findChordBySoftindex (softIndex, radius = 0.8) {
 		return this.notes.filter(note => Math.abs(note.softIndex - softIndex) < radius);
 	}
 
 
-	averageTempo(tickRange) {
+	averageTempo (tickRange) {
 		tickRange = tickRange || {from: 0, to: this.endtick};
 
 		console.assert(this.tempos, "no tempos.");
