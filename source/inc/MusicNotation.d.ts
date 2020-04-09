@@ -16,7 +16,7 @@ interface Tempo {
 	tempo: number;
 	tick: number;
 	time: number;
-};
+}
 
 
 declare class Notation {
@@ -44,5 +44,5 @@ declare class Notation {
 	getMeasureRange (measureRange: {start: number, end: number}): {
 		tickRange: object,
 		timeRange: object,
-	};
+	}
 }
