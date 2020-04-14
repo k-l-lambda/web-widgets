@@ -11,7 +11,9 @@
 				focus: note.index === focusNoteIndex, ...(note.classes || {}),
 				on: note.on,
 			}"
-		/>
+		>
+			<title v-if="tooltips">p: {{note.pitch}}</title>
+		</rect>
 	</g>
 </template>
 
@@ -33,6 +35,10 @@
 				default: 1,
 			},
 			focusNoteIndex: Number,
+			tooltips: {
+				type: Boolean,
+				default: false,
+			},
 		},
 
 
