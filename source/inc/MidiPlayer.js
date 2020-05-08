@@ -43,6 +43,11 @@ class MidiPlayer {
 	}
 
 
+	set progressTicks (value) {
+		this.progressTime = this.notations.ticksToTime(value);
+	}
+
+
 	async play () {
 		if (this.progressTime >= this.duration)
 			this.progressTime = 0;
