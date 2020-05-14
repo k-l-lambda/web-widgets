@@ -243,7 +243,7 @@ module.exports = function MidiFile (data) {
 
 
 	let source = data;
-	if (data instanceof ArrayBuffer || (typeof Buffer !== "undefined" && data instanceof Buffer))
+	if (data instanceof ArrayBuffer || (typeof Buffer !== "undefined" && data instanceof global.Buffer))
 		source = Array.from(new Uint8Array(data)).map(c => String.fromCharCode(c)).join("");
 
 	const stream = Stream(source);
