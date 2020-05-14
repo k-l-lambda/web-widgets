@@ -1,4 +1,5 @@
 
+import SvgPianoRoll from "./source/components/svg-piano-roll.vue";
 import MidiRoll from "./source/views/midi-roll.vue";
 
 import * as MIDI from "./source/inc/MIDI";
@@ -10,6 +11,7 @@ import MidiAudio from "./source/MidiAudio";
 
 
 export {
+	SvgPianoRoll,
 	MidiRoll,
 	MIDI,
 	MusicNotation,
