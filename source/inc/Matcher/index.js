@@ -87,6 +87,8 @@ const runNavigation = async function(criterion, sample, onStep) {
 
 
 module.exports = {
+	normalizeInterval,
+	makeNoteSoftIndex,
 	makeMatchNodes,
 	genNotationContext,
 	runNavigation,
