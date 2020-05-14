@@ -90,4 +90,5 @@ module.exports = {
 	makeMatchNodes,
 	genNotationContext,
 	runNavigation,
+	Navigator,
 };
