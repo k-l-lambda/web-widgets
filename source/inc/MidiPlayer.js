@@ -74,6 +74,9 @@ class MidiPlayer {
 			//await msDelay(this.cacheSpan * 0.1);
 			await animationDelay();
 
+			if (!this.isPlaying)
+				break;
+
 			if (this.cursorTurnDelta !== 0) {
 				const backturn = this.cursorTurnDelta < 0;
 
