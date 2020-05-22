@@ -1,5 +1,5 @@
 
-declare module Matcher {
+export namespace Matcher {
 	interface Note {
 		start: number;
 		pitch: number;
@@ -8,42 +8,40 @@ declare module Matcher {
 	}
 
 
-	class Node {
+	export interface Node {
 		s_note: Note;
 		c_note: Note;
 	
 	
 		constructor (s_note: Note, c_note: Note);
 	
-		get prev (): Node;
-		set prev (value: Node);
+		prev: Node;
 	
-		get si (): number;
-		get ci (): number;
+		si: number;
 	
-		get root (): Node;
+		root (): Node;
 	
-		get rootSi (): number;
+		rootSi: number;
 	
-		get id (): string;
+		id: string;
 	
-		get totalCost (): number;
+		totalCost: number;
 	
-		get value (): number;
+		value: number;
 	
-		get deep (): number;
+		deep: number;
 	
-		get path (): number[];
+		path: number[];
 	
 		evaluatePrev (node: Node): boolean;
 	
 		evaluatePrevCost (node: Node): number;
 	
 		priorByOffset (offset: number): number;
-	
-	
-		static cost (prev: number, skip: number, self: number): number;
-	
-		static zero (): object;
+
+
+		cost (prev: number, skip: number, self: number): number;
+
+		zero (): object;
 	}
 }
