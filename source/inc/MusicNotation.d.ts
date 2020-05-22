@@ -9,6 +9,10 @@ interface Note {
 	startTick: number;
 	pitch: number;
 	velocity?: number;
+
+	index?: number;
+	deltaSi?: number;
+	softIndex?: number;
 }
 
 
@@ -29,6 +33,8 @@ declare class Notation {
 
 	endTime: number;
 	endTick: number;
+
+	pitchMap?: {[key: number]: Note[]};
 
 	constructor (fields: object);
 
