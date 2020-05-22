@@ -3,7 +3,7 @@
 
 
 
-declare class MidiPlayer {
+export class MidiPlayer {
 	isPlaying: boolean;
 	progressTime: number;
 

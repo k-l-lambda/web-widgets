@@ -1,12 +1,12 @@
 
-interface MidiHeader {
+export interface MidiHeader {
 	formatType: number;
 	trackCount: number;
 	ticksPerBeat: number;
 }
 
 
-interface MidiEvent {
+export interface MidiEvent {
 	type: string;
 	subtype: string;
 
@@ -42,7 +42,7 @@ interface MidiEvent {
 }
 
 
-interface MidiData {
+export interface MidiData {
 	header: MidiHeader;
 	traces: MidiEvent[][];
 }

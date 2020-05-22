@@ -1,19 +1,20 @@
 
-declare module Matcher {
-	class Navigator {
-		constructor (criterion: Notation, sample: Notation, options: {
-			getCursorOffset: () => number,
-			outOfPage: () => boolean,
-		});
+export class Navigator {
+	zeroNode: any;
 
-		step (index: number);
 
-		path (options: {fromIndex?: number, toIndex?: number}): number[];
+	constructor (criterion: Notation, sample: Notation, options: {
+		getCursorOffset: () => number,
+		outOfPage: () => boolean,
+	});
 
-		nullSteps(index: number): number;
+	step (index: number);
 
-		resetCursor(index: number): boolean;
+	path (options: {fromIndex?: number, toIndex?: number}): number[];
 
-		get relocationTendency (): number;
-	}
+	nullSteps(index: number): number;
+
+	resetCursor(index: number): boolean;
+
+	get relocationTendency (): number;
 }

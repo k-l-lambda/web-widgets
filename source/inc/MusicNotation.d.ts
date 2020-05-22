@@ -3,7 +3,7 @@
 
 
 
-interface Note {
+export interface Note {
 	start: number;
 	duration: number;
 	startTick: number;
@@ -16,14 +16,14 @@ interface Note {
 }
 
 
-interface Tempo {
+export interface Tempo {
 	tempo: number;
 	tick: number;
 	time: number;
 }
 
 
-declare class Notation {
+export class Notation {
 	static parseMidi(data: MidiData): Notation;
 
 	ticksPerBeat: number;
