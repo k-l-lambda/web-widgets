@@ -15,27 +15,18 @@ export interface Node {
 	constructor (s_note: Note, c_note: Note);
 
 	prev: Node;
-
 	si: number;
-
-	root (): Node;
-
+	ci: number;
+	root: Node;
 	rootSi: number;
-
 	id: string;
-
 	totalCost: number;
-
 	value: number;
-
 	deep: number;
-
 	path: number[];
 
 	evaluatePrev (node: Node): boolean;
-
 	evaluatePrevCost (node: Node): number;
-
 	priorByOffset (offset: number): number;
 
 

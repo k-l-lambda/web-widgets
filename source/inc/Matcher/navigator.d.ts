@@ -1,5 +1,5 @@
 
-export class Navigator {
+export interface Navigator {
 	zeroNode: any;
 
 
@@ -16,5 +16,5 @@ export class Navigator {
 
 	resetCursor(index: number): boolean;
 
-	get relocationTendency (): number;
+	relocationTendency: number;
 }
