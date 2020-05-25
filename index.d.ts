@@ -5,7 +5,7 @@
 
 import * as MIDITypes from "./source/inc/MIDI/midi";
 
-import * as MusicNotation from "./source/inc/MusicNotation";
+//import * as MusicNotation from "./source/inc/MusicNotation";
 import * as MidiPlayerTypes from "./source/inc/MidiPlayer";
 
 //import * as MatcherNode from "./source/inc/Matcher/node";
@@ -25,11 +25,11 @@ declare module "@k-l-lambda/web-widgets" {
 	}
 
 
-	export type Note = MusicNotation.Note;
-	export type Tempo = MusicNotation.Tempo;
-	export type NotationData = MusicNotation.NotationData;
-	export type Notation = MusicNotation.Notation;
-
+	// TODO: not working like this
+	//export type Note = MusicNotation.Note;
+	//export type Tempo = MusicNotation.Tempo;
+	//export type NotationData = MusicNotation.NotationData;
+	//export type Notation = MusicNotation.Notation;
 	export type MidiPlayer = MidiPlayerTypes.MidiPlayer;
 
 
