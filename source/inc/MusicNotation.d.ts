@@ -23,7 +23,20 @@ export interface Tempo {
 }
 
 
-export class Notation {
+export interface NotationData {
+	ticksPerBeat?: number;
+
+	notes: Note[];
+	tempos?: Tempo[];
+
+	endTime?: number;
+	endTick?: number;
+
+	pitchMap?: {[key: number]: Note[]};
+}
+
+
+export class Notation implements NotationData {
 	static parseMidi(data: MidiData): Notation;
 
 	ticksPerBeat: number;

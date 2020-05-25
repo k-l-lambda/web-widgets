@@ -3,9 +3,10 @@
 
 
 
-export class MidiPlayer {
+export interface MidiPlayer {
 	isPlaying: boolean;
 	progressTime: number;
+	progressTicks: number;
 
 
 	constructor (midiData: MidiData, options: {
@@ -15,9 +16,6 @@ export class MidiPlayer {
 	});
 
 	dispose ();
-
-	get progressTicks (): number;
-	set progressTicks (value: number);
 
 	play (): Promise<void>;
 
