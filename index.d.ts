@@ -1,16 +1,10 @@
 
 /// <reference path="./source/inc/MIDI/index.d.ts" />
-/// <reference path="./source/inc/MusicNotation.d.ts" />
 /// <reference path="./source/inc/MidiPlayer.d.ts" />
 
 import * as MIDITypes from "./source/inc/MIDI/midi";
 
-//import * as MusicNotation from "./source/inc/MusicNotation";
 import * as MidiPlayerTypes from "./source/inc/MidiPlayer";
-
-//import * as MatcherNode from "./source/inc/Matcher/node";
-//import * as MatcherNavigator from "./source/inc/Matcher/navigator";
-//import * as Matcher from "./source/inc/Matcher";
 
 
 
@@ -25,11 +19,74 @@ declare module "@k-l-lambda/web-widgets" {
 	}
 
 
-	// TODO: not working like this
-	//export type Note = MusicNotation.Note;
-	//export type Tempo = MusicNotation.Tempo;
-	//export type NotationData = MusicNotation.NotationData;
-	//export type Notation = MusicNotation.Notation;
+	export namespace MusicNotation {
+		export interface Note {
+			start: number;
+			duration: number;
+			startTick: number;
+			pitch: number;
+			velocity?: number;
+		
+			index?: number;
+			deltaSi?: number;
+			softIndex?: number;
+
+			matches?: Node[];
+		}
+		
+		
+		export interface Tempo {
+			tempo: number;
+			tick: number;
+			time: number;
+		}
+		
+		
+		export interface NotationData {
+			ticksPerBeat?: number;
+		
+			notes: Note[];
+			tempos?: Tempo[];
+		
+			endTime?: number;
+			endTick?: number;
+		
+			pitchMap?: {[key: number]: Note[]};
+		}
+		
+		
+		export class Notation implements NotationData {
+			static parseMidi(data: MidiData): Notation;
+		
+			ticksPerBeat: number;
+		
+			notes: Note[];
+			tempos: Tempo[];
+		
+			endTime: number;
+			endTick: number;
+		
+			pitchMap?: {[key: number]: Note[]};
+		
+			constructor (fields: object);
+		
+			findChordBySoftindex (softIndex: number, radius?: number): Note[];
+		
+			averageTempo (tickRange: {from: number, to: number}): number;
+		
+			ticksToTime (ticks: number): number;
+			timeToTicks (time: number): number;
+		
+			tickRangeToTimeRange (tickRange: {from: number, to: number}): object;
+		
+			getMeasureRange (measureRange: {start: number, end: number}): {
+				tickRange: object,
+				timeRange: object,
+			}
+		}
+	}
+
+
 	export type MidiPlayer = MidiPlayerTypes.MidiPlayer;
 
 
@@ -94,5 +151,5 @@ declare module "@k-l-lambda/web-widgets" {
 		export function makeMatchNodes(note: Note, criterion: NotationData, zeroNode?: object);
 		export function genNotationContext(notation: NotationData);
 		export function runNavigation(criterion: NotationData, sample: NotationData, onStep?: (i: number, navigator: Navigator) => Symbol | Promise<Symbol>): Promise<Navigator>;
-	} 
+	}
 }
