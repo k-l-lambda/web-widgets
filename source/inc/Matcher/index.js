@@ -93,4 +93,5 @@ module.exports = {
 	genNotationContext,
 	runNavigation,
 	Navigator,
+	Node,
 };
