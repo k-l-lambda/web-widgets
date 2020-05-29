@@ -1,4 +1,6 @@
 
+const _ = require("lodash");
+
 const Config = require("./config.js");
 
 
@@ -107,7 +109,7 @@ class Node {
 
 
 	dump () {
-		return Object.pick(this, ["id", "si", "ci", "rootSi", "value", "deep", "rootSi", "offset", "prior", "selfCost", "totalCost"]);
+		return _.pick(this, ["id", "si", "ci", "rootSi", "value", "deep", "rootSi", "offset", "prior", "selfCost", "totalCost"]);
 	}
 
 
