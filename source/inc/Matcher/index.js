@@ -79,7 +79,7 @@ const runNavigation = async function(criterion, sample, onStep) {
 		}
 	}
 
-	console.log("Navigation accomplished.");
+	//console.log("Navigation accomplished.");
 
 	return navigator;
 };
