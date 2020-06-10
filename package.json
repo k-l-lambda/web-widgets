@@ -6,7 +6,7 @@
     "midi",
     "svg"
   ],
-  "main": "dist/musicWidgets.common.js",
+  "main": "index.js",
   "types": "index.d.ts",
   "browser": "dist/musicWidgetsBrowser.umd.js",
   "directories": {
@@ -21,7 +21,7 @@
     "vue-template-compiler": "^2.6.11"
   },
   "scripts": {
-    "build": "vue-cli-service build --target lib --name musicWidgets index.js && vue-cli-service build --target lib --no-clean --name musicWidgetsBrowser index.browser.js"
+    "build": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js"
   },
   "repository": {
     "type": "git",

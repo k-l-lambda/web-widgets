@@ -1,4 +1,8 @@
-*
-
-!*.d.ts
-!source/**/*.d.ts
+source/components
+source/MidiAudio
+source/views
+tests/
+.eslintrc.js
+vue.config.js
+*.log
+dist/*.html
