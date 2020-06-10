@@ -1,9 +1,17 @@
 
-/// <reference path="./midi.d.ts" />
+import {MidiHeader, MidiEvent, MidiData} from "./midi";
 
 
 
-declare module MIDI {
-	export function parseMidiData(data: string | object): MidiData;
-	export function encodeMidiFile(data: MidiData): ArrayBuffer;
-}
+declare const parseMidiData: (data: string | object) => MidiData;
+declare const encodeMidiFile: (data: MidiData) => ArrayBuffer;
+
+
+
+export {
+	MidiHeader,
+	MidiEvent,
+	MidiData,
+	parseMidiData,
+	encodeMidiFile,
+};

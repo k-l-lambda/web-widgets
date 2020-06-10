@@ -1,9 +1,9 @@
 
-/// <reference path="./MIDI/midi.d.ts" />
+import {MidiData} from "./MIDI/midi";
 
 
 
-export interface MidiPlayer {
+declare class MidiPlayer {
 	isPlaying: boolean;
 	progressTime: number;
 	progressTicks: number;
@@ -23,3 +23,7 @@ export interface MidiPlayer {
 
 	turnCursor (time: number);
 }
+
+
+
+export default MidiPlayer;
