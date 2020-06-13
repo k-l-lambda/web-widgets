@@ -63,19 +63,11 @@ const runNavigation = async function(criterion, sample, onStep) {
 	for (let i = 0; i < sample.notes.length; ++i) {
 		navigator.step(i);
 
-		const next = onStep && onStep(i, navigator);
-		if (next == Symbol.for("end")) {
+		const next = await (onStep && onStep(i, navigator));
+		if (next === Symbol.for("end")) {
 			console.log("Navigation interrupted.");
 
 			return;
-		}
-		else if (next) {
-			const command = await next;
-			if (command == Symbol.for("end")) {
-				console.log("Navigation interrupted.");
-
-				return;
-			}
 		}
 	}
 
