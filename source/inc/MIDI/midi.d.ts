@@ -29,22 +29,25 @@ interface MidiEvent {
 
 	data?: string;
 
-	noteNumber: number;
-	velocity: number;
+	noteNumber?: number;
+	velocity?: number;
 
-	amount: number;
+	amount?: number;
 
-	controllerType: number;
+	controllerType?: number;
 
-	programNumber: number;
+	programNumber?: number;
 
-	value: number;
+	value?: number;
 }
+
+
+type MidiTrack = MidiEvent[];
 
 
 interface MidiData {
 	header: MidiHeader;
-	traces: MidiEvent[][];
+	tracks: MidiTrack[];
 }
 
 
