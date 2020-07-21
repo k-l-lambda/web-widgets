@@ -1,4 +1,8 @@
 
+const MIDI = require("./MIDI");
+
+
+
 const trackDeltaToAbs = events => {
 	let tick = 0;
 
@@ -64,7 +68,105 @@ const sliceMidi = (midi, startTick, endTick) => ({
 });
 
 
+function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3}) {
+	notation.microsecondsPerBeat = notation.microsecondsPerBeat || 500000;
+
+	const ticksPerBeat = TICKS_PER_BEATS;
+	const msToTicks = ticksPerBeat * 1000 / notation.microsecondsPerBeat;
+
+	const header = { formatType: 0, ticksPerBeat };
+	const track = [];
+
+	if (startTime == null) {
+		if (!notation.notes || !notation.notes[0])
+			throw new Error("encodeToMidiData: no start time specificed");
+
+		startTime = notation.notes[0].start;
+	}
+
+	track.push({ time: startTime, type: "meta", subtype: "copyrightNotice", text: `Find Smart composes. v${process.env.DIST_VERSION} ${process.env.NODE_ENV}.${new Date(process.env.BUILD_TIME).format('yyyyMMddThhmmss')}` });
+
+	const containsTempo = notation.events && notation.events.find(event => event.subtype == "setTempo");
+	if (!containsTempo) {
+		track.push({ time: startTime, type: "meta", subtype: "timeSignature", numerator: 4, denominator: 4, thirtyseconds: 8 });
+		track.push({ time: startTime, type: "meta", subtype: "setTempo", microsecondsPerBeat: notation.microsecondsPerBeat });
+	}
+
+	//if (notation.correspondences)
+	//	track.push({ time: startTime, type: "meta", subtype: "text", text: "find-corres:" + notation.correspondences.join(",") });
+
+	let endTime = startTime || 0;
+
+	if (notation.notes) {
+		for (const note of notation.notes) {
+			track.push({
+				time: note.start,
+				type: "channel",
+				subtype: "noteOn",
+				channel: note.channel || 0,
+				noteNumber: note.pitch,
+				velocity: note.velocity,
+				finger: note.finger,
+			});
+
+			endTime = Math.max(endTime, note.start);
+
+			if (Number.isFinite(unclosedNoteDuration))
+				note.duration = note.duration || unclosedNoteDuration;
+			if (note.duration) {
+				track.push({
+					time: note.start + note.duration,
+					type: "channel",
+					subtype: "noteOff",
+					channel: note.channel || 0,
+					noteNumber: note.pitch,
+					velocity: 0,
+				});
+
+				endTime = Math.max(endTime, note.start + note.duration);
+			}
+		}
+	}
+
+	if (notation.events) {
+		for (const event of notation.events) {
+			track.push(event);
+
+			endTime = Math.max(endTime, event.time);
+		}
+	}
+
+	track.push({ time: endTime + 100, type: "meta", subtype: "endOfTrack" });
+
+	track.sort(function (e1, e2) { return e1.time - e2.time; });
+
+	// append finger event after every noteOn event
+	track.map((event, index) => ({event, index}))
+		.filter(({event, index}) => event.subtype == "noteOn" && event.finger != null)
+		.reverse()
+		.forEach(({event, index}) => track.splice(index + 1, 0, {
+			time: event.time,
+			type: "meta",
+			subtype: "text",
+			text: `fingering(${event.finger})`,
+		}));
+
+	track.forEach(event => event.ticks = Math.round((event.time - startTime) * msToTicks));
+	track.forEach((event, i) => event.deltaTime = (i > 0 ? (event.ticks - track[i - 1].ticks) : 0));
+
+	return {header, tracks: [track]};
+};
+
+
+function encodeToMIDI(notation, startTime) {
+	const data = encodeToMIDIData(notation, {startTime});
+	return MIDI.encodeMidiFile(data);
+};
+
+
 
 module.exports = {
 	sliceMidi,
+	encodeToMIDIData,
+	encodeToMIDI,
 };

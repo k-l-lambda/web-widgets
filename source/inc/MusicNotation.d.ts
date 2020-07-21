@@ -1,5 +1,5 @@
 
-import {MidiData} from "./MIDI/midi";
+import {MidiData, MidiEvent} from "./MIDI/midi";
 import Node from "./Matcher/node";
 
 
@@ -29,10 +29,19 @@ interface Tempo {
 }
 
 
+interface NotationEvent {
+	data: MidiEvent;
+	track: number;
+	deltaTime: number;
+	deltaTicks: number;
+}
+
+
 interface NotationData {
 	ticksPerBeat?: number;
 
 	notes: Note[];
+	events?: NotationEvent[];
 	tempos?: Tempo[];
 
 	endTime?: number;
@@ -77,5 +86,6 @@ declare class Notation implements NotationData {
 export {
 	NotationData,
 	Note,
+	NotationEvent,
 	Notation,
 };
