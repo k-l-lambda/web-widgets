@@ -87,7 +87,7 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 		startTime = notation.notes[0].start;
 	}
 
-	track.push({ time: startTime, type: "meta", subtype: "copyrightNotice", text: `Composed by MusicWdigets. BUILD on ${new Date(process.env.BUILD_TIME).toDateString()}` });
+	track.push({ time: startTime, type: "meta", subtype: "copyrightNotice", text: `Composed by MusicWdigets. BUILT on ${new Date(Number(process.env.VUE_APP_BUILD_TIME)).toDateString()}` });
 
 	const containsTempo = notation.events && notation.events.find(event => event.subtype == "setTempo");
 	if (!containsTempo) {

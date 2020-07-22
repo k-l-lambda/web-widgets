@@ -1,4 +1,8 @@
 
+process.env.VUE_APP_BUILD_TIME = Date.now();
+
+
+
 module.exports = {
 	//publicPath: "./",
 	outputDir: "dist",
