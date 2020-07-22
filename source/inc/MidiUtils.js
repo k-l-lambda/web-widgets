@@ -68,7 +68,10 @@ const sliceMidi = (midi, startTick, endTick) => ({
 });
 
 
-function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3}) {
+const TICKS_PER_BEATS = 480;
+
+
+function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = {}) {
 	notation.microsecondsPerBeat = notation.microsecondsPerBeat || 500000;
 
 	const ticksPerBeat = TICKS_PER_BEATS;
@@ -77,14 +80,14 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3}) {
 	const header = { formatType: 0, ticksPerBeat };
 	const track = [];
 
-	if (startTime == null) {
+	if (!Number.isFinite(startTime)) {
 		if (!notation.notes || !notation.notes[0])
 			throw new Error("encodeToMidiData: no start time specificed");
 
 		startTime = notation.notes[0].start;
 	}
 
-	track.push({ time: startTime, type: "meta", subtype: "copyrightNotice", text: `Find Smart composes. v${process.env.DIST_VERSION} ${process.env.NODE_ENV}.${new Date(process.env.BUILD_TIME).format('yyyyMMddThhmmss')}` });
+	track.push({ time: startTime, type: "meta", subtype: "copyrightNotice", text: `Composed by MusicWdigets. BUILD on ${new Date(process.env.BUILD_TIME).toDateString()}` });
 
 	const containsTempo = notation.events && notation.events.find(event => event.subtype == "setTempo");
 	if (!containsTempo) {
@@ -129,8 +132,12 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3}) {
 	}
 
 	if (notation.events) {
+		const events = notation.events.filter(event => event.data.type !== "meta" && event.data.subtype !== "noteOn" && event.data.subtype !== "noteOff");
 		for (const event of notation.events) {
-			track.push(event);
+			track.push({
+				time: event.time,
+				...event.data,
+			});
 
 			endTime = Math.max(endTime, event.time);
 		}
@@ -158,8 +165,8 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3}) {
 };
 
 
-function encodeToMIDI(notation, startTime) {
-	const data = encodeToMIDIData(notation, {startTime});
+function encodeToMIDI(notation, options) {
+	const data = encodeToMIDIData(notation, options);
 	return MIDI.encodeMidiFile(data);
 };
 
