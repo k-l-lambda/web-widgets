@@ -133,7 +133,7 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 
 	if (notation.events) {
 		const events = notation.events.filter(event => event.data.type !== "meta" && event.data.subtype !== "noteOn" && event.data.subtype !== "noteOff");
-		for (const event of notation.events) {
+		for (const event of events) {
 			track.push({
 				time: event.time,
 				...event.data,
