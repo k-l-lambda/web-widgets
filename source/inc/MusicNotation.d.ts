@@ -31,9 +31,10 @@ interface Tempo {
 
 interface NotationEvent {
 	data: MidiEvent;
-	track: number;
-	deltaTime: number;
-	deltaTicks: number;
+	track?: number;
+	deltaTime?: number;
+	deltaTicks?: number;
+	time?: number;
 }
 
 
