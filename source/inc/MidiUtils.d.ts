@@ -12,7 +12,7 @@ interface NotationToEncode {
 
 	notes: Note[];
 	events: NotationEvent[];
-};
+}
 
 
 declare const encodeToMIDIData: (notation: NotationToEncode, options: {startTime: number, unclosedNoteDuration?: number}) => MidiData;
