@@ -35,6 +35,7 @@ interface NotationEvent {
 	deltaTime?: number;
 	deltaTicks?: number;
 	time?: number;
+	ticks?: number;
 }
 
 
