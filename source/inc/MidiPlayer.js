@@ -45,6 +45,9 @@ class MidiPlayer {
 
 	set progressTicks (value) {
 		this.progressTime = this.notations.ticksToTime(value);
+
+		if (this.onTurnCursor)
+			this.onTurnCursor(this.progressTime);
 	}
 
 
