@@ -4,12 +4,9 @@
 
 
 module.exports = class Stream {
-	array = null;
-	position = 0;
-
-
 	constructor (buffer) {
 		this.array = new Uint8Array(buffer);
+		this.position = 0;
 	}
 
 
@@ -19,10 +16,17 @@ module.exports = class Stream {
 
 
 	read (length) {
-		const result = this.array.slice(this.position, length);
+		const result = this.array.slice(this.position, this.position + length);
 		this.position += length;
 
 		return result;
+	}
+
+
+	readString (length) {
+		const data = Array.from(this.read(length));
+
+		return data.map(c => String.fromCharCode(c)).join("");
 	}
 
 

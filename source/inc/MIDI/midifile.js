@@ -9,7 +9,7 @@ const Stream = require("./stream.js");
 
 module.exports = function MidiFile (data) {
 	function readChunk (stream) {
-		const id = stream.read(4);
+		const id = stream.readString(4);
 		const length = stream.readInt32();
 
 		return {
@@ -26,9 +26,9 @@ module.exports = function MidiFile (data) {
 		event.deltaTime = stream.readVarInt();
 		let eventTypeByte = stream.readInt8();
 		if ((eventTypeByte & 0xf0) === 0xf0) {
-			/* system / meta event */
+			// system / meta event
 			if (eventTypeByte === 0xff) {
-				/* meta event */
+				// meta event
 				event.type = "meta";
 				const subtypeByte = stream.readInt8();
 				const length = stream.readVarInt();
@@ -43,37 +43,37 @@ module.exports = function MidiFile (data) {
 					return event;
 				case 0x01:
 					event.subtype = "text";
-					event.text = stream.read(length);
+					event.text = stream.readString(length);
 
 					return event;
 				case 0x02:
 					event.subtype = "copyrightNotice";
-					event.text = stream.read(length);
+					event.text = stream.readString(length);
 
 					return event;
 				case 0x03:
 					event.subtype = "trackName";
-					event.text = stream.read(length);
+					event.text = stream.readString(length);
 
 					return event;
 				case 0x04:
 					event.subtype = "instrumentName";
-					event.text = stream.read(length);
+					event.text = stream.readString(length);
 
 					return event;
 				case 0x05:
 					event.subtype = "lyrics";
-					event.text = stream.read(length);
+					event.text = stream.readString(length);
 
 					return event;
 				case 0x06:
 					event.subtype = "marker";
-					event.text = stream.read(length);
+					event.text = stream.readString(length);
 
 					return event;
 				case 0x07:
 					event.subtype = "cuePoint";
-					event.text = stream.read(length);
+					event.text = stream.readString(length);
 
 					return event;
 				case 0x20:
@@ -135,31 +135,31 @@ module.exports = function MidiFile (data) {
 					return event;
 				case 0x7f:
 					event.subtype = "sequencerSpecific";
-					event.data = stream.read(length);
+					event.data = stream.readString(length);
 
 					return event;
 				default:
 					// console.log("Unrecognised meta event subtype: " + subtypeByte);
 					event.subtype = "unknown";
-					event.data = stream.read(length);
+					event.data = stream.readString(length);
 
 					return event;
 				}
 
-				//event.data = stream.read(length);
+				//event.data = stream.readString(length);
 				//return event;
 			}
 			else if (eventTypeByte === 0xf0) {
 				event.type = "sysEx";
 				const length = stream.readVarInt();
-				event.data = stream.read(length);
+				event.data = stream.readString(length);
 
 				return event;
 			}
 			else if (eventTypeByte === 0xf7) {
 				event.type = "dividedSysEx";
 				const length = stream.readVarInt();
-				event.data = stream.read(length);
+				event.data = stream.readString(length);
 
 				return event;
 			}
