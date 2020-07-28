@@ -1,75 +1,82 @@
 
-/* Wrapper for accessing strings through sequential reads */
+/* Wrapper for accessing buffer through sequential reads */
 
 
 
-module.exports = function Stream (str) {
-	let position = 0;
+module.exports = class Stream {
+	array = null;
+	position = 0;
 
-	function read (length) {
-		const result = str.substr(position, length);
-		position += length;
+
+	constructor (buffer) {
+		this.array = new Uint8Array(buffer);
+	}
+
+
+	eof () {
+		return this.position >= this.array.length;
+	}
+
+
+	read (length) {
+		const result = this.array.slice(this.position, length);
+		this.position += length;
+
 		return result;
 	}
 
-	/* read a big-endian 32-bit integer */
-	function readInt32 () {
+
+	// read a big-endian 32-bit integer
+	readInt32 () {
 		const result = (
-			(str.charCodeAt(position) << 24) +
-			(str.charCodeAt(position + 1) << 16) +
-			(str.charCodeAt(position + 2) << 8) +
-			str.charCodeAt(position + 3));
-		position += 4;
+			(this.array[this.position] << 24) +
+			(this.array[this.position + 1] << 16) +
+			(this.array[this.position + 2] << 8) +
+			this.array[this.position + 3]);
+		this.position += 4;
+
 		return result;
 	}
 
-	/* read a big-endian 16-bit integer */
-	function readInt16 () {
+
+	// read a big-endian 16-bit integer
+	readInt16 () {
 		const result = (
-			(str.charCodeAt(position) << 8) +
-			str.charCodeAt(position + 1));
-		position += 2;
+			(this.array[this.position] << 8) +
+			this.array[this.position + 1]);
+		this.position += 2;
+
 		return result;
 	}
 
-	/* read an 8-bit integer */
-	function readInt8 (signed) {
-		let result = str.charCodeAt(position);
-		if (signed && result > 127) result -= 256;
-		position += 1;
+
+	// read an 8-bit integer
+	readInt8 (signed) {
+		let result = this.array[this.position];
+		if (signed && result > 127)
+			result -= 256;
+		this.position += 1;
+
 		return result;
 	}
 
-	function eof () {
-		return position >= str.length;
-	}
 
 	/* read a MIDI-style variable-length integer
 		(big-endian value in groups of 7 bits,
 		with top bit set to signify that another byte follows)
 	*/
-	function readVarInt () {
+	readVarInt () {
 		let result = 0;
 		while (true) {
-			const b = readInt8();
+			const b = this.readInt8();
 			if (b & 0x80) {
 				result += (b & 0x7f);
 				result <<= 7;
 			}
 			else {
-				/* b is the last byte */
+				// b is the last byte
 				return result + b;
 			}
 		}
 	}
-
-
-	return {
-		eof,
-		read,
-		readInt32,
-		readInt16,
-		readInt8,
-		readVarInt,
-	};
 };

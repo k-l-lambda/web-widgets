@@ -243,15 +243,15 @@ module.exports = function MidiFile (data) {
 
 
 	let source = data;
-	if (data instanceof ArrayBuffer || (typeof Buffer !== "undefined" && data instanceof global.Buffer))
-		source = Array.from(new Uint8Array(data)).map(c => String.fromCharCode(c)).join("");
+	if (typeof data === "string")
+		source = data.split("").map(c => c.charCodeAt(0));
 
-	const stream = Stream(source);
+	const stream = new Stream(source);
 	const headerChunk = readChunk(stream);
 	if (headerChunk.id !== "MThd" || headerChunk.length !== 6)
 		throw new Error("Bad .mid file - header not found");
 
-	const headerStream = Stream(headerChunk.data);
+	const headerStream = new Stream(headerChunk.data);
 	const formatType = headerStream.readInt16();
 	const trackCount = headerStream.readInt16();
 	const timeDivision = headerStream.readInt16();
@@ -275,7 +275,7 @@ module.exports = function MidiFile (data) {
 		if (trackChunk.id !== "MTrk")
 			throw new Error("Unexpected chunk - expected MTrk, got " + trackChunk.id);
 
-		const trackStream = Stream(trackChunk.data);
+		const trackStream = new Stream(trackChunk.data);
 		while (!trackStream.eof()) {
 			const event = readEvent(trackStream);
 			tracks[i].push(event);
