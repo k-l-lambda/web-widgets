@@ -21,7 +21,8 @@
     "vue-template-compiler": "^2.6.11"
   },
   "scripts": {
-    "build": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js"
+    "build": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
