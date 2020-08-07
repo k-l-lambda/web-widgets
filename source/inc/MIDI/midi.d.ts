@@ -10,6 +10,8 @@ interface MidiEvent {
 	type: string;
 	subtype: string;
 
+	channel: number;
+
 	text?: string;
 
 	frameRate?: object;

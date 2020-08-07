@@ -86,7 +86,38 @@ const midiToSequence = (midiFile, timeWarp = 1) => {
 };
 
 
+const trimSequence = seq => {
+	const status = new Map();
+
+	return seq.filter(([{event, ticksToEvent}]) => {
+		if (ticksToEvent > 0)
+			status.clear();
+
+		if (event.type !== "channel")
+			return true;
+
+		const key = `${event.subtype}|${event.channel}|${event.noteNumber}`;
+
+		if (status.get(key)) {
+			//console.debug("event trimmed:", event, ticksToEvent);
+			return false;
+		}
+
+		status.set(key, event);
+
+		return true;
+	});
+};
+
+
+const fixOverlapNotes = seq => {
+	// TODO:
+};
+
+
 
 module.exports = {
 	midiToSequence,
+	trimSequence,
+	fixOverlapNotes,
 };

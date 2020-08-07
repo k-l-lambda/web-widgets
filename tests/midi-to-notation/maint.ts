@@ -14,7 +14,8 @@ const main = filepath => {
 	//console.log("midi:", midi);
 
 	const events = MidiSequence.midiToSequence(midi);
-	console.log("events:", events);
+	const events2 = MidiSequence.trimSequence(events);
+	console.log("events:", events2);
 
 	//const notation = MusicNotation.Notation.parseMidi(midi);
 	//console.log("notation:", notation);
