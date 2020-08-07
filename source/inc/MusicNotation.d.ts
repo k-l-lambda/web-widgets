@@ -6,6 +6,7 @@ import Node from "./Matcher/node";
 
 
 interface Note {
+	channel: number;
 	start: number;
 	duration: number;
 	startTick: number;

@@ -18,7 +18,7 @@ const main = filepath => {
 	MidiSequence.fixOverlapNotes(events2);
 	console.log("events:", events2);*/
 
-	const notation = MusicNotation.Notation.parseMidi(midi, {fixOverlap: false});
+	const notation = MusicNotation.Notation.parseMidi(midi, {fixOverlap: true});
 	console.log("notation:", notation);
 };
 

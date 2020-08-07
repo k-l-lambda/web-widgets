@@ -111,6 +111,7 @@ class Notation {
 							const status = channelStatus.splice(statusIndex, 1)[0];
 
 							channels[event.channel].push({
+								channel: event.channel,
 								startTick: status.startTick,
 								endTick: ticks,
 								pitch,
