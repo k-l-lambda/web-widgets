@@ -146,6 +146,18 @@ const fixOverlapNotes = seq => {
 		}
 	});
 
+	// shift overlapped swaps
+	swaps.forEach((swap, i) => {
+		for (let ii = i - 1; ii >= 0; --ii) {
+			const pre = swaps[ii];
+			if (pre[1] < swap[0])
+				break;
+
+			if (swap[0] > pre[0])
+				++swap[0];
+		}
+	});
+
 	//console.debug("swaps:", swaps);
 	swaps.forEach(([front, back]) => {
 		if (back >= seq.length - 1 || front < 0)
@@ -154,6 +166,11 @@ const fixOverlapNotes = seq => {
 		const offEvent = seq[back];
 		const nextEvent = seq[back + 1];
 		const leapEvent = seq[front];
+
+		if (!leapEvent[0].ticksToEvent) {
+			console.warn("invalid front index:", front, back, leapEvent);
+			return;
+		}
 
 		// ms per tick
 		const tempo = leapEvent[1] / leapEvent[0].ticksToEvent;
@@ -166,6 +183,7 @@ const fixOverlapNotes = seq => {
 
 		offEvent[1] = offEvent[0].ticksToEvent * tempo;
 		leapEvent[1] = leapEvent[0].ticksToEvent * tempo;
+		//console.debug("swap:", [front, back], offEvent, nextEvent, leapEvent);
 
 		seq.splice(back, 1);
 		seq.splice(front, 0, offEvent);
