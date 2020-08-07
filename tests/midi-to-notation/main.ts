@@ -13,12 +13,13 @@ const main = filepath => {
 	const midi = MIDI.parseMidiData(buffer);
 	//console.log("midi:", midi);
 
-	const events = MidiSequence.midiToSequence(midi);
+	/*const events = MidiSequence.midiToSequence(midi);
 	const events2 = MidiSequence.trimSequence(events);
-	console.log("events:", events2);
+	MidiSequence.fixOverlapNotes(events2);
+	console.log("events:", events2);*/
 
-	//const notation = MusicNotation.Notation.parseMidi(midi);
-	//console.log("notation:", notation);
+	const notation = MusicNotation.Notation.parseMidi(midi, {fixOverlap: false});
+	console.log("notation:", notation);
 };
 
 

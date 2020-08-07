@@ -1,5 +1,5 @@
 
-const { midiToSequence } = require("./MidiSequence.js");
+const MidiSequence = require("./MidiSequence.js");
 
 
 
@@ -13,7 +13,7 @@ const PedalControllerTypes = {
 
 
 class Notation {
-	static parseMidi (data) {
+	static parseMidi (data, {fixOverlap = false} = {}) {
 		const channelStatus = [];
 		const pedalStatus = {};
 		const pedals = {};
@@ -32,7 +32,10 @@ class Notation {
 
 		const ticksPerBeat = data.header.ticksPerBeat;
 
-		const rawEvents = midiToSequence(data);
+		const rawEvents = MidiSequence.trimSequence(MidiSequence.midiToSequence(data));
+
+		if (fixOverlap)
+			MidiSequence.fixOverlapNotes(rawEvents);
 
 		const events = rawEvents.map(d => ({
 			data: d[0].event,

@@ -111,7 +111,67 @@ const trimSequence = seq => {
 
 
 const fixOverlapNotes = seq => {
-	// TODO:
+	const noteMap = new Map();
+	const overlapMap = new Map();
+	const swaps = [];
+
+	let leapIndex = -1;
+
+	seq.forEach(([{event, ticksToEvent}], index) => {
+		if (ticksToEvent > 0)
+			leapIndex = index;
+
+		if (event.type !== "channel")
+			return;
+
+		const key = `${event.channel}|${event.noteNumber}`;
+
+		switch (event.subtype) {
+		case "noteOn":
+			if (noteMap.get(key))
+				overlapMap.set(key, leapIndex);
+			else
+				noteMap.set(key, leapIndex);
+
+			break;
+		case "noteOff":
+			if (overlapMap.get(key)) {
+				swaps.push([overlapMap.get(key), index]);
+				overlapMap.delete(key);
+			}
+			else
+				noteMap.delete(key);
+
+			break;
+		}
+	});
+
+	//console.debug("swaps:", swaps);
+	swaps.forEach(([front, back]) => {
+		if (back >= seq.length - 1 || front < 0)
+			return;
+
+		const offEvent = seq[back];
+		const nextEvent = seq[back + 1];
+		const leapEvent = seq[front];
+
+		// ms per tick
+		const tempo = leapEvent[1] / leapEvent[0].ticksToEvent;
+
+		nextEvent[1] += offEvent[1];
+		nextEvent[0].ticksToEvent += offEvent[0].ticksToEvent;
+
+		offEvent[0].ticksToEvent = leapEvent[0].ticksToEvent - 1;
+		leapEvent[0].ticksToEvent = 1;
+
+		offEvent[1] = offEvent[0].ticksToEvent * tempo;
+		leapEvent[1] = leapEvent[0].ticksToEvent * tempo;
+
+		seq.splice(back, 1);
+		seq.splice(front, 0, offEvent);
+	});
+
+	return seq;
 };
 
 

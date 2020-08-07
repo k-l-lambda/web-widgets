@@ -54,7 +54,7 @@ interface NotationData {
 
 
 declare class Notation implements NotationData {
-	static parseMidi(data: MidiData): Notation;
+	static parseMidi(data: MidiData, options?: {fixOverlap?: boolean}): Notation;
 
 	ticksPerBeat: number;
 
