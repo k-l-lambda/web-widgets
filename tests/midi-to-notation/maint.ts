@@ -3,6 +3,7 @@ import fs from "fs";
 
 import MIDI from "../../source/inc/MIDI";
 import * as MusicNotation from "../../source/inc/MusicNotation";
+import * as MidiSequence from "../../source/inc/MidiSequence";
 
 
 
@@ -12,7 +13,7 @@ const main = filepath => {
 	const midi = MIDI.parseMidiData(buffer);
 	//console.log("midi:", midi);
 
-	const events = MusicNotation.midiToEvents(midi);
+	const events = MidiSequence.midiToSequence(midi);
 	console.log("events:", events);
 
 	//const notation = MusicNotation.Notation.parseMidi(midi);
