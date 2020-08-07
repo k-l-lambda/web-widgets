@@ -84,10 +84,14 @@ declare class Notation implements NotationData {
 }
 
 
+declare const midiToEvents: (midi: MidiData, timeWarp?: number) => any;
+
+
 
 export {
 	NotationData,
 	Note,
 	NotationEvent,
 	Notation,
+	midiToEvents,
 };

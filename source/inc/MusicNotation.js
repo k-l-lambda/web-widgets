@@ -524,5 +524,6 @@ class Notation {
 
 
 module.exports = {
+	midiToEvents,
 	Notation,
 };
