@@ -1,5 +1,5 @@
 
-const midiToSequence = (midiFile, timeWarp = 1) => {
+const midiToSequence = (midiFile, {timeWarp = 1} = {}) => {
 	const trackStates = [];
 	let beatsPerMinute = 120;
 	const ticksPerBeat = midiFile.header.ticksPerBeat;
@@ -60,15 +60,18 @@ const midiToSequence = (midiFile, timeWarp = 1) => {
 	//
 	function processEvents () {
 		function processNext () {
-			if ( midiEvent.event.type == "meta" && midiEvent.event.subtype == "setTempo" ) {
-				// tempo change events can occur anywhere in the middle and affect events that follow
-				beatsPerMinute = 60e+6 / midiEvent.event.microsecondsPerBeat;
-			}
 			let secondsToGenerate = 0;
 			if (midiEvent.ticksToEvent > 0) {
 				const beatsToGenerate = midiEvent.ticksToEvent / ticksPerBeat;
 				secondsToGenerate = beatsToGenerate / (beatsPerMinute / 60);
 			}
+
+			// beatsPerMinute must be changed after secondsToGenerate calculation
+			if ( midiEvent.event.type == "meta" && midiEvent.event.subtype == "setTempo" ) {
+				// tempo change events can occur anywhere in the middle and affect events that follow
+				beatsPerMinute = 60e+6 / midiEvent.event.microsecondsPerBeat;
+			}
+
 			const time = (secondsToGenerate * 1000 * timeWarp) || 0;
 			events.push([ midiEvent, time ]);
 			midiEvent = getNextEvent();

@@ -13,7 +13,7 @@ interface MIDISequenceEvent {
 type MIDISequence = [MIDISequenceEvent, number][];
 
 
-declare const midiToSequence: (midi: MidiData, timeWarp?: number) => MIDISequence;
+declare const midiToSequence: (midi: MidiData, options?: {timeWarp?: number}) => MIDISequence;
 
 
 declare const trimSequence: (seq: MIDISequence) => MIDISequence;
