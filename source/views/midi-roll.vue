@@ -215,7 +215,7 @@
 
 			onMouseWheel (event) {
 				//console.log("onMouseWheel:", event);
-				this.timeScroll += event.deltaY * 0.1 / this.timeScale;
+				this.timeScroll += event.deltaY * 0.4 / this.timeScale;
 			},
 
 
