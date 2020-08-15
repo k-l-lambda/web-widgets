@@ -13,7 +13,7 @@ const PedalControllerTypes = {
 
 
 class Notation {
-	static parseMidi (data, {fixOverlap = false} = {}) {
+	static parseMidi (data, {fixOverlap = true} = {}) {
 		const channelStatus = [];
 		const pedalStatus = {};
 		const pedals = {};
@@ -32,10 +32,10 @@ class Notation {
 
 		const ticksPerBeat = data.header.ticksPerBeat;
 
-		const rawEvents = MidiSequence.trimSequence(MidiSequence.midiToSequence(data));
+		let rawEvents = MidiSequence.midiToSequence(data);
 
 		if (fixOverlap)
-			MidiSequence.fixOverlapNotes(rawEvents);
+			rawEvents = MidiSequence.trimSequence(MidiSequence.fixOverlapNotes(rawEvents));
 
 		const events = rawEvents.map(d => ({
 			data: d[0].event,
