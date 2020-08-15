@@ -1,5 +1,8 @@
 <template>
-	<svg xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox" :height="height" @click="onClickCanvas">
+	<svg xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox" :height="height"
+		@click="onClickCanvas"
+		@mousewheel="onMouseWheel"
+	>
 		<g :transform="`translate(${-xScroll}, 0)`">
 			<g v-if="progressTime" class="progress">
 				<rect :x="0" :y="-120" :height="121 - notations.keyRange.low" :width="progressTime * timeScale" />
@@ -207,6 +210,12 @@
 					if (time >= 0 && time < this.notations.endTime)
 						this.player.turnCursor(time);
 				}
+			},
+
+
+			onMouseWheel (event) {
+				//console.log("onMouseWheel:", event);
+				this.timeScroll += event.deltaY * 0.1 / this.timeScale;
 			},
 
 
