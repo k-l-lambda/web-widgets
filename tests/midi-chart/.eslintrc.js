@@ -33,13 +33,13 @@ module.exports = {
 			"double",
 		],
 		indent: [
-			"warn",
+			"off",
 			"tab",
 		],
 		"vue/html-indent": [
-			"off",
-			//"tab",
-			//{ baseIndent: 1 },
+			"warn",
+			"tab",
+			{ baseIndent: 1 },
 		],
 		"vue/script-indent": [
 			"warn", "tab", { baseIndent: 1 },
