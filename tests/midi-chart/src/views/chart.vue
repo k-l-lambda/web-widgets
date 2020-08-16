@@ -8,8 +8,8 @@
 					</th>
 					<td class="events">
 						<ul>
-							<li v-for="(event, i) of item.events" :key="i">
-								{{ event }}
+							<li v-for="(event, i) of item.events" :key="i" :data-status="event.status">
+								{{ event.summary }}
 							</li>
 						</ul>
 					</td>
@@ -60,6 +60,8 @@
 
 		props: {
 			midiURL: String,
+			fixOverlap: Boolean,
+			trim: Boolean,
 		},
 
 
@@ -80,6 +82,7 @@
 		methods: {
 			async load () {
 				console.debug("loading...");
+				await this.$nextTick();
 
 				this.stateSequence = [];
 
@@ -90,8 +93,11 @@
 				const midi = MIDI.parseMidiData(buffer);
 				//console.log("midi:", midi);
 
-				const events = MidiSequence.midiToSequence(midi);
-				//console.log("events:", events);
+				let events = MidiSequence.midiToSequence(midi);
+				if (this.fixOverlap)
+					events = MidiSequence.fixOverlapNotes(events);
+				if (this.trim)
+					events = MidiSequence.trimSequence(events);
 
 				let ticks = 0;
 				const pitchStatus = Array(108).fill().map(() => Array(16).fill(0));
@@ -110,18 +116,27 @@
 						this.stateSequence.push(currentSeq);
 					}
 
-					currentSeq.events.push(eventSummary(event));
+					const summary = eventSummary(event);
+					let status = null;
 
 					switch (event.subtype) {
 					case "noteOn":
 						++pitchStatus[event.noteNumber][event.channel];
+						if (pitchStatus[event.noteNumber][event.channel] > 1)
+							status = "error";
 
 						break;
 					case "noteOff":
 						--pitchStatus[event.noteNumber][event.channel];
+						if (pitchStatus[event.noteNumber][event.channel] < 0) {
+							pitchStatus[event.noteNumber][event.channel] = 0;
+							status = "warn";
+						}
 
 						break;
 					}
+
+					currentSeq.events.push({summary, status});
 				});
 
 				console.debug("done");
@@ -146,9 +161,26 @@
 		position: relative;
 	}
 
+	tr:hover
+	{
+		background-color: #aaa2;
+	}
+
 	td.events
 	{
 		font-size: 9px;
+	}
+
+	td.events li[data-status="warn"]
+	{
+		color: orange;
+		font-weight: bold;
+	}
+
+	td.events li[data-status="error"]
+	{
+		color: red;
+		font-weight: bold;
 	}
 
 	td.pitches > span

@@ -5,7 +5,12 @@
 		@dragleave="dragHover = false"
 		@drop.prevent="onDrop"
 	>
-		<ViewChart :midiURL="midiURL" />
+		<p>
+			<input type="checkbox" v-model="fixOverlap" />fixOverlap
+			<input type="checkbox" v-model="trim" />trim
+			<button @click="$refs.chart.load()">refresh</button>
+		</p>
+		<ViewChart ref="chart" :midiURL="midiURL" />
 	</div>
 </template>
 
@@ -27,6 +32,8 @@
 			return {
 				midiURL: null,
 				dragHover: false,
+				fixOverlap: false,
+				trim: false,
 			};
 		},
 
