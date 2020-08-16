@@ -5,15 +5,12 @@
 		@dragleave="dragHover = false"
 		@drop.prevent="onDrop"
 	>
-		<p><img alt="Vue logo" src="./assets/logo.png"></p>
-		<ViewSimple :midiURL="midiURL" />
-		<ViewPlayer :midiURL="midiURL" />
+		<ViewChart :midiURL="midiURL" />
 	</div>
 </template>
 
 <script>
-	import ViewSimple from "./views/simple.vue";
-	import ViewPlayer from "./views/player.vue";
+	import ViewChart from "./views/chart.vue";
 
 
 
@@ -22,8 +19,7 @@
 
 
 		components: {
-			ViewSimple,
-			ViewPlayer,
+			ViewChart,
 		},
 
 
