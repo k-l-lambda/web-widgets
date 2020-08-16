@@ -6,7 +6,7 @@
 					<th>
 						{{ item.ticks }}
 					</th>
-					<td>
+					<td class="events">
 						<ul>
 							<li v-for="(event, i) of item.events" :key="i">
 								{{ event }}
@@ -41,6 +41,12 @@
 		case "setTempo":
 			return `tempo: ${event.microsecondsPerBeat / 1000}`;
 
+		case "controller":
+			return `controller: ${event.controllerType}`;
+
+		case "programChange":
+			return `program: ${event.programNumber}`;
+
 		default:
 			return `${event.type}|${event.subtype}`;
 		}
@@ -73,6 +79,8 @@
 
 		methods: {
 			async load () {
+				console.debug("loading...");
+
 				this.stateSequence = [];
 
 				if (!this.midiURL)
@@ -83,7 +91,7 @@
 				//console.log("midi:", midi);
 
 				const events = MidiSequence.midiToSequence(midi);
-				console.log("events:", events);
+				//console.log("events:", events);
 
 				let ticks = 0;
 				const pitchStatus = Array(108).fill().map(() => Array(16).fill(0));
@@ -115,6 +123,8 @@
 						break;
 					}
 				});
+
+				console.debug("done");
 			},
 		},
 
@@ -136,7 +146,12 @@
 		position: relative;
 	}
 
-	.pitches > span
+	td.events
+	{
+		font-size: 9px;
+	}
+
+	td.pitches > span
 	{
 		display: inline-block;
 		width: 10px;
@@ -144,7 +159,7 @@
 		position: relative;
 	}
 
-	.pitches > span label
+	td.pitches > span label
 	{
 		position: absolute;
 		left: 0;
