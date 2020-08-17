@@ -14,7 +14,7 @@
 						</ul>
 					</td>
 					<td class="pitches">
-						<span v-for="(pitch, p) of item.pitchStatus" :key="p">
+						<span v-for="(pitch, p) of item.pitchStatus" :key="p" :title="p">
 							<label v-for="(count, channel) of pitch" :key="channel" v-if="count" :data-channel="channel" :data-intensity="count" />
 						</span>
 					</td>
@@ -91,7 +91,7 @@
 
 				const buffer = await (await fetch(this.midiURL)).arrayBuffer();
 				const midi = MIDI.parseMidiData(buffer);
-				//console.log("midi:", midi);
+				console.debug("midi:", midi);
 
 				let events = MidiSequence.midiToSequence(midi);
 				if (this.fixOverlap)
@@ -136,7 +136,7 @@
 						break;
 					}
 
-					currentSeq.events.push({summary, status});
+					currentSeq.events.push({ summary, status });
 				});
 
 				console.debug("done");
