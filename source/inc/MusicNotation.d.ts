@@ -19,6 +19,7 @@ interface Note {
 
 	matches?: Node[];
 
+	id?: string;
 	ids?: string[];
 }
 
