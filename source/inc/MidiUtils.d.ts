@@ -15,8 +15,10 @@ interface NotationToEncode {
 }
 
 
-declare const encodeToMIDIData: (notation: NotationToEncode, options: {startTime: number, unclosedNoteDuration?: number}) => MidiData;
-declare const encodeToMIDI: (notation: NotationToEncode, startTime: number) => ArrayBuffer;
+type EncoderOptions = {startTime?: number, unclosedNoteDuration?: number};
+
+declare const encodeToMIDIData: (notation: NotationToEncode, options?: EncoderOptions) => MidiData;
+declare const encodeToMIDI: (notation: NotationToEncode, options?: EncoderOptions) => ArrayBuffer;
 
 
 
