@@ -10,7 +10,7 @@
 			<input type="checkbox" v-model="trim" />trim
 			<button @click="$refs.chart.load()">refresh</button>
 		</p>
-		<ViewChart ref="chart" :midiURL="midiURL" />
+		<ViewChart ref="chart" :midiURL="midiURL" :fixOverlap="fixOverlap" :trim="trim" />
 	</div>
 </template>
 
