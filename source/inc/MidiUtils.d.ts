@@ -11,7 +11,7 @@ interface NotationToEncode {
 	microsecondsPerBeat?: number;
 
 	notes: Note[];
-	events: NotationEvent[];
+	events?: NotationEvent[];
 }
 
 
