@@ -10,8 +10,12 @@ interface Note {
 	start: number;
 	duration: number;
 	startTick: number;
+	endTick: number;
 	pitch: number;
 	velocity?: number;
+	beats?: number;
+	track?: number;
+	finger?: number;
 
 	index?: number;
 	deltaSi?: number;
