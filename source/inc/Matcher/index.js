@@ -11,7 +11,8 @@ const SIMULTANEOUS_INTERVAL = HEART_BEAT * 0.24;
 const normalizeInterval = interval => Math.tanh(interval / SIMULTANEOUS_INTERVAL);
 
 
-const makeNoteSoftIndex = function (notes, index) {
+// greater softIndexFactor make 'harder' soft index
+const makeNoteSoftIndex = function (notes, index, {softIndexFactor = 1} = {}) {
 	index = Number(index);
 
 	const note = notes[index];
@@ -23,7 +24,7 @@ const makeNoteSoftIndex = function (notes, index) {
 		console.assert(note.start != null, "note.start is null", note);
 		console.assert(lastNote.start != null, "lastNote.start is null", lastNote);
 
-		note.deltaSi = normalizeInterval(note.start - lastNote.start);
+		note.deltaSi = normalizeInterval((note.start - lastNote.start) * softIndexFactor);
 		note.softIndex = lastNote.softIndex + note.deltaSi;
 
 		console.assert(!Number.isNaN(note.deltaSi), "note.deltaSi is NaN.", note.start, lastNote.start);
@@ -51,9 +52,9 @@ const makeMatchNodes = function (note, criterion, zeroNode = Node.zero()) {
 };
 
 
-const genNotationContext = function (notation) {
+const genNotationContext = function (notation, {softIndexFactor = 1} = {}) {
 	for (let i = 0; i < notation.notes.length; ++i)
-		makeNoteSoftIndex(notation.notes, i);
+		makeNoteSoftIndex(notation.notes, i, {softIndexFactor});
 };
 
 
