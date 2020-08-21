@@ -12,7 +12,12 @@
 				on: note.on,
 			}"
 		>
-			<title v-if="tooltips">p: {{note.pitch}}</title>
+			<title v-if="tooltips">
+				p: {{note.pitch}}
+				<tspan v-if="note.id">
+					id: {{note.id}}
+				</tspan>
+			</title>
 		</rect>
 	</g>
 </template>
