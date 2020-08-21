@@ -66,7 +66,6 @@
 						onMidi: (data, timestamp) => this.onMidi(data, timestamp),
 						onPlayFinish: () => this.onFinish(),
 					});
-					//console.log("notations:", this.notations);
 				}
 			},
 

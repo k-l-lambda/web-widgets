@@ -14,20 +14,20 @@ class MidiPlayer {
 		this.onPlayFinish = onPlayFinish;
 		this.onTurnCursor = onTurnCursor;
 
-		let notations;
+		let notation;
 		if (midiData.notes && midiData.endTime)
-			notations = midiData;
+			notation = midiData;
 		else
-			notations = Notation.parseMidi(midiData);
+			notation = Notation.parseMidi(midiData);
 
-		this.notations = notations;
-		this.events = notations.events;
+		this.notation = notation;
+		this.events = notation.events;
 		//console.log("events:", this.events);
 
 		this.isPlaying = false;
 		this.progressTime = 0;
 		this.startTime = performance.now();
-		this.duration = notations.endTime;
+		this.duration = notation.endTime;
 		this.cursorTurnDelta = 0;
 	}
 
@@ -39,12 +39,12 @@ class MidiPlayer {
 
 
 	get progressTicks () {
-		return this.notations.timeToTicks(this.progressTime);
+		return this.notation.timeToTicks(this.progressTime);
 	}
 
 
 	set progressTicks (value) {
-		this.progressTime = this.notations.ticksToTime(value);
+		this.progressTime = this.notation.ticksToTime(value);
 
 		if (this.onTurnCursor)
 			this.onTurnCursor(this.progressTime);

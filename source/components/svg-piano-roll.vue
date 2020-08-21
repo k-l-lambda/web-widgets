@@ -1,6 +1,6 @@
 <template>
 	<g class="piano-roll-root">
-		<rect v-for="(note, i) of notations.notes" :key="i"
+		<rect v-for="(note, i) of notationObj.notes" :key="i"
 			class="note"
 			:x="note.start * timeScale"
 			:y="-note.pitch * pitchScale"
@@ -23,6 +23,8 @@
 
 
 		props: {
+			notation: Object,
+			// deprecated
 			notations: Object,
 			// ms to px
 			timeScale: {
@@ -38,6 +40,22 @@
 			tooltips: {
 				type: Boolean,
 				default: false,
+			},
+		},
+
+
+		computed: {
+			notationObj () {
+				if (this.notation)
+					return this.notation;
+
+				if (this.notations) {
+					console.warn("property of 'notations' deprecated, replace by 'notation'.");
+					return this.notations;
+				}
+
+				console.warn("property of 'notation' is required.");
+				return null;
 			},
 		},
 

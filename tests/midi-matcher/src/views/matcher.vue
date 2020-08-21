@@ -5,10 +5,10 @@
 		</p>
 		<svg xmlns="http://www.w3.org/2000/svg" height="480" viewBox="-20 -20 1000 160">
 			<g :transform="`translate(${positionC.x}, ${positionC.y})`">
-				<PinaoRoll v-if="criterion" :notations="criterion" :timeScale="timeScale" :pitchScale="1" />
+				<PinaoRoll v-if="criterion" :notation="criterion" :timeScale="timeScale" :pitchScale="1" />
 			</g>
 			<g :transform="`translate(${positionS.x}, ${positionS.y})`">
-				<PinaoRoll v-if="sample" :notations="sample" :timeScale="timeScale" :pitchScale="1" />
+				<PinaoRoll v-if="sample" :notation="sample" :timeScale="timeScale" :pitchScale="1" />
 			</g>
 			<g class="links">
 				<line v-for="link of links" :key="link.s.index"
