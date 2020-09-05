@@ -70,6 +70,11 @@ const sliceMidi = (midi, startTick, endTick) => ({
 
 const TICKS_PER_BEATS = 480;
 
+const EXCLUDE_MIDI_EVENT_SUBTYPES = [
+	"endOfTrack", "trackName",
+	"noteOn", "noteOff",
+];
+
 
 function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = {}) {
 	notation.microsecondsPerBeat = notation.microsecondsPerBeat || 500000;
@@ -132,7 +137,7 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 	}
 
 	if (notation.events) {
-		const events = notation.events.filter(event => event.data.type !== "meta" && event.data.subtype !== "noteOn" && event.data.subtype !== "noteOff");
+		const events = notation.events.filter(event => !EXCLUDE_MIDI_EVENT_SUBTYPES.includes(event.data.subtype));
 		for (const event of events) {
 			track.push({
 				time: event.time,
