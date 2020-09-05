@@ -154,7 +154,7 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 
 	// append finger event after every noteOn event
 	track.map((event, index) => ({event, index}))
-		.filter(({event, index}) => event.subtype == "noteOn" && event.finger != null)
+		.filter(({event}) => event.subtype == "noteOn" && event.finger != null)
 		.reverse()
 		.forEach(({event, index}) => track.splice(index + 1, 0, {
 			time: event.time,

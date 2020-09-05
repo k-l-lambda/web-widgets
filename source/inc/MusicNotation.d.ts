@@ -42,6 +42,9 @@ interface NotationEvent {
 	deltaTicks?: number;
 	time?: number;
 	ticks?: number;
+
+	id?: string;
+	ids?: string[];
 }
 
 
