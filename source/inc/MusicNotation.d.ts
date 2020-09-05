@@ -53,10 +53,16 @@ interface BeatInfo {
 }
 
 
+interface NotationMetaInfo {
+	beatInfos?: BeatInfo[];
+}
+
+
 interface NotationData {
 	ticksPerBeat?: number;
 
 	notes: Note[];
+	channels?: Note[][];
 	events?: NotationEvent[];
 	tempos?: Tempo[];
 
@@ -65,44 +71,83 @@ interface NotationData {
 
 	pitchMap?: {[key: number]: Note[]};
 
-	meta: {
-		beatInfos?: BeatInfo[],
-	};
+	meta?: NotationMetaInfo;
 }
 
 
-declare class Notation implements NotationData {
+interface FromToRange {
+	from: number;
+	to: number;
+}
+
+
+interface Pedal {
+	type: string;
+	start: number;
+	duration: number;
+	value: number;
+}
+
+
+interface Bar {
+	time: number;
+	index: number;
+}
+
+
+interface NotationProtoData {
+	channels: Note[][];
+	meta: NotationMetaInfo;
+
+	keyRange?: {low: number, high: number};
+	pedals?: Pedal[];
+	bars?: Bar[];
+	endTime?: number;
+	endTick?: number;
+	correspondences?: number[];
+	events?: NotationEvent[];
+	tempos: Tempo[];
+	ticksPerBeat?: number;
+}
+
+
+declare class Notation implements NotationProtoData {
 	static parseMidi(data: MidiData, options?: {fixOverlap?: boolean}): Notation;
 
 	ticksPerBeat: number;
 
+	channels: Note[][];
 	notes: Note[];
+	events?: NotationEvent[];
 	tempos: Tempo[];
 
 	endTime: number;
 	endTick: number;
 
-	pitchMap?: {[key: number]: Note[]};
+	duration: number;
+	pitchMap: {[key: number]: Note[]};
 
-	meta: {
-		beatInfos?: BeatInfo[],
-	};
+	keyRange?: {low: number, high: number};
+	pedals?: Pedal[];
+	bars?: Bar[];
 
-	constructor (fields: object);
+	meta: NotationMetaInfo;
+
+	constructor (fields: NotationProtoData);
 
 	findChordBySoftindex (softIndex: number, radius?: number): Note[];
 
-	averageTempo (tickRange: {from: number, to: number}): number;
+	averageTempo (tickRange: FromToRange): number;
 
 	ticksToTime (ticks: number): number;
 	timeToTicks (time: number): number;
 
-	tickRangeToTimeRange (tickRange: {from: number, to: number}): object;
+	tickRangeToTimeRange (tickRange: FromToRange): FromToRange;
 
 	getMeasureRange (measureRange: {start: number, end: number}): {
 		tickRange: object,
 		timeRange: object,
-	}
+	};
 }
 
 
