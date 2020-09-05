@@ -7,10 +7,12 @@ interface MidiHeader {
 
 
 interface MidiEvent {
+	deltaTime?: number;
+
 	type: string;
 	subtype: string;
 
-	channel: number;
+	channel?: number;
 
 	text?: string;
 
