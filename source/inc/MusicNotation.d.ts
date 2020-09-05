@@ -45,6 +45,14 @@ interface NotationEvent {
 }
 
 
+interface BeatInfo {
+	beatIndex?: number;
+	beatsUnit: number,
+	beats: number,
+	tick: number,
+}
+
+
 interface NotationData {
 	ticksPerBeat?: number;
 
@@ -56,6 +64,10 @@ interface NotationData {
 	endTick?: number;
 
 	pitchMap?: {[key: number]: Note[]};
+
+	meta: {
+		beatInfos?: BeatInfo[],
+	};
 }
 
 
@@ -71,6 +83,10 @@ declare class Notation implements NotationData {
 	endTick: number;
 
 	pitchMap?: {[key: number]: Note[]};
+
+	meta: {
+		beatInfos?: BeatInfo[],
+	};
 
 	constructor (fields: object);
 
