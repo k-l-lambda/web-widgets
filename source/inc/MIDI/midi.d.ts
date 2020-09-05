@@ -1,7 +1,7 @@
 
 interface MidiHeader {
 	formatType: number;
-	trackCount: number;
+	trackCount?: number;
 	ticksPerBeat: number;
 }
 
