@@ -15,7 +15,7 @@ class MidiPlayer {
 		this.onTurnCursor = onTurnCursor;
 
 		let notation;
-		if (midiData.notes && midiData.endTime)
+		if (midiData.notes && Number.isFinite(midiData.endTime))
 			notation = midiData;
 		else
 			notation = Notation.parseMidi(midiData);
