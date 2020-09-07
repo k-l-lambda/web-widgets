@@ -124,7 +124,7 @@ class Notation {
 							});
 						}
 						else
-							console.warn("unexpected noteOff: ", time, event);
+							console.debug("unexpected noteOff: ", time, event);
 
 						keyRange.high = Math.max(keyRange.high || pitch, pitch);
 					}
@@ -209,7 +209,7 @@ class Notation {
 		}
 
 		channelStatus.forEach(status => {
-			console.warn("unclosed noteOn event at", status.startTick, status);
+			console.debug("unclosed noteOn event at", status.startTick, status);
 
 			channels[status.channel].push({
 				startTick: status.startTick,
