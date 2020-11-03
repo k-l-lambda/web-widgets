@@ -55,6 +55,8 @@ interface BeatInfo {
 
 interface NotationMetaInfo {
 	beatInfos?: BeatInfo[];
+
+	[key: string]: any;
 }
 
 
@@ -108,6 +110,7 @@ interface NotationProtoData {
 	events?: NotationEvent[];
 	tempos: Tempo[];
 	ticksPerBeat?: number;
+	measures?: any;
 }
 
 
