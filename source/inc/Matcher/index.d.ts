@@ -6,12 +6,12 @@ import {Note} from "../MusicNotation";
 
 
 
-interface SimpleNotationData {
+export interface SimpleNotationData {
 	notes: Note[];
 }
 
 
-interface CriterionNotationData extends SimpleNotationData {
+export interface CriterionNotationData extends SimpleNotationData {
 	pitchMap: {[key: number]: Note[]};
 }
 
