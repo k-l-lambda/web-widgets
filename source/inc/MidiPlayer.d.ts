@@ -1,5 +1,6 @@
 
 import {MidiData} from "./MIDI/midi";
+import {NotationData} from "./MusicNotation";
 
 
 
@@ -9,7 +10,7 @@ declare class MidiPlayer {
 	progressTicks: number;
 
 
-	constructor (midiData: MidiData, options: {
+	constructor (midiData: MidiData | NotationData, options: {
 		cacheSpan?: number,
 		onMidi?: (event: object, timestamp: number) => void,
 		onPlayFinish: () => void,
