@@ -138,6 +138,7 @@ declare class Notation implements NotationProtoData {
 
 	duration: number;
 	pitchMap: {[key: number]: Note[]};
+	measures?: MeasureRange[];
 
 	keyRange?: {low: number, high: number};
 	pedals?: Pedal[];
