@@ -60,6 +60,13 @@ interface NotationMetaInfo {
 }
 
 
+interface MeasureRange {
+	startTick: number;
+	endTick: number;
+	index: number;
+}
+
+
 interface NotationData {
 	ticksPerBeat?: number;
 
@@ -72,6 +79,8 @@ interface NotationData {
 	endTick?: number;
 
 	pitchMap?: {[key: number]: Note[]};
+
+	measures?: MeasureRange[];
 
 	meta?: NotationMetaInfo;
 }
