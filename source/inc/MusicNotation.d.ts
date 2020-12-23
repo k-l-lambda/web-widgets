@@ -157,10 +157,10 @@ declare class Notation implements NotationProtoData {
 
 	tickRangeToTimeRange (tickRange: FromToRange): FromToRange;
 
-	getMeasureRange (measureRange: {start: number, end: number}): {
+	/*getMeasureRange (measureRange: {start: number, end: number}): {
 		tickRange: object,
 		timeRange: object,
-	};
+	};*/
 }
 
 

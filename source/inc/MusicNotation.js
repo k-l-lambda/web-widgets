@@ -279,7 +279,7 @@ class Notation {
 		this.pitchMap.forEach(notes => notes.sort((n1, n2) => n1.start - n2.start));
 
 
-		// setup measure notes index
+		/*// setup measure notes index
 		if (this.measures) {
 			const measure_list = [];
 
@@ -311,7 +311,7 @@ class Notation {
 			}
 
 			this.measure_list = measure_list;
-		}
+		}*/
 
 
 		// prepare beats info
@@ -411,7 +411,7 @@ class Notation {
 	}
 
 
-	getMeasureRange (measureRange) {
+	/*getMeasureRange (measureRange) {
 		console.assert(Number.isInteger(measureRange.start) && Number.isInteger(measureRange.end), "invalid measure range:", measureRange);
 		console.assert(this.measure_list && this.measure_list[measureRange.start] && this.measure_list[measureRange.end], "no measure data for specific index:", this.measure_list, measureRange);
 
@@ -436,7 +436,7 @@ class Notation {
 			tickRange,
 			timeRange,
 		};
-	}
+	}*/
 };
 
 
