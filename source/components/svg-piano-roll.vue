@@ -1,24 +1,23 @@
 <template>
 	<g class="piano-roll-root">
-		<rect v-for="(note, i) of notationObj.notes" :key="i"
-			class="note"
-			:x="note.start * timeScale"
-			:y="-note.pitch * pitchScale"
-			:width="note.duration * timeScale"
-			:height="pitchScale"
-			@click="onClickNote(note)"
-			:class="{
-				focus: note.index === focusNoteIndex, ...(note.classes || {}),
-				on: note.on,
-			}"
-		>
+		<g v-for="(note, i) of notationObj.notes" :key="i" class="note" :transform="`translate(${note.start * timeScale}, ${-note.pitch * pitchScale})`">
+			<rect
+				:width="note.duration * timeScale"
+				:height="pitchScale"
+				@click="onClickNote(note)"
+				:class="{
+					focus: note.index === focusNoteIndex, ...(note.classes || {}),
+					on: note.on,
+				}"
+			/>
+			<line :x1="0" :x2="0" :y1="0" :y2="pitchScale" />
 			<title v-if="tooltips">
 				p: {{note.pitch}}
 				<tspan v-if="note.id">
 					id: {{note.id}}
 				</tspan>
 			</title>
-		</rect>
+		</g>
 	</g>
 </template>
 
@@ -77,7 +76,7 @@
 	.note
 	{
 		cursor: pointer;
-		opacity: 0.4;
+		opacity: 0.6;
 	}
 
 	.note:hover
@@ -90,5 +89,16 @@
 	.note.on
 	{
 		fill: #2a2;
+	}
+
+	.note rect
+	{
+		fill: #555;
+	}
+
+	.note line
+	{
+		stroke: #111;
+		stroke-width: 0.12px;
 	}
 </style>
