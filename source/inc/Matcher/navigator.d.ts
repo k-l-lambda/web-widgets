@@ -13,6 +13,7 @@ declare class Navigator {
 	constructor (criterion: Notation, sample: NotationData, options: {
 		getCursorOffset: () => number,
 		outOfPage: (tick: number) => boolean,
+		relocationThreshold?: number,
 	});
 
 	step (index: number);

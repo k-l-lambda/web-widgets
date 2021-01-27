@@ -19,6 +19,8 @@ class Navigator {
 
 		this.zeroNode = Node.zero();
 		this.zeroNode.offset = this.getCursorOffset() || 0;
+
+		this.relocationThreshold = options.relocationThreshold || Config.RelocationThreshold;
 	}
 
 
@@ -64,7 +66,7 @@ class Navigator {
 			const cursor = this.cursors[0];
 			if (cursor && cursor.totalCost < 1) {
 				//console.log("nullLength:", nullLength, nullLength * Math.log(cursor.value / 4));
-				if (cursor.prior > 0 || (cursor.totalCost < 0.4 && Math.log(Math.max(nullLength * cursor.value, 1e-3)) > Config.RelocationThreshold)) {
+				if (cursor.prior > 0 || (cursor.totalCost < 0.4 && Math.log(Math.max(nullLength * cursor.value, 1e-3)) > this.relocationThreshold)) {
 					this.zeroNode.offset = cursor.offset;
 
 					fineCursor = cursor;
