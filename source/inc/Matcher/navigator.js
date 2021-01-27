@@ -15,6 +15,8 @@ class Navigator {
 		this.bestNode = null;
 		this.fineCursor = null;
 
+		this.breakingSI = sample.notes.length - 1;
+
 		this.zeroNode = Node.zero();
 		this.zeroNode.offset = this.getCursorOffset() || 0;
 	}
@@ -30,18 +32,17 @@ class Navigator {
 				node.evaluatePrev(this.zeroNode);
 				//console.log("node:", node, node.evaluatePrevCost(this.zeroNode), node.offset, this.zeroNode.offset);
 
-				if (!this.breaking) {
-					for (let si = index - 1; si >= 0 && si >= index - Config.SkipDeep; --si) {
-						//const skipCost = Config.SkipCost * (index - 1 - si);
+				for (let si = index - 1; si >= Math.max(this.breakingSI + 1, index - Config.SkipDeep); --si) {
+					//const skipCost = Config.SkipCost * (index - 1 - si);
 
-						const prevNote = this.sample.notes[si];
-						prevNote.matches.forEach(prevNode => {
-							const bias = node.offset - prevNode.offset;
-							if (/*prevNode.totalCost + skipCost < node.totalCost
-								&&*/ (bias < 2 / Config.LagOffsetCost && bias > -2 / Config.LeadOffsetCost))
-								node.evaluatePrev(prevNode);
-						});
-					}
+					const prevNote = this.sample.notes[si];
+					console.assert(prevNote, "prevNote is null:", si, index, this.sample.notes);
+					prevNote.matches.forEach(prevNode => {
+						const bias = node.offset - prevNode.offset;
+						if (/*prevNode.totalCost + skipCost < node.totalCost
+							&&*/ (bias < 2 / Config.LagOffsetCost && bias > -2 / Config.LeadOffsetCost))
+							node.evaluatePrev(prevNode);
+					});
 				}
 
 				node.prior = node.totalCost > 1.99 ? -1 : node.priorByOffset(this.zeroNode.offset);
@@ -81,8 +82,6 @@ class Navigator {
 					console.assert(!Number.isNaN(this.zeroNode.offset), "zeroNode.offset is NaN.", note.deltaSi, nullLength);
 				}
 			}
-
-			this.breaking = false;
 		}
 		else
 			this.cursors = [];
@@ -133,14 +132,16 @@ class Navigator {
 
 
 	resetCursor (index) {
+		this.breakingSI = index;
+
 		const cursorOffset = this.getCursorOffset();
 		if (cursorOffset != null) {
 			//console.log("cursorOffset:", cursorOffset);
 
 			this.zeroNode.offset = cursorOffset;
-			this.breaking = this.nullSteps(index) > Config.SkipDeep;
-			if (this.breaking)	// trivial zero node si resets result in focus path interruption
-				this.zeroNode.si = index;
+			//this.breaking = this.nullSteps(index) > Config.SkipDeep;
+			//if (this.breaking)	// trivial zero node si resets result in focus path interruption
+			this.zeroNode.si = index;
 			this.fineCursor = null;
 
 			console.assert(!Number.isNaN(this.zeroNode.offset), "zeroNode.offset is NaN.", cursorOffset);
