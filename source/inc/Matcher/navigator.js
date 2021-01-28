@@ -79,7 +79,7 @@ class Navigator {
 			if (fineCursor)
 				this.fineCursor = fineCursor;
 			else {
-				if(!this.resetCursor(index)) {
+				if (!this.resetCursor(index, {breaking: false/*nullLength > Config.SkipDeep*/})) {
 					this.zeroNode.offset += note.deltaSi * Math.tanh(nullLength);
 					console.assert(!Number.isNaN(this.zeroNode.offset), "zeroNode.offset is NaN.", note.deltaSi, nullLength);
 				}
@@ -133,8 +133,9 @@ class Navigator {
 	}
 
 
-	resetCursor (index) {
-		this.breakingSI = index;
+	resetCursor (index, {breaking = true} = {}) {
+		if (breaking)
+			this.breakingSI = index;
 
 		const cursorOffset = this.getCursorOffset();
 		if (cursorOffset != null) {
@@ -165,7 +166,7 @@ class Navigator {
 		if (nullLength <= 0)
 			return 0;
 
-		return Math.log(Math.max(nullLength * cursor.value, 1e-3)) / Config.RelocationThreshold;
+		return Math.log(Math.max(nullLength * cursor.value, 1e-3)) / this.relocationThreshold;
 	}
 };
 
