@@ -1,7 +1,7 @@
 {
-  "name": "@k-l-lambda/web-widgets",
+  "name": "@k-l-lambda/music-widgets",
   "version": "0.3.29",
-  "description": "A package contains some utility vue.js components and modules.",
+  "description": "A package contains some music utility modules.",
   "keywords": [
     "midi",
     "svg"
@@ -33,9 +33,5 @@
     "url": "git+https://github.com/k-l-lambda/web-widgets.git"
   },
   "author": "K.L.",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/k-l-lambda/web-widgets/issues"
-  },
-  "homepage": "https://github.com/k-l-lambda/web-widgets#readme"
+  "license": "ISC"
 }

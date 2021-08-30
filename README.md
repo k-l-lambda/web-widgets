@@ -1,11 +1,7 @@
-# Web Widgets
+# Music Widgets
 
-A package contains some utility vue.js components and modules.
+A package contains some music utility modules.
 
-
-## Vue Components
-
-* midi-roll
 
 ## Modules
 
