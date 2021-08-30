@@ -51,7 +51,7 @@ class MidiPlayer {
 	}
 
 
-	async play () {
+	async play ({nextFrame = animationDelay} = {}) {
 		if (this.progressTime >= this.duration)
 			this.progressTime = 0;
 
@@ -74,8 +74,7 @@ class MidiPlayer {
 						this.onMidi(event.data, this.startTime + event.time);
 			}
 
-			//await msDelay(this.cacheSpan * 0.1);
-			await animationDelay();
+			await nextFrame();
 
 			if (!this.isPlaying)
 				break;
