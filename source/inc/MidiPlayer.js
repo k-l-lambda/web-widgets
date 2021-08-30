@@ -29,6 +29,8 @@ class MidiPlayer {
 		this.startTime = performance.now();
 		this.duration = notation.endTime;
 		this.cursorTurnDelta = 0;
+
+		console.assert(notation.tempos && notation.tempos.length, "[MidiPlayer] invalid notation, tempos is empty.");
 	}
 
 
