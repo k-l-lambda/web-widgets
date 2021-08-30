@@ -109,6 +109,8 @@ interface Bar {
 interface NotationProtoData {
 	channels: Note[][];
 	meta: NotationMetaInfo;
+	ticksPerBeat: number;
+	tempos: Tempo[];
 
 	keyRange?: {low: number, high: number};
 	pedals?: Pedal[];
@@ -117,8 +119,6 @@ interface NotationProtoData {
 	endTick?: number;
 	correspondences?: number[];
 	events?: NotationEvent[];
-	tempos: Tempo[];
-	ticksPerBeat?: number;
 	measures?: any;
 }
 

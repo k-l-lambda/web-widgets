@@ -13,12 +13,12 @@ declare class MidiPlayer {
 	constructor (midiData: MidiData | Notation, options: {
 		cacheSpan?: number,
 		onMidi?: (event: object, timestamp: number) => void,
-		onPlayFinish: () => void,
+		onPlayFinish?: () => void,
 	});
 
 	dispose ();
 
-	play (): Promise<void>;
+	play (options?: {nextFrame: () => Promise<void>}): Promise<void>;
 
 	pause ();
 
