@@ -31,7 +31,7 @@ interface Note {
 interface Tempo {
 	tempo: number;
 	tick: number;
-	time: number;
+	time: number;	// in milliseconds
 }
 
 
