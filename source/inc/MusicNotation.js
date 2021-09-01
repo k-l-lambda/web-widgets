@@ -437,6 +437,19 @@ class Notation {
 			timeRange,
 		};
 	}*/
+
+
+	scaleTempo ({factor, headTempo}) {
+		console.assert(this.tempos && this.tempos.length, "[Notation.scaleTempo] tempos is empty.");
+
+		if (headTempo)
+			factor = headTempo / this.tempos[0].tempo;
+
+		console.assert(Number.isFinite(factor) && factor > 0, "[Notation.scaleTempo] invalid factor:", factor);
+
+		for (const tempo of this.tempos)
+			tempo.tempo *= factor;
+	}
 };
 
 

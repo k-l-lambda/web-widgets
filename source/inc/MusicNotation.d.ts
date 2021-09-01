@@ -161,6 +161,8 @@ declare class Notation implements NotationProtoData {
 		tickRange: object,
 		timeRange: object,
 	};*/
+
+	scaleTempo (options: {factor: number} | {headTempo: number}): void;
 }
 
 
