@@ -447,8 +447,18 @@ class Notation {
 
 		console.assert(Number.isFinite(factor) && factor > 0, "[Notation.scaleTempo] invalid factor:", factor);
 
-		for (const tempo of this.tempos)
+		this.tempos.forEach(tempo => {
 			tempo.tempo *= factor;
+			tempo.time *= factor;
+		});
+		this.events.forEach(event => {
+			event.deltaTime *= factor;
+			event.time *= factor;
+		});
+		this.notes.forEach(note => {
+			note.start *= factor;
+			note.duration *= factor;
+		});
 	}
 };
 
