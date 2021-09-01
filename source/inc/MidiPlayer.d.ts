@@ -14,6 +14,7 @@ declare class MidiPlayer {
 		cacheSpan?: number,
 		onMidi?: (event: MidiEvent, timestamp: number) => void,
 		onPlayFinish?: () => void,
+		onTurnCursor?: (progressTime: number) => void,
 	});
 
 	dispose ();
