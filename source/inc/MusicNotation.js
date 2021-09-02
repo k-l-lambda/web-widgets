@@ -459,6 +459,8 @@ class Notation {
 			note.start *= factor;
 			note.duration *= factor;
 		});
+
+		this.endTime *= factor;
 	}
 };
 
