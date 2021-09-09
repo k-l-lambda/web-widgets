@@ -60,6 +60,7 @@ const genNotationContext = function (notation, {softIndexFactor = 1} = {}) {
 
 const runNavigation = async function(criterion, sample, onStep) {
 	const navigator = new Navigator(criterion, sample);
+	navigator.resetCursor(-1);
 
 	for (let i = 0; i < sample.notes.length; ++i) {
 		navigator.step(i);
