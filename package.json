@@ -1,6 +1,6 @@
 {
   "name": "@k-l-lambda/music-widgets",
-  "version": "0.3.33",
+  "version": "0.3.34",
   "description": "A package contains some music utility modules.",
   "keywords": [
     "midi",
@@ -17,7 +17,7 @@
     "@types/node": "^14.0.27",
     "@vue/cli-plugin-babel": "^4.3.1",
     "@vue/cli-service": "^4.3.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "ts-node-dev": "^1.0.0-pre.56",
     "typescript": "^3.9.7",
     "vue": "^2.6.11",
