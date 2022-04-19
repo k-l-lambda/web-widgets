@@ -373,17 +373,16 @@ class Notation {
 	}
 
 
-	ticksToTime (ticks) {
-		console.assert(Number.isFinite(ticks), "invalid ticks value:", ticks);
+	ticksToTime (tick) {
+		console.assert(Number.isFinite(tick), "invalid tick value:", tick);
 		console.assert(this.tempos && this.tempos.length, "no tempos.");
 
-		let tempo_index = this.tempos.findIndex(tempo => tempo.tick > ticks) - 1;
-		if (tempo_index < 0)
-			tempo_index = this.tempos.length - 1;
+		const next_tempo_index = this.tempos.findIndex(tempo => tempo.tick > tick);
+		const tempo_index = next_tempo_index < 0 ? this.tempos.length - 1 : Math.max(next_tempo_index - 1, 0);
 
 		const tempo = this.tempos[tempo_index];
 
-		return tempo.time + (ticks - tempo.tick) * tempo.tempo * 1e-3 / this.ticksPerBeat;
+		return tempo.time + (tick - tempo.tick) * tempo.tempo * 1e-3 / this.ticksPerBeat;
 	}
 
 
@@ -391,9 +390,8 @@ class Notation {
 		console.assert(Number.isFinite(time), "invalid time value:", time);
 		console.assert(this.tempos && this.tempos.length, "no tempos.");
 
-		let tempo_index = this.tempos.findIndex(tempo => tempo.time > time) - 1;
-		if (tempo_index < 0)
-			tempo_index = this.tempos.length - 1;
+		const next_tempo_index = this.tempos.findIndex(tempo => tempo.time > time);
+		const tempo_index = next_tempo_index < 0 ? this.tempos.length - 1 : Math.max(next_tempo_index - 1, 0);
 
 		const tempo = this.tempos[tempo_index];
 
