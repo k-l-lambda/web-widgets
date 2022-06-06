@@ -164,7 +164,7 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 		}));
 
 	track.forEach(event => event.ticks = Math.round((event.time - startTime) * msToTicks));
-	track.forEach((event, i) => event.deltaTime = (i > 0 ? (event.ticks - track[i - 1].ticks) : 0));
+	track.forEach((event, i) => event.deltaTime = (event.ticks - (i > 0 ? track[i - 1].ticks : 0)));
 
 	return {header, tracks: [track]};
 };
