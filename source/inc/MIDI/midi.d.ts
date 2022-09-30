@@ -16,6 +16,8 @@ interface MidiEvent {
 
 	text?: string;
 
+	microsecondsPerBeat?: number;
+
 	frameRate?: object;
 	hour?: number;
 	min?: number;
@@ -27,6 +29,8 @@ interface MidiEvent {
 	denominator?: number;
 	metronome?: number;
 	thirtyseconds?: number;
+
+	number?: number;
 
 	key?: number;
 	scale?: number;
