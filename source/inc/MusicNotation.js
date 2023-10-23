@@ -144,17 +144,9 @@ class Notation {
 
 						const status = pedalStatus[event.channel][pedalType];
 
-						if (event.value > 0) {
-							if (!status)
-								pedalStatus[event.channel][pedalType] = {start: time, value: event.value};
-						}
-						else {
-							if (status) {
-								pedals[event.channel].push({type: pedalType, start: status.start, duration: time - status.start, value: status.value});
-
-								pedalStatus[event.channel][pedalType] = null;
-							}
-						}
+						if (status)
+							pedals[event.channel].push({type: pedalType, start: status.start, duration: time - status.start, value: status.value});
+						pedalStatus[event.channel][pedalType] = {start: time, value: event.value};
 
 						break;
 					}
