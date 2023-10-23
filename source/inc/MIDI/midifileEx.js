@@ -121,7 +121,7 @@ module.exports = function OMidiFile ({ header, tracks }) {
 				stream.writeVarInt(4);
 
 				stream.writeInt8(event.numerator);
-				stream.writeInt8(Math.log(event.denominator) / Math.log(2));
+				stream.writeInt8(Math.log2(event.denominator));
 				stream.writeInt8(event.metronome);
 				stream.writeInt8(event.thirtyseconds);
 
