@@ -137,7 +137,9 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 	}
 
 	if (notation.events) {
-		const events = notation.events.filter(event => !EXCLUDE_MIDI_EVENT_SUBTYPES.includes(event.data.subtype));
+		const events = notation.notes
+			? notation.events.filter(event => !EXCLUDE_MIDI_EVENT_SUBTYPES.includes(event.data.subtype))
+			: notation.events;
 		for (const event of events) {
 			track.push({
 				time: event.time,
