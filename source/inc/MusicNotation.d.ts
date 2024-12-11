@@ -123,8 +123,18 @@ interface NotationProtoData {
 }
 
 
+interface Logger {
+	assert(condition?: boolean, ...data: any[]): void;
+	debug(...data: any[]): void;
+	error(...data: any[]): void;
+	info(...data: any[]): void;
+	log(...data: any[]): void;
+	warn(...data: any[]): void;
+}
+
+
 declare class Notation implements NotationProtoData {
-	static parseMidi(data: MidiData, options?: {fixOverlap?: boolean}): Notation;
+	static parseMidi(data: MidiData, options?: {fixOverlap?: boolean, logger?: Logger}): Notation;
 
 	ticksPerBeat: number;
 
@@ -146,7 +156,7 @@ declare class Notation implements NotationProtoData {
 
 	meta: NotationMetaInfo;
 
-	constructor (fields: NotationProtoData);
+	constructor (fields: NotationProtoData & {logger?: Logger});
 
 	findChordBySoftindex (softIndex: number, radius?: number): Note[];
 

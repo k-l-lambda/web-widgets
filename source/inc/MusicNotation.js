@@ -13,7 +13,7 @@ const PedalControllerTypes = {
 
 
 class Notation {
-	static parseMidi (data, {fixOverlap = true} = {}) {
+	static parseMidi (data, {fixOverlap = true, logger = null} = {}) {
 		const channelStatus = [];
 		const pedalStatus = {};
 		const pedals = {};
@@ -66,9 +66,6 @@ class Notation {
 			}
 
 			time += ev.deltaTime;
-
-			//const ticksTime = beats * millisecondsPerBeat;
-			//console.log("time:", time, ticksTime, ticksTime - time);
 
 			ev.time = time;
 			ev.ticks = ticks;
@@ -124,7 +121,7 @@ class Notation {
 							});
 						}
 						else
-							console.debug("unexpected noteOff: ", time, event);
+							this.logger && this.logger.debug("unexpected noteOff: ", time, event);
 
 						keyRange.high = Math.max(keyRange.high || pitch, pitch);
 					}
@@ -159,8 +156,6 @@ class Notation {
 				switch (event.subtype) {
 				case "setTempo":
 					millisecondsPerBeat = event.microsecondsPerBeat / 1000;
-					//beats = Math.round(beats);
-					//console.assert(Number.isFinite(time), "invalid time:", time);
 					tempos.push({tempo: event.microsecondsPerBeat, tick: ticks, time});
 
 					break;
@@ -191,7 +186,7 @@ class Notation {
 
 					break;
 				case "copyrightNotice":
-					console.log("MIDI copyright:", event.text);
+					this.logger && this.logger.log("MIDI copyright:", event.text);
 
 					break;
 				}
@@ -201,8 +196,9 @@ class Notation {
 		}
 
 		channelStatus.forEach(status => {
-			console.debug("unclosed noteOn event at", status.startTick, status);
+			this.logger && this.logger.debug("unclosed noteOn event at", status.startTick, status);
 
+			channels[status.channel] = channels[status.channel] || [];
 			channels[status.channel].push({
 				startTick: status.startTick,
 				endTick: ticks,
@@ -228,6 +224,7 @@ class Notation {
 			tempos,
 			ticksPerBeat,
 			meta: {},
+			logger,
 		});
 	}
 
@@ -346,8 +343,8 @@ class Notation {
 	averageTempo (tickRange) {
 		tickRange = tickRange || {from: 0, to: this.endtick};
 
-		console.assert(this.tempos, "no tempos.");
-		console.assert(tickRange.to > tickRange.from, "range is invalid:", tickRange);
+		this.logger && this.logger.assert(this.tempos, "no tempos.");
+		this.logger && this.logger.assert(tickRange.to > tickRange.from, "range is invalid:", tickRange);
 
 		const span = index => {
 			const from = Math.max(tickRange.from, this.tempos[index].tick);
@@ -366,8 +363,8 @@ class Notation {
 
 
 	ticksToTime (tick) {
-		console.assert(Number.isFinite(tick), "invalid tick value:", tick);
-		console.assert(this.tempos && this.tempos.length, "no tempos.");
+		this.logger && this.logger.assert(Number.isFinite(tick), "invalid tick value:", tick);
+		this.logger && this.logger.assert(this.tempos && this.tempos.length, "no tempos.");
 
 		const next_tempo_index = this.tempos.findIndex(tempo => tempo.tick > tick);
 		const tempo_index = next_tempo_index < 0 ? this.tempos.length - 1 : Math.max(next_tempo_index - 1, 0);
@@ -379,8 +376,8 @@ class Notation {
 
 
 	timeToTicks (time) {
-		console.assert(Number.isFinite(time), "invalid time value:", time);
-		console.assert(this.tempos && this.tempos.length, "no tempos.");
+		this.logger && this.logger.assert(Number.isFinite(time), "invalid time value:", time);
+		this.logger && this.logger.assert(this.tempos && this.tempos.length, "no tempos.");
 
 		const next_tempo_index = this.tempos.findIndex(tempo => tempo.time > time);
 		const tempo_index = next_tempo_index < 0 ? this.tempos.length - 1 : Math.max(next_tempo_index - 1, 0);
@@ -392,7 +389,7 @@ class Notation {
 
 
 	tickRangeToTimeRange (tickRange) {
-		console.assert(tickRange.to >= tickRange.from, "invalid tick range:", tickRange);
+		this.logger && this.logger.assert(tickRange.to >= tickRange.from, "invalid tick range:", tickRange);
 
 		return {
 			from: this.ticksToTime(tickRange.from),
@@ -430,12 +427,12 @@ class Notation {
 
 
 	scaleTempo ({factor, headTempo}) {
-		console.assert(this.tempos && this.tempos.length, "[Notation.scaleTempo] tempos is empty.");
+		this.logger && this.logger.assert(this.tempos && this.tempos.length, "[Notation.scaleTempo] tempos is empty.");
 
 		if (headTempo)
 			factor = headTempo / this.tempos[0].tempo;
 
-		console.assert(Number.isFinite(factor) && factor > 0, "[Notation.scaleTempo] invalid factor:", factor);
+		this.logger && this.logger.assert(Number.isFinite(factor) && factor > 0, "[Notation.scaleTempo] invalid factor:", factor);
 
 		this.tempos.forEach(tempo => {
 			tempo.tempo *= factor;

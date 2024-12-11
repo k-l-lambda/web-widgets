@@ -46,6 +46,8 @@ interface MidiEvent {
 
 	programNumber?: number;
 
+	microsecondsPerBeat?: number;
+
 	value?: number;
 }
 
