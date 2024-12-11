@@ -203,6 +203,7 @@ class Notation {
 		channelStatus.forEach(status => {
 			console.debug("unclosed noteOn event at", status.startTick, status);
 
+			channels[status.channel] = channels[status.channel] || [];
 			channels[status.channel].push({
 				startTick: status.startTick,
 				endTick: ticks,
