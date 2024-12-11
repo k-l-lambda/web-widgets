@@ -32,6 +32,9 @@
     "type": "git",
     "url": "git+https://github.com/k-l-lambda/web-widgets.git"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "author": "K.L.",
   "license": "ISC"
 }
