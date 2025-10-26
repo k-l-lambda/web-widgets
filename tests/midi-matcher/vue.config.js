@@ -1,5 +1,6 @@
 
 module.exports = {
+	lintOnSave: false,
 	chainWebpack: config => {
 		// binary file loader
 		config.module
