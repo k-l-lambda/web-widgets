@@ -4,7 +4,7 @@
 		@mousewheel="onMouseWheel"
 	>
 		<g :transform="`translate(${-xScroll}, 0)`">
-			<g v-if="progressTime" class="progress">
+			<g v-if="progressTime && notation" class="progress">
 				<rect :x="0" :y="-120" :height="121 - notation.keyRange.low" :width="progressTime * timeScale" />
 				<line :x1="progressTime * timeScale" :x2="progressTime * timeScale" :y1="-notation.keyRange.low + 1" y2="-120" />
 			</g>

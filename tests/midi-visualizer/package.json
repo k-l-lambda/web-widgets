@@ -13,12 +13,13 @@
     "vue": "^3.4.0"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.22.0",
+    "@k-l-lambda/music-widgets": "../../",
     "@k-l-lambda/web-widgets": "../../",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-eslint": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
     "@vue/eslint-config-standard": "^5.1.0",
-    "@babel/eslint-parser": "^7.22.0",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-node": "^11.0.0",
