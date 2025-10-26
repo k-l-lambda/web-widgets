@@ -3,5 +3,6 @@ yarn.lock
 package-lock.json
 *.log
 *.local
+*.local.*
 
 dist/
