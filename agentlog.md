@@ -808,3 +808,22 @@ But these are negligible compared to the huge developer experience improvement!
 - Patch `node-ipc` in root if needed (guard `os.networkInterfaces()`), or run bundling in an environment without the IPC limitation. Continue tightening types in `MusicNotation` and `MidiUtils` as desired.
 
 </details>
+
+
+> Fix MIDI parser input handling for browser ArrayBuffer
+
+<details>
+<summary>Stream reads ArrayBuffer/Uint8Array</summary>
+
+### Mini‑Milestone (2025-10-27)
+
+**Issue**: Browser build threw “Bad .mid file - header not found”, caused by the MIDI Stream reading an incompatible input type.
+
+**Fix**:
+- `source/inc/MIDI/stream.ts`: Normalize input to `Uint8Array` and read via `array`/`position`.
+- Accepts `ArrayBuffer | Uint8Array | number[]`, implements `read`, `readString`, `readInt8/16/32`, `readVarInt` correctly.
+- `source/inc/MIDI/midifile.ts`: Converts string to `Uint8Array.buffer`, handles `Uint8Array` directly.
+
+**Result**: MIDI headers parse reliably from `fetch(...).arrayBuffer()` and data URLs in the browser.
+
+</details>
