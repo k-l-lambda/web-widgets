@@ -201,6 +201,9 @@ export {
 </details>
 
 
+## 2025/10/27
+
+
 > Font size in MidiRoll seems not right. It seems `<style>` in midi-roll.vue not take effect.
 
 <details>
@@ -731,3 +734,51 @@ But these are negligible compared to the huge developer experience improvement!
 **Result**: ✅ Both solutions implemented and documented. Users can choose between simpler webpack polling (Option A) or more reliable chokidar-based file copying (Option B) depending on their needs.
 </details>
 
+
+> Fix svg-piano-roll rendered as raw element under Vue 3 (shows <SvgPianoRoll ...>)
+
+<details>
+<summary>Fix Vue 3 component rendering under SVG namespace</summary>
+
+### Fix: Use kebab-case for nested SVG components (2025-10-27)
+
+**Problem**: In the browser inspector, the piano roll appeared as `<SvgPianoRoll notation="[object Object]" timeScale="0.001" pitchScale="1"></SvgPianoRoll>`, meaning Vue didn’t compile the component and treated it as a native element inside `<svg>`.
+
+**Root Cause**: Vue 3 handling of components inside the SVG namespace can fail when using PascalCase in templates. Tags inside `<svg>` should be kebab-case so the compiler recognizes them as components.
+
+**Changes**:
+- In `source/views/midi-roll.vue`, render child as `<svg-piano-roll ... />` and register with a kebab-case key: `{ "svg-piano-roll": SvgPianoRoll }`.
+- Updated usages in the midi-visualizer test app to kebab-case:
+  - `tests/midi-visualizer/src/views/simple.vue`: `<midi-roll ... />` with `{ "midi-roll": MidiRoll }`.
+  - `tests/midi-visualizer/src/views/player.vue`: `<midi-roll ... />` with `{ "midi-roll": MidiRoll }`.
+  - `tests/midi-visualizer/src/App.vue`: `<view-simple />`, `<view-player />` with kebab-case registration.
+
+**Additional Hardening**:
+- `source/components/svg-piano-roll.vue`: replaced object-spread `:class` with array/object binding; fixed hover/on styles to target child shapes.
+- `source/views/midi-roll.vue`: applied `:deep()` selectors to ensure scoped styles affect nested SVG.
+
+**Result**: Vue now recognizes and mounts components within SVG. The inspector no longer shows raw `<SvgPianoRoll>`; the piano roll renders correctly with interactive notes and styles.
+
+</details>
+
+> Confirmed: svg-piano-roll rendering fixed; SVG styles isolated
+
+<details>
+<summary>Post‑validation and recommended pattern</summary>
+
+### Validation Summary (2025-10-27)
+
+**Rendering**:
+- Dynamic component in `midi-roll.vue` mounts child under SVG. Build shows `resolveDynamicComponent(_ctx.SvgPianoRoll)` and props bound.
+
+**Styles**:
+- Namespaced root class `mw-midi-roll` with unscoped selectors (e.g., `svg.mw-midi-roll .scales text`) reliably styles nested SVG.
+- Avoid Vue `<style scoped>` for deep SVG nodes; prefer a unique prefix or data attribute.
+
+**Recommended**:
+- Root SVG: `class="mw-midi-roll"` (or `data-mw="roll"`).
+- Styles: `svg.mw-midi-roll ...` (or `svg[data-mw="roll"] ...`).
+
+**Result**: ✅ Browser shows correct piano roll rendering and visual styles without global collisions.
+
+</details>

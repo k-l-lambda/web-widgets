@@ -1,5 +1,5 @@
 <template>
-	<svg xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox" :height="height"
+	<svg xmlns="http://www.w3.org/2000/svg" :viewBox="viewBox" :height="height" class="mw-midi-roll"
 		@click="onClickCanvas"
 		@mousewheel="onMouseWheel"
 	>
@@ -18,7 +18,7 @@
 					<line :x1="0" :x2="timeScale * notation.endTime" :y1="-pitch + 1" :y2="-pitch + 1" />
 				</g>
 			</g>
-			<SvgPianoRoll v-if="notation" :notation="notation" :timeScale="timeScale" :pitchScale="1" />
+			<component v-if="notation" :is="SvgPianoRoll" :notation="notation" :timeScale="timeScale" :pitchScale="1" />
 		</g>
 		<g class="scales" v-if="notation">
 			<rect class="pitch-padding" :x="-10" :y="-120" :width="10" :height="-notation.keyRange.low + 121" />
@@ -73,7 +73,7 @@
 
 
 		components: {
-			SvgPianoRoll,
+			"svg-piano-roll": SvgPianoRoll,
 		},
 
 
@@ -81,6 +81,7 @@
 			return {
 				notation: null,
 				timeScroll: 0,
+				SvgPianoRoll,
 			};
 		},
 
@@ -241,43 +242,43 @@
 	};
 </script>
 
-<style scoped>
-	.scales line
+<style>
+	svg.mw-midi-roll .scales line
 	{
 		stroke: black;
 		stroke-width: 0.1;
 	}
 
-	.scales text
+	svg.mw-midi-roll .scales text
 	{
 		font-size: 2px;
 		text-anchor: middle;
 		user-select: none;
 	}
 
-	.bar line
+	svg.mw-midi-roll .bar line
 	{
 		stroke: black;
 		stroke-width: 0.01;
 	}
 
-	.pitch-bar line, .time-bar line
+	svg.mw-midi-roll .pitch-bar line, svg.mw-midi-roll .time-bar line
 	{
 		stroke: black;
 		stroke-width: 0.06;
 	}
 
-	.pitch-padding
+	svg.mw-midi-roll .pitch-padding
 	{
 		fill: #fffc;
 	}
 
-	.progress rect
+	svg.mw-midi-roll .progress rect
 	{
 		fill: #afa1;
 	}
 
-	.progress line
+	svg.mw-midi-roll .progress line
 	{
 		stroke: #0a0;
 		stroke-width: 0.04;

@@ -5,10 +5,10 @@
 				:width="note.duration * timeScale"
 				:height="pitchScale"
 				@click="onClickNote(note)"
-				:class="{
-					focus: note.index === focusNoteIndex, ...(note.classes || {}),
+				:class="[{
+					focus: note.index === focusNoteIndex,
 					on: note.on,
-				}"
+				}, note.classes]"
 			/>
 			<line :x1="0" :x2="0" :y1="0" :y2="pitchScale" />
 			<title v-if="tooltips">
@@ -79,14 +79,15 @@
 		opacity: 0.6;
 	}
 
-	.note:hover
+	.note:hover rect,
+	.note:hover line
 	{
 		opacity: 0.9;
 		stroke: orange;
 		stroke-width: 0.08px;
 	}
 
-	.note.on
+	.note.on rect
 	{
 		fill: #2a2;
 	}
