@@ -782,3 +782,29 @@ But these are negligible compared to the huge developer experience improvement!
 **Result**: ✅ Browser shows correct piano roll rendering and visual styles without global collisions.
 
 </details>
+
+
+---
+
+> TypeScript build progress and module normalization
+
+<details>
+<summary>TS types added and ES modules aligned</summary>
+
+### Mini‑Milestone (2025-10-27)
+
+**Changes**:
+- Added class field types to `Stream`, `OStream`, `MidiPlayer`, `MatchNode`, `Navigator`, and `Notation` to satisfy TS.
+- Converted `MidiSequence` to export named functions and default object; updated `MusicNotation` to use named imports.
+- Replaced unsafe spreads in `MidiUtils` with typed `Object.assign` usage and added parameter types.
+- Normalized Matcher modules to ES exports (`config` default, `navigator` default).
+- Added DOM lib to tsconfig for `performance` and `requestAnimationFrame`.
+- Created `index.ts` and `index.browser.ts`; updated build to use TS entries.
+
+**Status**:
+- `tsc` completes successfully; bundling via `vue-cli-service` hits a known `node-ipc` networkInterfaces error in this environment (non-code issue).
+
+**Next**:
+- Patch `node-ipc` in root if needed (guard `os.networkInterfaces()`), or run bundling in an environment without the IPC limitation. Continue tightening types in `MusicNotation` and `MidiUtils` as desired.
+
+</details>

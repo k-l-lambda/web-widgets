@@ -6,8 +6,8 @@
     "midi",
     "svg"
   ],
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "types": "index.ts",
   "browser": "dist/musicWidgetsBrowser.umd.js",
   "directories": {
     "test": "tests"
@@ -24,7 +24,7 @@
     "vue": "^3.4.0"
   },
   "scripts": {
-    "build": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js",
+    "build": "tsc && vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.ts",
     "prepublishOnly": "npm run build",
     "ts-dev:inspect": "ts-node-dev --inspect --",
     "watch": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js --watch"

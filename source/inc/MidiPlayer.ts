@@ -1,5 +1,5 @@
 
-const { Notation } = require("./MusicNotation.js");
+import * as MusicNotation from "./MusicNotation";
 
 
 
@@ -8,7 +8,19 @@ const animationDelay = () => new Promise(resolve => requestAnimationFrame(resolv
 
 
 class MidiPlayer {
-	constructor (midiData, {cacheSpan = 600, onMidi, onPlayFinish, onTurnCursor} = {}) {
+	notation: any;
+	events: any[];
+	isPlaying: boolean;
+	progressTime: number;
+	startTime: number;
+	duration: number;
+	cursorTurnDelta: number;
+	cacheSpan: number;
+	onMidi?: Function;
+	onPlayFinish?: Function;
+	onTurnCursor?: Function;
+
+	constructor (midiData: any, {cacheSpan = 600, onMidi, onPlayFinish, onTurnCursor}: any = {}) {
 		this.cacheSpan = cacheSpan;
 		this.onMidi = onMidi;
 		this.onPlayFinish = onPlayFinish;
@@ -18,7 +30,7 @@ class MidiPlayer {
 		if (midiData.notes && Number.isFinite(midiData.endTime))
 			notation = midiData;
 		else
-			notation = Notation.parseMidi(midiData);
+			notation = MusicNotation.Notation.parseMidi(midiData);
 
 		this.notation = notation;
 		this.events = notation.events;

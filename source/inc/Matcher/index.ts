@@ -1,6 +1,6 @@
 
-const Node = require("./node.js");
-const Navigator = require("./navigator.js");
+import Node from "./node";
+import Navigator from "./navigator";
 
 
 
@@ -73,14 +73,12 @@ const runNavigation = async function(criterion, sample, onStep) {
 		}
 	}
 
-	//console.log("Navigation accomplished.");
-
 	return navigator;
 };
 
 
 
-module.exports = {
+export {
 	normalizeInterval,
 	makeNoteSoftIndex,
 	makeMatchNodes,

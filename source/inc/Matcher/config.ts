@@ -1,5 +1,5 @@
 
-module.exports = {
+const Config = {
 	CostStepAttenuation: 0.6,
 	SkipDeep: 3,
 	PriorDistanceSigmoidFactor: 0.1,
@@ -12,3 +12,5 @@ module.exports = {
 
 	RelocationThreshold: 6,
 };
+
+export default Config;

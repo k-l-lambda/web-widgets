@@ -2,12 +2,20 @@
 	"compilerOptions": {
 		"moduleResolution": "node",
 		"downlevelIteration": true,
-		"lib": ["es2017"],
+		"lib": ["es2017", "dom"],
 		"target": "es6",
 		"module": "commonjs",
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"declaration": true,
-		"outDir": "lib"
+		"outDir": "lib",
+		"allowJs": true,
+		"skipLibCheck": true,
+		"noEmitOnError": false,
+		"types": ["node"]
 	},
+	"include": [
+		"source/inc/**/*.ts",
+		"source/inc/**/*.js"
+	]
 }

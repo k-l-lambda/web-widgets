@@ -1,5 +1,5 @@
 
-const midiToSequence = (midiFile, {timeWarp = 1} = {}) => {
+export const midiToSequence = (midiFile: any, {timeWarp = 1}: any = {}) => {
 	const trackStates = [];
 	let beatsPerMinute = 120;
 	const ticksPerBeat = midiFile.header.ticksPerBeat;
@@ -89,7 +89,7 @@ const midiToSequence = (midiFile, {timeWarp = 1} = {}) => {
 };
 
 
-const trimSequence = seq => {
+export const trimSequence = (seq: any) => {
 	const status = new Map();
 
 	return seq.filter(([{event, ticksToEvent}]) => {
@@ -113,7 +113,7 @@ const trimSequence = seq => {
 };
 
 
-const fixOverlapNotes = seq => {
+export const fixOverlapNotes = (seq: any) => {
 	const noteMap = new Map();
 	const overlapMap = new Map();
 	const swaps = [];
@@ -193,12 +193,4 @@ const fixOverlapNotes = seq => {
 	});
 
 	return seq;
-};
-
-
-
-module.exports = {
-	midiToSequence,
-	trimSequence,
-	fixOverlapNotes,
 };

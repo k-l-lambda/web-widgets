@@ -1,9 +1,12 @@
-
-const MIDI = require("./MIDI");
-
+import * as MIDI from "./MIDI";
 
 
-const trackDeltaToAbs = events => {
+
+type MidiEvent = any; // TODO
+type MidiTrackEvent = { time?: number, ticks?: number, deltaTime?: number, tick?: number, type?: string, subtype?: string, [key: string]: any };
+type MidiTrack = MidiTrackEvent[];
+
+const trackDeltaToAbs = (events: MidiTrack) => {
 	let tick = 0;
 
 	events.forEach(event => {
@@ -13,7 +16,7 @@ const trackDeltaToAbs = events => {
 };
 
 
-const trackAbsToDelta = events => {
+const trackAbsToDelta = (events: MidiTrack) => {
 	let lastTick = 0;
 
 	events.sort((e1, e2) => e1.tick - e2.tick).forEach(event => {
@@ -23,11 +26,11 @@ const trackAbsToDelta = events => {
 };
 
 
-const sliceTrack = (track, startTick, endTick) => {
+const sliceTrack = (track: MidiTrack, startTick: number, endTick: number) => {
 	trackDeltaToAbs(track);
 
-	const events = [];
-	const status = {};
+	const events: MidiTrack = [];
+	const status: Record<string, MidiTrackEvent> = {};
 
 	track.forEach(event => {
 		if (event.tick >= startTick && event.tick <= endTick && event.subtype !== "endOfTrack")
@@ -45,10 +48,7 @@ const sliceTrack = (track, startTick, endTick) => {
 		}
 	});
 
-	Object.values(status).forEach(event => events.push({
-		...event,
-		tick: 0,
-	}));
+	Object.values(status).forEach((event: MidiEvent) => events.push(Object.assign({}, event, { tick: 0 })));
 
 	events.push({
 		tick: endTick - startTick,
@@ -62,7 +62,7 @@ const sliceTrack = (track, startTick, endTick) => {
 };
 
 
-const sliceMidi = (midi, startTick, endTick) => ({
+const sliceMidi = (midi: any, startTick: number, endTick: number) => ({
 	header: midi.header,
 	tracks: midi.tracks.map(track => sliceTrack(track, startTick, endTick)),
 });
@@ -76,14 +76,14 @@ const EXCLUDE_MIDI_EVENT_SUBTYPES = [
 ];
 
 
-function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = {}) {
+function encodeToMIDIData(notation: any, {startTime, unclosedNoteDuration = 30e+3}: any = {}) {
 	notation.microsecondsPerBeat = notation.microsecondsPerBeat || 500000;
 
 	const ticksPerBeat = TICKS_PER_BEATS;
 	const msToTicks = ticksPerBeat * 1000 / notation.microsecondsPerBeat;
 
 	const header = { formatType: 0, ticksPerBeat };
-	const track = [];
+	const track: MidiTrack = [];
 
 	if (!Number.isFinite(startTime)) {
 		if (!notation.notes || !notation.notes[0])
@@ -94,14 +94,11 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 
 	track.push({ time: startTime, type: "meta", subtype: "copyrightNotice", text: `Composed by MusicWdigets. BUILT on ${new Date(Number(process.env.VUE_APP_BUILD_TIME)).toDateString()}` });
 
-	const containsTempo = notation.events && notation.events.find(event => event.subtype == "setTempo");
+	const containsTempo = notation.events && notation.events.find((event: any) => event.subtype == "setTempo");
 	if (!containsTempo) {
 		track.push({ time: startTime, type: "meta", subtype: "timeSignature", numerator: 4, denominator: 4, thirtyseconds: 8 });
 		track.push({ time: startTime, type: "meta", subtype: "setTempo", microsecondsPerBeat: notation.microsecondsPerBeat });
 	}
-
-	//if (notation.correspondences)
-	//	track.push({ time: startTime, type: "meta", subtype: "text", text: "find-corres:" + notation.correspondences.join(",") });
 
 	let endTime = startTime || 0;
 
@@ -138,13 +135,11 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 
 	if (notation.events) {
 		const events = notation.notes
-			? notation.events.filter(event => !EXCLUDE_MIDI_EVENT_SUBTYPES.includes(event.data.subtype))
+			? notation.events.filter((event: any) => !EXCLUDE_MIDI_EVENT_SUBTYPES.includes(event.data.subtype))
 			: notation.events;
 		for (const event of events) {
-			track.push({
-				time: event.time,
-				...event.data,
-			});
+			const dataObj = Object.assign({}, event.data);
+			track.push(Object.assign({ time: event.time }, dataObj));
 
 			endTime = Math.max(endTime, event.time);
 		}
@@ -155,8 +150,8 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 	track.sort(function (e1, e2) { return e1.time - e2.time; });
 
 	// append finger event after every noteOn event
-	track.map((event, index) => ({event, index}))
-		.filter(({event}) => event.subtype == "noteOn" && event.finger != null)
+	track.map((event: MidiEvent, index: number) => ({event, index}))
+		.filter(({event}: any) => event.subtype == "noteOn" && event.finger != null)
 		.reverse()
 		.forEach(({event, index}) => track.splice(index + 1, 0, {
 			time: event.time,
@@ -165,14 +160,14 @@ function encodeToMIDIData(notation, {startTime, unclosedNoteDuration = 30e+3} = 
 			text: `fingering(${event.finger})`,
 		}));
 
-	track.forEach(event => event.ticks = Math.round((event.time - startTime) * msToTicks));
-	track.forEach((event, i) => event.deltaTime = (event.ticks - (i > 0 ? track[i - 1].ticks : 0)));
+	track.forEach((event: MidiEvent) => event.ticks = Math.round((event.time - startTime) * msToTicks));
+	track.forEach((event: MidiEvent, i: number) => event.deltaTime = (event.ticks - (i > 0 ? (track[i - 1] as any).ticks : 0)));
 
 	return {header, tracks: [track]};
 };
 
 
-function encodeToMIDI(notation, options) {
+function encodeToMIDI(notation: any, options: any) {
 	const data = encodeToMIDIData(notation, options);
 	return MIDI.encodeMidiFile(data);
 };

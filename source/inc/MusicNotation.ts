@@ -1,5 +1,5 @@
 
-const MidiSequence = require("./MidiSequence.js");
+import { midiToSequence, trimSequence, fixOverlapNotes } from "./MidiSequence";
 
 
 
@@ -12,7 +12,24 @@ const PedalControllerTypes = {
 
 
 
-class Notation {
+export class Notation {
+	channels: any[];
+	keyRange: any;
+	pedals: any;
+	bars: any[];
+	endTime: number;
+	endTick: number;
+	correspondences: any;
+	events: any[];
+	tempos: any[];
+	ticksPerBeat: number;
+	meta: any;
+	logger: any;
+	notes: any[];
+	duration: number;
+	pitchMap: any[];
+
+
 	static parseMidi (data, {fixOverlap = true, logger = null} = {}) {
 		const channelStatus = [];
 		const pedalStatus = {};
@@ -32,12 +49,12 @@ class Notation {
 
 		const ticksPerBeat = data.header.ticksPerBeat;
 
-		let rawEvents = MidiSequence.midiToSequence(data);
+		let rawEvents = midiToSequence(data);
 
 		if (fixOverlap)
-			rawEvents = MidiSequence.trimSequence(MidiSequence.fixOverlapNotes(rawEvents));
+			rawEvents = trimSequence(fixOverlapNotes(rawEvents));
 
-		const events = rawEvents.map(d => ({
+		const events: any[] = rawEvents.map((d: any) => ({
 			data: d[0].event,
 			track: d[0].track,
 			deltaTime: d[1],
@@ -48,7 +65,7 @@ class Notation {
 
 		const ticksNormal = 1;
 
-		for (const ev of events) {
+		for (const ev of events as any[]) {
 			rawTicks += ev.deltaTicks;
 			ticks = Math.round(rawTicks * ticksNormal);
 
@@ -70,7 +87,7 @@ class Notation {
 			ev.time = time;
 			ev.ticks = ticks;
 
-			const event = ev.data;
+			const event: any = ev.data;
 			switch (event.type) {
 			case "channel":
 				//channelStatus[event.channel] = channelStatus[event.channel] || [];
@@ -90,7 +107,7 @@ class Notation {
 							track: ev.track,
 						});
 
-						keyRange.low = Math.min(keyRange.low || pitch, pitch);
+					(keyRange as any).low = Math.min((keyRange as any).low || pitch, pitch);
 
 						ev.index = index;
 						++index;
@@ -121,9 +138,9 @@ class Notation {
 							});
 						}
 						else
-							this.logger && this.logger.debug("unexpected noteOff: ", time, event);
+					logger && logger.debug && logger.debug("unexpected noteOff: ", time, event);
 
-						keyRange.high = Math.max(keyRange.high || pitch, pitch);
+						(keyRange as any).high = Math.max((keyRange as any).high || pitch, pitch);
 					}
 
 					break;
@@ -186,7 +203,7 @@ class Notation {
 
 					break;
 				case "copyrightNotice":
-					this.logger && this.logger.log("MIDI copyright:", event.text);
+					logger && logger.log && logger.log("MIDI copyright:", event.text);
 
 					break;
 				}
@@ -195,8 +212,8 @@ class Notation {
 			}
 		}
 
-		channelStatus.forEach(status => {
-			this.logger && this.logger.debug("unclosed noteOn event at", status.startTick, status);
+		channelStatus.forEach((status: any) => {
+			logger && logger.debug && logger.debug("unclosed noteOn event at", status.startTick, status);
 
 			channels[status.channel] = channels[status.channel] || [];
 			channels[status.channel].push({
@@ -229,7 +246,7 @@ class Notation {
 	}
 
 
-	constructor (fields) {
+	constructor (fields: any) {
 		Object.assign(this, fields);
 
 		// channels to notes
@@ -268,41 +285,6 @@ class Notation {
 		this.pitchMap.forEach(notes => notes.sort((n1, n2) => n1.start - n2.start));
 
 
-		/*// setup measure notes index
-		if (this.measures) {
-			const measure_list = [];
-
-			let last_measure = null;
-			const measure_entries = Object.entries(this.measures).sort((e1, e2) => Number(e1[0]) - Number(e2[0]));
-			for (const [t, measure] of measure_entries) {
-				//console.log("measure time:", Number(t));
-				measure.startTick = Number(t);
-				measure.notes = [];
-
-				if (last_measure)
-					last_measure.endTick = measure.startTick;
-
-				const m = measure.measure;
-				measure_list[m] = measure_list[m] || [];
-				measure_list[m].push(measure);
-
-				last_measure = measure;
-			}
-			if (last_measure)
-				last_measure.endTick = this.notes[this.notes.length - 1].endTick;
-			for (const i in this.notes) {
-				const note = this.notes[i];
-				for (const t in this.measures) {
-					const measure = this.measures[t];
-					if (note.startTick >= measure.startTick && note.startTick < measure.endTick || note.endTick > measure.startTick && note.endTick <= measure.endTick)
-						measure.notes.push(note);
-				}
-			}
-
-			this.measure_list = measure_list;
-		}*/
-
-
 		// prepare beats info
 		if (this.meta.beatInfos) {
 			for (let i = 0; i < this.meta.beatInfos.length; ++i) {
@@ -335,13 +317,13 @@ class Notation {
 	}
 
 
-	findChordBySoftindex (softIndex, radius = 0.8) {
+	findChordBySoftindex (softIndex: any, radius = 0.8) {
 		return this.notes.filter(note => Math.abs(note.softIndex - softIndex) < radius);
 	}
 
 
-	averageTempo (tickRange) {
-		tickRange = tickRange || {from: 0, to: this.endtick};
+	averageTempo (tickRange: any) {
+		tickRange = tickRange || {from: 0, to: this.endTick};
 
 		this.logger && this.logger.assert(this.tempos, "no tempos.");
 		this.logger && this.logger.assert(tickRange.to > tickRange.from, "range is invalid:", tickRange);
@@ -362,7 +344,7 @@ class Notation {
 	}
 
 
-	ticksToTime (tick) {
+	ticksToTime (tick: any) {
 		this.logger && this.logger.assert(Number.isFinite(tick), "invalid tick value:", tick);
 		this.logger && this.logger.assert(this.tempos && this.tempos.length, "no tempos.");
 
@@ -375,7 +357,7 @@ class Notation {
 	}
 
 
-	timeToTicks (time) {
+	timeToTicks (time: any) {
 		this.logger && this.logger.assert(Number.isFinite(time), "invalid time value:", time);
 		this.logger && this.logger.assert(this.tempos && this.tempos.length, "no tempos.");
 
@@ -388,7 +370,7 @@ class Notation {
 	}
 
 
-	tickRangeToTimeRange (tickRange) {
+	tickRangeToTimeRange (tickRange: any) {
 		this.logger && this.logger.assert(tickRange.to >= tickRange.from, "invalid tick range:", tickRange);
 
 		return {
@@ -396,34 +378,6 @@ class Notation {
 			to: this.ticksToTime(tickRange.to),
 		};
 	}
-
-
-	/*getMeasureRange (measureRange) {
-		console.assert(Number.isInteger(measureRange.start) && Number.isInteger(measureRange.end), "invalid measure range:", measureRange);
-		console.assert(this.measure_list && this.measure_list[measureRange.start] && this.measure_list[measureRange.end], "no measure data for specific index:", this.measure_list, measureRange);
-
-		const startMeasure = this.measure_list[measureRange.start][0];
-		let endMeasure = null;
-		for (const measure of this.measure_list[measureRange.end]) {
-			if (measure.endTick > startMeasure.startTick) {
-				endMeasure = measure;
-				break;
-			}
-		}
-
-		// there no path between start measure and end measure.
-		if (!endMeasure)
-			return null;
-
-		const tickRange = {from: startMeasure.startTick, to: endMeasure.endTick, duration: endMeasure.endTick - startMeasure.startTick};
-		const timeRange = this.tickRangeToTimeRange(tickRange);
-		timeRange.duration = timeRange.to - timeRange.from;
-
-		return {
-			tickRange,
-			timeRange,
-		};
-	}*/
 
 
 	scaleTempo ({factor, headTempo}) {
@@ -449,10 +403,4 @@ class Notation {
 
 		this.endTime *= factor;
 	}
-};
-
-
-
-module.exports = {
-	Notation,
 };
