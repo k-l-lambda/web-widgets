@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "update": "yarn add --dev ../../ && rm -r -f ./node_modules/@k-l-lambda/web-widgets/tests && rm -r -f ./node_modules/@k-l-lambda/web-widgets/node_modules"
+    "update": "yarn add --dev ../../ && rm -r -f ./node_modules/@k-l-lambda/web-widgets/tests && rm -r -f ./node_modules/@k-l-lambda/web-widgets/node_modules",
+    "watch": "node watch-parent.js"
   },
   "dependencies": {
     "core-js": "^3.6.4",
