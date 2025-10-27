@@ -228,7 +228,9 @@ class MidiFile {
 
 		let source = data;
 		if (typeof data === "string")
-			source = data.split("").map(c => c.charCodeAt(0));
+			source = new Uint8Array(data.split("").map((c: string) => c.charCodeAt(0))).buffer;
+		else if (source instanceof Uint8Array)
+			source = source.buffer;
 
 		const stream = new MidiStream(source);
 		const headerChunk = readChunk(stream);

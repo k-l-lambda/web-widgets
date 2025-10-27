@@ -4,6 +4,7 @@ source/views
 tests/
 .eslintrc.js
 vue.config.js
+watch.js
 *.log
 dist/*.html
 *.sh

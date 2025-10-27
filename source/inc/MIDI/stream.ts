@@ -1,37 +1,64 @@
 
 class Stream {
-	pos: number;
-	data: any;
+	array: Uint8Array;
+	position: number;
 
-	constructor (str: any) {
-		this.pos = 0;
-		this.data = str;
+	constructor (source: ArrayBuffer | Uint8Array | number[]) {
+		if (source instanceof Uint8Array)
+			this.array = source;
+		else if (Array.isArray(source))
+			this.array = new Uint8Array(source as number[]);
+		else
+			this.array = new Uint8Array(source as ArrayBuffer);
+
+		this.position = 0;
 	}
 
 	eof () {
-		return this.pos >= this.data.length;
+		return this.position >= this.array.length;
+	}
+
+	read (length: number) {
+		const result = this.array.slice(this.position, this.position + length);
+		this.position += length;
+
+		return result;
+	}
+
+	readString (length: number) {
+		const data = Array.from(this.read(length));
+
+		return data.map(c => String.fromCharCode(c)).join("");
 	}
 
 	readInt32 () {
 		const result = (
-			(this.data[this.pos] << 24)
-			+ (this.data[this.pos + 1] << 16)
-			+ (this.data[this.pos + 2] << 8)
-			+ this.data[this.pos + 3]
+			(this.array[this.position] << 24) +
+			(this.array[this.position + 1] << 16) +
+			(this.array[this.position + 2] << 8) +
+			this.array[this.position + 3]
 		);
-		this.pos += 4;
+		this.position += 4;
+
 		return result;
 	}
 
 	readInt16 () {
-		const result = ((this.data[this.pos] << 8) + this.data[this.pos + 1]);
-		this.pos += 2;
+		const result = (
+			(this.array[this.position] << 8) +
+			this.array[this.position + 1]
+		);
+		this.position += 2;
+
 		return result;
 	}
 
-	readInt8 () {
-		const result = this.data[this.pos];
-		this.pos += 1;
+	readInt8 (signed?: boolean) {
+		let result = this.array[this.position];
+		if (signed && result > 127)
+			result -= 256;
+		this.position += 1;
+
 		return result;
 	}
 
@@ -48,21 +75,6 @@ class Stream {
 			}
 		}
 	}
-
-	read (length) {
-		let result = this.data.slice(this.pos, this.pos + length);
-		this.pos += length;
-		return result;
-	}
-
-	readString (length) {
-		let result = "";
-		for (; length > 0; --length)
-			result += String.fromCharCode(this.readInt8());
-		return result;
-	}
-};
-
-
+}
 
 export default Stream;

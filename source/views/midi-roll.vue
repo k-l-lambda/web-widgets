@@ -39,8 +39,8 @@
 </template>
 
 <script>
-	import { parseMidiData } from "../inc/MIDI";
-	import { Notation } from "../inc/MusicNotation.js";
+	import { parseMidiData } from "../../lib/MIDI/index.js";
+	import { Notation } from "../../lib/MusicNotation.js";
 
 	import SvgPianoRoll from "../components/svg-piano-roll.vue";
 

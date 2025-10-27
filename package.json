@@ -24,10 +24,10 @@
     "vue": "^3.4.0"
   },
   "scripts": {
-    "build": "tsc && vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.ts",
+    "build": "tsc && cp -r source/MidiAudio lib/ && vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.ts",
     "prepublishOnly": "npm run build",
     "ts-dev:inspect": "ts-node-dev --inspect --",
-    "watch": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js --watch"
+    "watch": "node watch.js"
   },
   "repository": {
     "type": "git",
