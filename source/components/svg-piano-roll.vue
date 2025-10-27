@@ -1,5 +1,5 @@
 <template>
-	<g class="piano-roll-root">
+	<g class="piano-roll-root mw-svg-piano-roll">
 		<g v-for="(note, i) of notationObj.notes" :key="i" class="note" :transform="`translate(${note.start * timeScale}, ${-note.pitch * pitchScale})`">
 			<rect
 				:width="note.duration * timeScale"
@@ -72,32 +72,32 @@
 	};
 </script>
 
-<style scoped>
-	.note
+<style>
+	g.mw-svg-piano-roll .note
 	{
 		cursor: pointer;
 		opacity: 0.6;
 	}
 
-	.note:hover rect,
-	.note:hover line
+	g.mw-svg-piano-roll .note:hover rect,
+	g.mw-svg-piano-roll .note:hover line
 	{
 		opacity: 0.9;
 		stroke: orange;
 		stroke-width: 0.08px;
 	}
 
-	.note.on rect
+	g.mw-svg-piano-roll .note.on rect
 	{
 		fill: #2a2;
 	}
 
-	.note rect
+	g.mw-svg-piano-roll .note rect
 	{
 		fill: #555;
 	}
 
-	.note line
+	g.mw-svg-piano-roll .note line
 	{
 		stroke: #111;
 		stroke-width: 0.12px;
