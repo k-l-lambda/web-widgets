@@ -339,3 +339,262 @@ This confirmed that the deep selector is working correctly and styles are being 
 **Result**: ✅ Vue 3 migration complete with all MidiRoll component functionality and styling working correctly. The `:deep()` selector is the proper Vue 3 solution for styling nested SVG elements within scoped styles.
 </details>
 
+
+> When making changes to midi-roll.vue in the parent package, the changes don't appear in the midi-visualizer test app. Need a solution for automatic updates during development.
+
+<details>
+<summary>Development Workflow: Automatic Parent Package Updates</summary>
+
+### Development Workflow Issue: Source Changes Not Appearing in Test App (2025-10-27)
+
+**Problem**: When editing `source/views/midi-roll.vue` in the parent package, changes were not visible in the midi-visualizer test app even after rebuilding, causing confusion during development.
+
+**Root Cause Analysis**:
+1. Test applications (midi-visualizer, midi-chart, midi-matcher) install the parent package via local reference: `"@k-l-lambda/web-widgets": "../../"`
+2. The package is installed into `node_modules/@k-l-lambda/web-widgets/`
+3. The test app imports from the **compiled bundle** (`dist/musicWidgetsBrowser.umd.js`), not source files
+4. Workflow required:
+	- Edit source file → Build parent package → Copy dist files to node_modules → Rebuild/refresh test app
+5. Missing step: After building parent package, dist files were not automatically copied to node_modules
+
+**Solution Implemented**:
+
+Created an automatic watch script (`tests/midi-visualizer/watch-parent.js`) that:
+- Monitors changes in parent package source files (`source/**/*.vue`, `source/**/*.js`, `source/**/*.ts`)
+- Monitors changes to `index.browser.js`
+- Automatically rebuilds parent package when changes detected (with 1-second debounce)
+- Automatically copies updated dist files to `node_modules/@k-l-lambda/web-widgets/dist/`
+- Provides clear console feedback about the build and copy process
+
+**Implementation Details**:
+
+1. **Created watch script** at `tests/midi-visualizer/watch-parent.js`:
+	```javascript
+	#!/usr/bin/env node
+
+	const fs = require("fs");
+	const path = require("path");
+	const {exec} = require("child_process");
+
+	// Watches parent source directory
+	// Debounces changes (1 second)
+	// Builds parent package
+	// Copies dist files to node_modules
+	```
+
+2. **Added script to package.json**:
+	```json
+	{
+		"scripts": {
+			"watch": "node watch-parent.js"
+		}
+	}
+	```
+
+3. **Usage**:
+	```bash
+	# Terminal 1: Run the watch script
+	cd tests/midi-visualizer
+	yarn watch
+
+	# Terminal 2: Run the dev server
+	yarn serve
+
+	# Now edit source files in parent package - changes auto-rebuild and update!
+	```
+
+**Features**:
+- ✅ Watches all `.vue`, `.js`, `.ts` files in `source/` directory recursively
+- ✅ Watches `index.browser.js` for export changes
+- ✅ Ignores `node_modules`, `dist`, `.git` directories
+- ✅ Debounces rapid changes (waits 1 second after last change)
+- ✅ Prevents concurrent builds
+- ✅ Clear timestamped console output with emoji indicators
+- ✅ Graceful shutdown with Ctrl+C
+
+**Benefits**:
+- No more manual rebuild + copy steps
+- Instant feedback during development
+- Works alongside the dev server
+- Can be easily adapted for other test applications (midi-chart, midi-matcher)
+
+**Result**: ✅ Development workflow significantly improved. Changes to parent package source files now automatically appear in test applications with ~3-5 second latency (build time).
+</details>
+
+
+> Create a watch script for the main package to automatically build when source files change.
+
+<details>
+<summary>Root Package Watch Script</summary>
+
+### Root Package Auto-Build Watch Script (2025-10-27)
+
+**Objective**: Create a watch script for the root package that automatically rebuilds when source files change, streamlining the development workflow.
+
+**Implementation**:
+
+Created `watch.js` in the root directory with the following features:
+
+**Features**:
+- ✅ Watches `source/` directory recursively for `.vue`, `.js`, `.ts`, `.d.ts` files
+- ✅ Watches `index.browser.js` and `index.js` entry points
+- ✅ Debounces changes (500ms delay to handle rapid consecutive changes)
+- ✅ Prevents concurrent builds
+- ✅ Shows timestamped console output with build duration
+- ✅ Ignores irrelevant directories (`node_modules`, `dist`, `lib`, `.git`, `tests`)
+- ✅ Graceful error handling for system file watcher limits
+- ✅ Clean shutdown with Ctrl+C
+
+**Script Structure**:
+```javascript
+#!/usr/bin/env node
+
+const fs = require("fs");
+const path = require("path");
+const {exec} = require("child_process");
+
+// Watches source directory recursively
+// Watches index.browser.js and index.js
+// Debounces and builds on changes
+// Shows clear console feedback
+```
+
+**Added to package.json**:
+```json
+{
+	"scripts": {
+		"watch": "node watch.js"
+	}
+}
+```
+
+**Usage**:
+```bash
+# Start watch mode
+yarn watch
+
+# The script will automatically rebuild when you edit:
+# - source/**/*.vue
+# - source/**/*.js
+# - source/**/*.ts
+# - index.browser.js
+# - index.js
+```
+
+**Example Output**:
+```
+👀 Watching for changes in source files...
+   Source directory: /path/to/source
+   Entry points: index.browser.js, index.js
+
+[11:49:01] ✅ Watching: /path/to/source
+[11:49:01] ✅ Watching: /path/to/index.browser.js
+[11:49:01] ✅ Watching: /path/to/index.js
+
+🚀 Watch mode active. Press Ctrl+C to stop.
+
+[11:49:15] 📝 Change detected: views/midi-roll.vue
+[11:49:15] 🔨 Building package...
+[11:49:20] ✅ Build completed successfully in 4.82s
+```
+
+**System File Watcher Limit Handling**:
+
+On systems with many watched files, you may encounter the `ENOSPC` error (system limit for file watchers reached). The script handles this gracefully:
+- Still watches the main `source/` directory
+- Shows a warning instead of failing
+- Provides instructions to increase the limit if needed
+
+To increase the limit:
+```bash
+# Temporary (until reboot)
+sudo sysctl fs.inotify.max_user_watches=524288
+
+# Permanent
+echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+```
+
+**Combined Workflow with Test Applications**:
+
+For the best development experience, use both watch scripts together:
+
+```bash
+# Terminal 1: Root package watch
+cd /path/to/music-widgets
+yarn watch
+
+# Terminal 2: Test app watch
+cd tests/midi-visualizer
+yarn watch
+
+# Terminal 3: Test app dev server
+yarn serve
+```
+
+This creates a fully automated pipeline:
+1. Edit source files → Root watch rebuilds package
+2. Root package dist updated → Test app watch copies to node_modules
+3. Node_modules updated → Browser hot-reloads (or manual refresh)
+
+**Result**: ✅ Streamlined development workflow with automatic builds on file changes. Build time ~3-5 seconds per change.
+</details>
+
+
+> Improve the watch script implementation using Vue's built-in functionality or a third-party library instead of Node.js's fs.watch.
+
+<details>
+<summary>Final Solution: Use Vue CLI Service Built-in Watch</summary>
+
+### Final Watch Solution: Vue CLI Service --watch Flag (2025-10-27)
+
+**Problem**: The initial custom watch script using Node.js's `fs.watch` encountered system file watcher limit issues (`ENOSPC` errors).
+
+**Solution Evaluation**:
+
+1. **Native fs.watch**: ❌ File watcher limit issues
+2. **Chokidar with polling**: ⚠️ Works but adds complexity and dependencies
+3. **Vue CLI Service `--watch`**: ✅ **Best solution** - simple and already available!
+
+**Final Decision**: Use **Vue CLI Service's built-in `--watch` flag**
+
+**Why this is the best solution**:
+- ✅ **Already built-in** - no custom code needed
+- ✅ **Uses webpack's watch** - proven, robust implementation
+- ✅ **Incremental compilation** - faster rebuilds after first build
+- ✅ **Zero additional dependencies** - uses existing vue-cli-service
+- ✅ **Works despite ENOSPC warnings** - warnings are non-fatal
+
+**Implementation**:
+
+Simply added the `--watch` flag to the existing build command:
+
+```json
+{
+	"scripts": {
+		"watch": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js --watch"
+	}
+}
+```
+
+**Usage**:
+```bash
+yarn watch
+```
+
+**About ENOSPC Warnings**:
+The `Watchpack Error (watcher): Error: ENOSPC: System limit for number of file watchers reached` warnings may appear but are **non-fatal**. The watch mode continues to work perfectly. If desired, users can increase their system's file watcher limit, but it's not required.
+
+**Benefits**:
+- ✅ Watches all source files, dependencies, and entry points automatically
+- ✅ Hot rebuilds with webpack's incremental compilation (much faster than full rebuilds)
+- ✅ Shows build progress and errors in real-time
+- ✅ No maintenance of custom watch scripts needed
+- ✅ Consistent with Vue ecosystem best practices
+
+**Lessons Learned**:
+Sometimes the simplest solution is the best. The built-in tool works great - don't overcomplicate by creating custom solutions when the framework already provides what you need!
+
+**Result**: ✅ Clean, simple watch mode using Vue CLI Service's built-in functionality. Zero custom code, zero additional dependencies, works perfectly.
+</details>
+

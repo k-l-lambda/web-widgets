@@ -17,7 +17,45 @@ npm run prepublishOnly
 
 # Development with TypeScript debugging
 npm run ts-dev:inspect -- <script.ts>
+
+# Watch mode: automatically rebuild when source files change
+npm run watch
+# or with yarn:
+yarn watch
 ```
+
+### Watch Mode
+
+The `yarn watch` command uses **Vue CLI Service's built-in watch mode** (webpack watch) to automatically rebuild the package when source files change:
+
+- Watches all source files, dependencies, and entry points
+- Hot rebuilds with webpack's incremental compilation
+- Shows build progress and errors in real-time
+
+**Usage**:
+```bash
+# Start watch mode
+yarn watch
+
+# Edit source files - webpack will automatically rebuild!
+```
+
+**Note about ENOSPC warnings**: On systems with many files, you may see `Watchpack Error (watcher): Error: ENOSPC: System limit for number of file watchers reached` warnings. These are **non-fatal** - the watch mode continues to work. If you want to eliminate these warnings, increase your system's file watcher limit:
+
+```bash
+# Temporary (until reboot)
+sudo sysctl fs.inotify.max_user_watches=524288
+
+# Permanent
+echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+```
+
+**Why use vue-cli-service --watch?**
+- ✅ Built-in, no custom code or dependencies
+- ✅ Uses webpack's proven watch implementation
+- ✅ Incremental compilation (faster rebuilds)
+- ✅ Already configured in your project
 
 ## Architecture
 

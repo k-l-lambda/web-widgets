@@ -17,16 +17,17 @@
     "@types/node": "^14.0.27",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
+    "@vue/compiler-sfc": "^3.4.0",
     "lodash": "^4.17.21",
     "ts-node-dev": "^1.0.0-pre.56",
     "typescript": "^3.9.7",
-    "vue": "^3.4.0",
-    "@vue/compiler-sfc": "^3.4.0"
+    "vue": "^3.4.0"
   },
   "scripts": {
     "build": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js",
     "prepublishOnly": "npm run build",
-    "ts-dev:inspect": "ts-node-dev --inspect --"
+    "ts-dev:inspect": "ts-node-dev --inspect --",
+    "watch": "vue-cli-service build --target lib --name musicWidgetsBrowser index.browser.js --watch"
   },
   "repository": {
     "type": "git",
