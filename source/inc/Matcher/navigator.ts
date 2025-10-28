@@ -2,18 +2,22 @@
 import MatchNode from "./node";
 import Config from "./config";
 
+import { Notation } from "./types";
+
 
 
 class Navigator {
-	criterion: any;
-	sample: any;
+	criterion: Notation;
+	sample: Notation;
 	zeroNode: any;
 	cursors: any[];
 	bestNode: any;
 	fineCursor: any;
 	breakingSI: number;
 	relocationThreshold: number;
-	constructor (criterion, sample, {relocationThreshold = Config.RelocationThreshold} = {}) {
+
+
+	constructor (criterion: Notation, sample: Notation, {relocationThreshold = Config.RelocationThreshold} = {}) {
 		this.criterion = criterion;
 		this.sample = sample;
 		this.zeroNode = MatchNode.zero();
@@ -24,11 +28,11 @@ class Navigator {
 		this.relocationThreshold = relocationThreshold;
 	}
 
-	getCursorOffset () {
+	getCursorOffset (): number {
 		return this.zeroNode.offset;
 	}
 
-	step (index) {
+	step (index: number): void {
 		const note = this.sample.notes[index];
 
 		if (note.matches && note.matches.length) {
@@ -58,8 +62,8 @@ class Navigator {
 	}
 
 
-	path ({fromIndex = 0, toIndex = this.sample.notes.length - 1} = {}) {
-		const path = [];
+	path ({fromIndex = 0, toIndex = this.sample.notes.length - 1} = {}): number[] {
+		const path: number[] = [];
 
 		let offset = null;
 
@@ -89,12 +93,12 @@ class Navigator {
 	}
 
 
-	nullSteps (index) {
+	nullSteps (index: number): number {
 		return index - (this.fineCursor ? this.fineCursor.si : -1) - 1;
 	}
 
 
-	resetCursor (index, {breaking = true} = {}) {
+	resetCursor (index: number, {breaking = true} = {}): boolean {
 		if (breaking)
 			this.breakingSI = index;
 
@@ -111,7 +115,7 @@ class Navigator {
 	}
 
 
-	get relocationTendency () {
+	get relocationTendency (): number | null {
 		const cursor = this.cursors && this.cursors[0];
 		if (!cursor)
 			return null;
@@ -123,5 +127,7 @@ class Navigator {
 		return Math.log(Math.max(nullLength * cursor.value, 1e-3)) / this.relocationThreshold;
 	}
 }
+
+
 
 export default Navigator;

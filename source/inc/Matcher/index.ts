@@ -1,6 +1,8 @@
 
-import Node from "./node";
+import MatchNode from "./node";
 import Navigator from "./navigator";
+
+import {Note, Notation} from "./types";
 
 
 
@@ -8,11 +10,11 @@ const HEART_BEAT = 800;	// in ms
 const SIMULTANEOUS_INTERVAL = HEART_BEAT * 0.24;
 
 
-const normalizeInterval = interval => Math.tanh(interval / SIMULTANEOUS_INTERVAL);
+const normalizeInterval = (interval: number): number => Math.tanh(interval / SIMULTANEOUS_INTERVAL);
 
 
 // greater softIndexFactor make 'harder' soft index
-const makeNoteSoftIndex = function (notes, index, {softIndexFactor = 1} = {}) {
+const makeNoteSoftIndex = function (notes: Note[], index: number, {softIndexFactor = 1} = {}): void {
 	index = Number(index);
 
 	const note = notes[index];
@@ -36,13 +38,13 @@ const makeNoteSoftIndex = function (notes, index, {softIndexFactor = 1} = {}) {
 };
 
 
-const makeMatchNodes = function (note, criterion, zeroNode = Node.zero()) {
+const makeMatchNodes = function (note: Note, criterion: Notation, zeroNode = MatchNode.zero()): void {
 	note.matches = [];
 
 	const targetList = criterion.pitchMap[note.pitch];
 	if (targetList) {
 		for (const targetNote of targetList) {
-			const node = new Node(note, targetNote);
+			const node = new MatchNode(note, targetNote);
 			if (zeroNode)
 				node.evaluatePrev(zeroNode);
 
@@ -52,13 +54,13 @@ const makeMatchNodes = function (note, criterion, zeroNode = Node.zero()) {
 };
 
 
-const genNotationContext = function (notation, {softIndexFactor = 1} = {}) {
+const genNotationContext = function (notation: Notation, {softIndexFactor = 1} = {}): void {
 	for (let i = 0; i < notation.notes.length; ++i)
 		makeNoteSoftIndex(notation.notes, i, {softIndexFactor});
 };
 
 
-const runNavigation = async function(criterion, sample, onStep) {
+const runNavigation = async function(criterion: Notation, sample: Notation, onStep: ((index: number, navigator: Navigator) => any) | null = null): Promise<Navigator | void> {
 	const navigator = new Navigator(criterion, sample);
 	navigator.resetCursor(-1);
 
@@ -78,6 +80,8 @@ const runNavigation = async function(criterion, sample, onStep) {
 
 
 
+export * from "./types";
+
 export {
 	normalizeInterval,
 	makeNoteSoftIndex,
@@ -85,5 +89,5 @@ export {
 	genNotationContext,
 	runNavigation,
 	Navigator,
-	Node,
+	MatchNode,
 };
