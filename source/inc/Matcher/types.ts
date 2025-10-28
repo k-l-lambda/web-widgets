@@ -18,6 +18,8 @@ interface Node {
 	selfCost?: number;
 	path?: number[];
 	priorByOffset?: (offset: number) => number;
+
+	evaluatePrev?: (node: Node) => boolean;
 };
 
 
@@ -28,6 +30,7 @@ interface Note {
 	softIndex?: number;
 	deltaSi?: number;
 	matches?: Node[];
+	startTick?: number;
 };
 
 
