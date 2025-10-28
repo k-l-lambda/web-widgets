@@ -9,3 +9,9 @@ watch.js
 dist/*.html
 *.sh
 *.local
+*.local.*
+yarn.lock
+
+AGENTS.md
+CLAUDE.md
+agentlog.md
