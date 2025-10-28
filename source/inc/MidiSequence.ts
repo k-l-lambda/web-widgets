@@ -1,6 +1,26 @@
 
-export const midiToSequence = (midiFile: any, {timeWarp = 1}: any = {}) => {
-	const trackStates = [];
+import * as MIDI from "./MIDI";
+
+
+interface TickEvent {
+	ticksToEvent: number;
+	event: MIDI.MIDIEvent;
+	track: number;
+};
+
+type SeqEvent = [TickEvent, number];
+
+export type MIDISequence = SeqEvent[];
+
+
+interface TrackState {
+	nextEventIndex: number;
+	ticksToNextEvent: number | null;
+};
+
+
+export const midiToSequence = (midiFile: MIDI.MIDIObject, {timeWarp = 1} = {}): MIDISequence => {
+	const trackStates: TrackState[] = [];
 	let beatsPerMinute = 120;
 	const ticksPerBeat = midiFile.header.ticksPerBeat;
 
@@ -15,7 +35,7 @@ export const midiToSequence = (midiFile: any, {timeWarp = 1}: any = {}) => {
 		};
 	}
 
-	function getNextEvent () {
+	function getNextEvent (): TickEvent | null {
 		let ticksToNextEvent = null;
 		let nextEventTrack = null;
 		let nextEventIndex = null;
@@ -55,8 +75,8 @@ export const midiToSequence = (midiFile: any, {timeWarp = 1}: any = {}) => {
 		
 	};
 	//
-	let midiEvent;
-	const events = [];
+	let midiEvent: TickEvent | null = null;
+	const events: SeqEvent[] = [];
 	//
 	function processEvents () {
 		function processNext () {
@@ -89,8 +109,8 @@ export const midiToSequence = (midiFile: any, {timeWarp = 1}: any = {}) => {
 };
 
 
-export const trimSequence = (seq: any) => {
-	const status = new Map();
+export const trimSequence = (seq: MIDISequence): MIDISequence => {
+	const status = new Map<string, MIDI.MIDIEvent>();
 
 	return seq.filter(([{event, ticksToEvent}]) => {
 		if (ticksToEvent > 0)
@@ -113,10 +133,10 @@ export const trimSequence = (seq: any) => {
 };
 
 
-export const fixOverlapNotes = (seq: any) => {
-	const noteMap = new Map();
-	const overlapMap = new Map();
-	const swaps = [];
+export const fixOverlapNotes = (seq: MIDISequence): MIDISequence => {
+	const noteMap = new Map<string, number>();
+	const overlapMap = new Map<string, number>();
+	const swaps: [number, number][] = [];
 
 	let leapIndex = -1;
 

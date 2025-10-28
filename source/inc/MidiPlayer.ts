@@ -46,18 +46,18 @@ class MidiPlayer {
 	}
 
 
-	dispose () {
+	dispose (): void {
 		this.isPlaying = false;
 		this.progressTime = 0;
 	}
 
 
-	get progressTicks () {
+	get progressTicks (): number {
 		return this.notation.timeToTicks(this.progressTime);
 	}
 
 
-	set progressTicks (value) {
+	set progressTicks (value: number) {
 		this.progressTime = this.notation.ticksToTime(value);
 
 		if (this.onTurnCursor)
@@ -65,7 +65,7 @@ class MidiPlayer {
 	}
 
 
-	async play ({nextFrame = animationDelay} = {}) {
+	async play ({nextFrame = animationDelay} = {}): Promise<void> {
 		if (this.progressTime >= this.duration)
 			this.progressTime = 0;
 
@@ -122,12 +122,12 @@ class MidiPlayer {
 	}
 
 
-	pause () {
+	pause (): void {
 		this.isPlaying = false;
 	}
 
 
-	turnCursor (time) {
+	turnCursor (time: number): void {
 		//console.log("onTurnCursor:", time, oldTime);
 		if (this.isPlaying)
 			this.cursorTurnDelta += time - this.progressTime;

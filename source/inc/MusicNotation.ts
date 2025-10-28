@@ -1,4 +1,6 @@
 
+import * as MIDI from "./MIDI";
+
 import { midiToSequence, trimSequence, fixOverlapNotes } from "./MidiSequence";
 
 
@@ -11,26 +13,93 @@ const PedalControllerTypes = {
 };
 
 
+interface Note {
+	channel: number;
+	startTick: number;
+	endTick: number;
+	pitch: number;
+	start: number;
+	duration: number;
+	velocity: number;
+	beats: number;
+	track: number;
+	finger?: number;
+	index?: number;
+	softIndex?: number;
+};
+
+
+interface Pedal {
+	type: string;
+	start: number;
+	duration: number;
+	value: number;
+};
+
+
+interface Bar {
+	time: number;
+	index: number;
+};
+
+
+interface NotationEvent {
+	data: MIDI.MIDIEvent;
+	track: number;
+	deltaTime: number;
+	deltaTicks: number;
+	time?: number;
+	ticks?: number;
+	index?: number;
+};
+
+
+interface Tempo {
+	tempo: number;
+	tick: number;
+	time: number;
+};
+
+
+interface BeatInfo {
+	tick: number;
+	time: number;
+	beatIndex: number;
+};
+
+
+interface NotationMeta {
+	beatInfos?: BeatInfo[];
+};
+
+
+interface Logger {
+	assert?: (condition: any, ...args: any[]) => void;
+	log?: (...args: any[]) => void;
+	debug?: (...args: any[]) => void;
+};
+
 
 export class Notation {
-	channels: any[];
-	keyRange: any;
-	pedals: any;
-	bars: any[];
+	channels: Note[][];
+	keyRange: {low: number; high: number};
+	pedals: {[channel: number]: Pedal[]};
+	bars: Bar[];
 	endTime: number;
 	endTick: number;
-	correspondences: any;
-	events: any[];
-	tempos: any[];
+	correspondences: string;
+	events: NotationEvent[];
+	tempos: Tempo[];
 	ticksPerBeat: number;
-	meta: any;
-	logger: any;
-	notes: any[];
+	meta: NotationMeta;
+	logger: Logger;
+	notes: Note[];
 	duration: number;
-	pitchMap: any[];
+	pitchMap: Note[][];
+	microsecondsPerBeat?: number;
 
 
-	static parseMidi (data, {fixOverlap = true, logger = null} = {}) {
+	static parseMidi (data: MIDI.MIDIObject, {fixOverlap = true, logger = null} = {}): Notation {
 		const channelStatus = [];
 		const pedalStatus = {};
 		const pedals = {};
@@ -54,7 +123,7 @@ export class Notation {
 		if (fixOverlap)
 			rawEvents = trimSequence(fixOverlapNotes(rawEvents));
 
-		const events: any[] = rawEvents.map((d: any) => ({
+		const events: NotationEvent[] = rawEvents.map((d: any) => ({
 			data: d[0].event,
 			track: d[0].track,
 			deltaTime: d[1],
@@ -317,12 +386,12 @@ export class Notation {
 	}
 
 
-	findChordBySoftindex (softIndex: any, radius = 0.8) {
+	findChordBySoftindex (softIndex: any, radius = 0.8): Note[] {
 		return this.notes.filter(note => Math.abs(note.softIndex - softIndex) < radius);
 	}
 
 
-	averageTempo (tickRange: any) {
+	averageTempo (tickRange: {from: number; to: number} | null = null): number {
 		tickRange = tickRange || {from: 0, to: this.endTick};
 
 		this.logger && this.logger.assert(this.tempos, "no tempos.");
@@ -344,7 +413,7 @@ export class Notation {
 	}
 
 
-	ticksToTime (tick: any) {
+	ticksToTime (tick: number): number {
 		this.logger && this.logger.assert(Number.isFinite(tick), "invalid tick value:", tick);
 		this.logger && this.logger.assert(this.tempos && this.tempos.length, "no tempos.");
 
@@ -357,7 +426,7 @@ export class Notation {
 	}
 
 
-	timeToTicks (time: any) {
+	timeToTicks (time: number): number {
 		this.logger && this.logger.assert(Number.isFinite(time), "invalid time value:", time);
 		this.logger && this.logger.assert(this.tempos && this.tempos.length, "no tempos.");
 
@@ -370,7 +439,7 @@ export class Notation {
 	}
 
 
-	tickRangeToTimeRange (tickRange: any) {
+	tickRangeToTimeRange (tickRange: {from: number; to: number}): {from: number; to: number} {
 		this.logger && this.logger.assert(tickRange.to >= tickRange.from, "invalid tick range:", tickRange);
 
 		return {
@@ -380,7 +449,7 @@ export class Notation {
 	}
 
 
-	scaleTempo ({factor, headTempo}) {
+	scaleTempo ({factor, headTempo}: {factor?: number; headTempo?: number}): void {
 		this.logger && this.logger.assert(this.tempos && this.tempos.length, "[Notation.scaleTempo] tempos is empty.");
 
 		if (headTempo)

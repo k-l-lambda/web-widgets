@@ -7,8 +7,77 @@ import MidiStream from "./stream";
 
 
 
-class MidiFile {
-	static parse (data: any) {
+export interface MIDIHeader {
+	formatType: number;
+	trackCount: number;
+	ticksPerBeat: number;
+}
+
+export interface MIDIEvent {
+	deltaTime: number;
+	type: string;
+	subtype?: string;
+	channel?: number;
+
+	// Channel events (noteOff, noteOn, noteAftertouch, controller, programChange, channelAftertouch, pitchBend)
+	noteNumber?: number;
+	velocity?: number;
+	amount?: number; // used for aftertouch
+	controllerType?: number;
+	value?: number; // controller value or pitchBend LSB/MSB combined
+	programNumber?: number;
+
+	// Meta events
+	// sequenceNumber
+	number?: number;
+	// text-like events: text, copyrightNotice, trackName, instrumentName, lyrics, marker, cuePoint
+	text?: string;
+	// setTempo
+	microsecondsPerBeat?: number;
+	// smpteOffset
+	frameRate?: number;
+	hour?: number;
+	min?: number;
+	sec?: number;
+	frame?: number;
+	subframe?: number;
+	// timeSignature
+	numerator?: number;
+	denominator?: number;
+	metronome?: number;
+	thirtyseconds?: number;
+	// keySignature
+	key?: number;
+	scale?: number;
+	// sequencerSpecific & unknown
+	data?: string;
+
+	// SysEx events
+	// (uses `data` above)
+
+	finger?: number; // custom field for note finger number
+}
+
+export type MIDITrack = MIDIEvent[];
+
+
+export interface MIDIObject {
+	header: MIDIHeader;
+	tracks: MIDITrack[];
+};
+
+
+export class MidiFile implements MIDIObject {
+	header: MIDIHeader;
+	tracks: MIDITrack[];
+
+
+	constructor (fields: MIDIObject) {
+		Object.assign(this, fields);
+	}
+
+
+	static parse (data: any): MidiFile {
 		function readChunk (stream) {
 			const id = stream.readString(4);
 			const length = stream.readInt32();
@@ -23,7 +92,10 @@ class MidiFile {
 		let lastEventTypeByte: any;
 
 		function readEvent (stream: any) {
-			const event: any = {};
+			const event: MIDIEvent = {
+				deltaTime: null,
+				type: null,
+			};
 			event.deltaTime = stream.readVarInt();
 			let eventTypeByte = stream.readInt8();
 			if ((eventTypeByte & 0xf0) === 0xf0) {
@@ -274,9 +346,10 @@ class MidiFile {
 			tracks.push(track);
 		}
 
-		return {header, tracks};
+		return new MidiFile({header, tracks});
 	}
 }
 
-// Keep original API: export the parser function
+
+
 export default (data: any) => MidiFile.parse(data);

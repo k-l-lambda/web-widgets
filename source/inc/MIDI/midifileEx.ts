@@ -1,14 +1,15 @@
 /*
 class to encode the .mid file format
-(depends on streamEx.js)
+(depends on streamEx.ts)
 */
 
 import OStream from "./streamEx";
+import type { MIDIObject, MIDIEvent } from "./midifile";
 
 
 
-export default function OMidiFile ({ header, tracks }) {
-	function writeChunk (stream, id, data) {
+export default function OMidiFile ({ header, tracks }: MIDIObject): Uint8Array {
+	function writeChunk (stream: OStream, id: string, data: string): void {
 		console.assert(id.length === 4, "chunk id must be 4 byte");
 
 		stream.write(id);
@@ -16,7 +17,7 @@ export default function OMidiFile ({ header, tracks }) {
 		stream.write(data);
 	}
 
-	function writeEvent (stream, event) {
+	function writeEvent (stream: OStream, event: MIDIEvent): void {
 		if (event.subtype === "unknown")
 			return;
 
@@ -161,38 +162,43 @@ export default function OMidiFile ({ header, tracks }) {
 
 			break;
 		case "channel":
-			stream.writeInt8(event.channel | (event.subtype << 4));
-
 			switch (event.subtype) {
 			case "noteOff":
+				stream.writeInt8(0x90 | event.channel);
 				stream.writeInt8(event.noteNumber);
 				stream.writeInt8(event.velocity);
 
 				break;
 			case "noteOn":
+				stream.writeInt8(0x80 | event.channel);
 				stream.writeInt8(event.noteNumber);
 				stream.writeInt8(event.velocity);
 
 				break;
 			case "noteAftertouch":
+				stream.writeInt8(0xa0 | event.channel);
 				stream.writeInt8(event.noteNumber);
 				stream.writeInt8(event.amount);
 
 				break;
 			case "controller":
+				stream.writeInt8(0xb0 | event.channel);
 				stream.writeInt8(event.controllerType);
 				stream.writeInt8(event.value);
 
 				break;
 			case "programChange":
+				stream.writeInt8(0xc0 | event.channel);
 				stream.writeInt8(event.programNumber);
 
 				break;
 			case "channelAftertouch":
+				stream.writeInt8(0xd0 | event.channel);
 				stream.writeInt8(event.amount);
 
 				break;
 			case "pitchBend":
+				stream.writeInt8(0xe0 | event.channel);
 				stream.writeInt8(event.value & 0x7f);
 				stream.writeInt8((event.value >> 7) & 0x7f);
 
@@ -207,31 +213,23 @@ export default function OMidiFile ({ header, tracks }) {
 		}
 	};
 
-	const headerBuf = new Uint8Array(6);
-	const tracksData = [];
+	const stream = new OStream();
 
-	const headerStream = new OStream();
-	const trackStream = new OStream();
+	const headerChunk = new OStream();
+	headerChunk.writeInt16(header.formatType);
+	headerChunk.writeInt16(tracks.length);
+	headerChunk.writeInt16(header.ticksPerBeat);
 
-	// header
-	headerBuf[0] = 0;
-	headerBuf[1] = header.formatType;
-	headerBuf[2] = 0;
-	headerBuf[3] = header.trackCount;
-	headerBuf[4] = (header.ticksPerBeat >> 8) & 0xff;
-	headerBuf[5] = header.ticksPerBeat & 0xff;
+	writeChunk(stream, "MThd", headerChunk.getBuffer());
 
-	// tracks
-	for (const track of tracks)
-		// events
-		track.forEach(event => writeEvent(trackStream, event));
+	for (let i = 0; i < tracks.length; ++i) {
+		const trackChunk = new OStream();
 
-	tracksData.push(trackStream.buffer());
+		for (let ei = 0; ei < tracks[i].length; ++ei)
+			writeEvent(trackChunk, tracks[i][ei]);
 
-	// chunks
-const stream = new OStream();
-writeChunk(stream, "MThd", headerBuf);
-tracksData.forEach(track => writeChunk(stream, "MTrk", track));
+		writeChunk(stream, "MTrk", trackChunk.getBuffer());
+	}
 
-	return stream.buffer();
+	return stream.getArrayBuffer();
 };

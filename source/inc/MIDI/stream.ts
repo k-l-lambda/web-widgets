@@ -3,6 +3,7 @@ class Stream {
 	array: Uint8Array;
 	position: number;
 
+
 	constructor (source: ArrayBuffer | Uint8Array | number[]) {
 		if (source instanceof Uint8Array)
 			this.array = source;
@@ -14,24 +15,24 @@ class Stream {
 		this.position = 0;
 	}
 
-	eof () {
+	eof (): boolean {
 		return this.position >= this.array.length;
 	}
 
-	read (length: number) {
+	read (length: number): Uint8Array {
 		const result = this.array.slice(this.position, this.position + length);
 		this.position += length;
 
 		return result;
 	}
 
-	readString (length: number) {
+	readString (length: number): string {
 		const data = Array.from(this.read(length));
 
 		return data.map(c => String.fromCharCode(c)).join("");
 	}
 
-	readInt32 () {
+	readInt32 (): number {
 		const result = (
 			(this.array[this.position] << 24) +
 			(this.array[this.position + 1] << 16) +
@@ -43,7 +44,7 @@ class Stream {
 		return result;
 	}
 
-	readInt16 () {
+	readInt16 (): number {
 		const result = (
 			(this.array[this.position] << 8) +
 			this.array[this.position + 1]
@@ -53,7 +54,7 @@ class Stream {
 		return result;
 	}
 
-	readInt8 (signed?: boolean) {
+	readInt8 (signed?: boolean): number {
 		let result = this.array[this.position];
 		if (signed && result > 127)
 			result -= 256;
@@ -62,7 +63,7 @@ class Stream {
 		return result;
 	}
 
-	readVarInt () {
+	readVarInt (): number {
 		let result = 0;
 		while (true) {
 			const b = this.readInt8();
@@ -75,6 +76,8 @@ class Stream {
 			}
 		}
 	}
-}
+};
+
+
 
 export default Stream;

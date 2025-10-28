@@ -1,3 +1,4 @@
+
 class OStream {
 	data: number[];
 
@@ -5,28 +6,28 @@ class OStream {
 		this.data = [];
 	}
 
-	write (str) {
+	write (str: string) {
 		for (let i = 0; i < str.length; ++i)
 			this.data.push(str.charCodeAt(i));
 	}
 
-	writeInt32 (value) {
+	writeInt32 (value: number) {
 		this.data.push((value >> 24) & 0xff);
 		this.data.push((value >> 16) & 0xff);
 		this.data.push((value >> 8) & 0xff);
 		this.data.push(value & 0xff);
 	}
 
-	writeInt16 (value) {
+	writeInt16 (value: number) {
 		this.data.push((value >> 8) & 0xff);
 		this.data.push(value & 0xff);
 	}
 
-	writeInt8 (value) {
+	writeInt8 (value: number) {
 		this.data.push(value & 0xff);
 	}
 
-	writeVarInt (value) {
+	writeVarInt (value: number) {
 		const stack = [];
 		while (value) {
 			stack.push(value & 0x7f);
@@ -37,9 +38,15 @@ class OStream {
 			this.data.push(stack[i] | (i ? 0x80 : 0));
 	}
 
-	buffer () {
+	getBuffer (): string {
+		return String.fromCharCode(...this.data);
+	}
+
+	getArrayBuffer () {
 		return new Uint8Array(this.data);
 	}
 }
+
+
 
 export default OStream;
