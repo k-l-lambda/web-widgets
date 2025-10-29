@@ -2,7 +2,7 @@
 import MatchNode from "./node";
 import Config from "./config";
 
-import { Notation, Note } from "./types";
+import { Note, Notation } from "./types";
 
 
 

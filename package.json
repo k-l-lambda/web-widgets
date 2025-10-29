@@ -7,7 +7,7 @@
     "svg"
   ],
   "main": "lib/index.js",
-  "types": "index.ts",
+  "types": "lib/index.d.ts",
   "browser": "dist/musicWidgetsBrowser.umd.js",
   "directories": {
     "test": "tests"

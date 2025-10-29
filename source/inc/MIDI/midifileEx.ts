@@ -4,11 +4,11 @@ class to encode the .mid file format
 */
 
 import OStream from "./streamEx";
-import type { MIDIObject, MIDIEvent } from "./midifile";
+import type { MidiData, MidiEvent } from "./types";
 
 
 
-export default function OMidiFile ({ header, tracks }: MIDIObject): Uint8Array {
+export default function OMidiFile ({ header, tracks }: MidiData): Uint8Array {
 	function writeChunk (stream: OStream, id: string, data: string): void {
 		console.assert(id.length === 4, "chunk id must be 4 byte");
 
@@ -17,7 +17,7 @@ export default function OMidiFile ({ header, tracks }: MIDIObject): Uint8Array {
 		stream.write(data);
 	}
 
-	function writeEvent (stream: OStream, event: MIDIEvent): void {
+	function writeEvent (stream: OStream, event: MidiEvent): void {
 		if (event.subtype === "unknown")
 			return;
 

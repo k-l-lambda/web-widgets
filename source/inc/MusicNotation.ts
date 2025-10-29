@@ -20,31 +20,22 @@ interface Note {
 	pitch: number;
 	start: number;
 	duration: number;
-	velocity: number;
-	beats: number;
-	track: number;
+	velocity?: number;
+	beats?: number;
+	track?: number;
 	finger?: number;
+
 	index?: number;
+	deltaSi?: number;
 	softIndex?: number;
-};
 
-
-interface Pedal {
-	type: string;
-	start: number;
-	duration: number;
-	value: number;
-};
-
-
-interface Bar {
-	time: number;
-	index: number;
+	id?: string;
+	ids?: string[];
 };
 
 
 interface NotationEvent {
-	data: MIDI.MIDIEvent;
+	data: MIDI.MidiEvent;
 	track: number;
 	deltaTime: number;
 	deltaTicks: number;
@@ -62,44 +53,119 @@ interface Tempo {
 
 
 interface BeatInfo {
+	beatIndex?: number;
+	beatsUnit: number;
+	beats: number;
 	tick: number;
-	time: number;
-	beatIndex: number;
 };
 
 
-interface NotationMeta {
+interface NotationMetaInfo {
 	beatInfos?: BeatInfo[];
-};
+
+	[key: string]: any;
+}
+
+
+interface MeasureRange {
+	startTick: number;
+	endTick: number;
+	index: number;
+}
+
+
+interface NotationData {
+	ticksPerBeat?: number;
+
+	notes: Note[];
+	channels?: Note[][];
+	events?: NotationEvent[];
+	tempos?: Tempo[];
+
+	endTime?: number;
+	endTick?: number;
+
+	pitchMap?: {[key: number]: Note[]};
+
+	measures?: MeasureRange[];
+
+	meta?: NotationMetaInfo;
+}
+
+
+interface FromToRange {
+	from: number;
+	to: number;
+}
+
+
+interface Pedal {
+	type: string;
+	start: number;
+	duration: number;
+	value: number;
+}
+
+
+interface Bar {
+	time: number;
+	index: number;
+}
+
+
+interface NotationProtoData {
+	channels: Note[][];
+	meta: NotationMetaInfo;
+	ticksPerBeat: number;
+	tempos: Tempo[];
+
+	keyRange?: {low: number, high: number};
+	pedals?: {[channel: number]: Pedal[]};
+	bars?: Bar[];
+	endTime?: number;
+	endTick?: number;
+	correspondences?: number[];
+	events?: NotationEvent[];
+	measures?: MeasureRange[];
+}
 
 
 interface Logger {
-	assert?: (condition: any, ...args: any[]) => void;
-	log?: (...args: any[]) => void;
-	debug?: (...args: any[]) => void;
-};
+	assert(condition?: boolean, ...data: any[]): void;
+	debug(...data: any[]): void;
+	error(...data: any[]): void;
+	info(...data: any[]): void;
+	log(...data: any[]): void;
+	warn(...data: any[]): void;
+}
 
 
-export class Notation {
+class Notation implements NotationProtoData {
+	ticksPerBeat: number;
+
 	channels: Note[][];
-	keyRange: {low: number; high: number};
-	pedals: {[channel: number]: Pedal[]};
-	bars: Bar[];
+	notes: Note[];
+	events?: NotationEvent[];
+	tempos: Tempo[];
+
 	endTime: number;
 	endTick: number;
-	correspondences: string;
-	events: NotationEvent[];
-	tempos: Tempo[];
-	ticksPerBeat: number;
-	meta: NotationMeta;
-	logger: Logger;
-	notes: Note[];
+
 	duration: number;
 	pitchMap: Note[][];
+	measures?: MeasureRange[];
+
+	keyRange?: {low: number, high: number};
+	pedals?: {[channel: number]: Pedal[]};
+	bars?: Bar[];
+
+	meta: NotationMetaInfo;
 	microsecondsPerBeat?: number;
 
+	logger: Logger;
 
-	static parseMidi (data: MIDI.MIDIObject, {fixOverlap = true, logger = null} = {}): Notation {
+
+	static parseMidi (data: MIDI.MidiData, {fixOverlap = true, logger = null} = {}): Notation {
 		const channelStatus = [];
 		const pedalStatus = {};
 		const pedals = {};
@@ -110,10 +176,10 @@ export class Notation {
 		let beats = 0;
 		let numerator = 4;
 		let barIndex = 0;
-		const keyRange = {};
+		const keyRange: {low: number, high: number} = {low: null, high: null};
 		let rawTicks = 0;
 		let ticks = 0;
-		let correspondences;
+		let correspondences: number[];
 		const tempos = [];
 
 		const ticksPerBeat = data.header.ticksPerBeat;
@@ -176,7 +242,7 @@ export class Notation {
 							track: ev.track,
 						});
 
-					(keyRange as any).low = Math.min((keyRange as any).low || pitch, pitch);
+					keyRange.low = Math.min(keyRange.low || pitch, pitch);
 
 						ev.index = index;
 						++index;
@@ -209,7 +275,7 @@ export class Notation {
 						else
 					logger && logger.debug && logger.debug("unexpected noteOff: ", time, event);
 
-						(keyRange as any).high = Math.max((keyRange as any).high || pitch, pitch);
+						keyRange.high = Math.max(keyRange.high || pitch, pitch);
 					}
 
 					break;
@@ -315,7 +381,7 @@ export class Notation {
 	}
 
 
-	constructor (fields: any) {
+	constructor (fields: NotationProtoData & {logger?: Logger}) {
 		Object.assign(this, fields);
 
 		// channels to notes
@@ -391,10 +457,10 @@ export class Notation {
 	}
 
 
-	averageTempo (tickRange: {from: number; to: number} | null = null): number {
+	averageTempo (tickRange: FromToRange | null = null): number {
 		tickRange = tickRange || {from: 0, to: this.endTick};
 
-		this.logger && this.logger.assert(this.tempos, "no tempos.");
+		this.logger && this.logger.assert(!!this.tempos, "no tempos.");
 		this.logger && this.logger.assert(tickRange.to > tickRange.from, "range is invalid:", tickRange);
 
 		const span = index => {
@@ -415,7 +481,7 @@ export class Notation {
 
 	ticksToTime (tick: number): number {
 		this.logger && this.logger.assert(Number.isFinite(tick), "invalid tick value:", tick);
-		this.logger && this.logger.assert(this.tempos && this.tempos.length, "no tempos.");
+		this.logger && this.logger.assert(!!this.tempos && !!this.tempos.length, "no tempos.");
 
 		const next_tempo_index = this.tempos.findIndex(tempo => tempo.tick > tick);
 		const tempo_index = next_tempo_index < 0 ? this.tempos.length - 1 : Math.max(next_tempo_index - 1, 0);
@@ -428,7 +494,7 @@ export class Notation {
 
 	timeToTicks (time: number): number {
 		this.logger && this.logger.assert(Number.isFinite(time), "invalid time value:", time);
-		this.logger && this.logger.assert(this.tempos && this.tempos.length, "no tempos.");
+		this.logger && this.logger.assert(!!this.tempos && !!this.tempos.length, "no tempos.");
 
 		const next_tempo_index = this.tempos.findIndex(tempo => tempo.time > time);
 		const tempo_index = next_tempo_index < 0 ? this.tempos.length - 1 : Math.max(next_tempo_index - 1, 0);
@@ -439,7 +505,7 @@ export class Notation {
 	}
 
 
-	tickRangeToTimeRange (tickRange: {from: number; to: number}): {from: number; to: number} {
+	tickRangeToTimeRange (tickRange: FromToRange): FromToRange {
 		this.logger && this.logger.assert(tickRange.to >= tickRange.from, "invalid tick range:", tickRange);
 
 		return {
@@ -450,7 +516,7 @@ export class Notation {
 
 
 	scaleTempo ({factor, headTempo}: {factor?: number; headTempo?: number}): void {
-		this.logger && this.logger.assert(this.tempos && this.tempos.length, "[Notation.scaleTempo] tempos is empty.");
+		this.logger && this.logger.assert(!!this.tempos && !!this.tempos.length, "[Notation.scaleTempo] tempos is empty.");
 
 		if (headTempo)
 			factor = headTempo / this.tempos[0].tempo;
@@ -472,4 +538,13 @@ export class Notation {
 
 		this.endTime *= factor;
 	}
+};
+
+
+
+export {
+	NotationData,
+	Note,
+	NotationEvent,
+	Notation,
 };

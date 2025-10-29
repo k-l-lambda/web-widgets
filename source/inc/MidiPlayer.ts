@@ -141,4 +141,4 @@ class MidiPlayer {
 
 
 
-module.exports = MidiPlayer;
+export default MidiPlayer;

@@ -3,76 +3,17 @@ class to parse the .mid file format
 (depends on stream.js)
 */
 
+import type { MidiData, MidiHeader, MidiTrack, MidiEvent } from "./types";
 import MidiStream from "./stream";
 
 
 
-export interface MIDIHeader {
-	formatType: number;
-	trackCount: number;
-	ticksPerBeat: number;
-}
-
-export interface MIDIEvent {
-	deltaTime: number;
-	type: string;
-	subtype?: string;
-	channel?: number;
-
-	// Channel events (noteOff, noteOn, noteAftertouch, controller, programChange, channelAftertouch, pitchBend)
-	noteNumber?: number;
-	velocity?: number;
-	amount?: number; // used for aftertouch
-	controllerType?: number;
-	value?: number; // controller value or pitchBend LSB/MSB combined
-	programNumber?: number;
-
-	// Meta events
-	// sequenceNumber
-	number?: number;
-	// text-like events: text, copyrightNotice, trackName, instrumentName, lyrics, marker, cuePoint
-	text?: string;
-	// setTempo
-	microsecondsPerBeat?: number;
-	// smpteOffset
-	frameRate?: number;
-	hour?: number;
-	min?: number;
-	sec?: number;
-	frame?: number;
-	subframe?: number;
-	// timeSignature
-	numerator?: number;
-	denominator?: number;
-	metronome?: number;
-	thirtyseconds?: number;
-	// keySignature
-	key?: number;
-	scale?: number;
-	// sequencerSpecific & unknown
-	data?: string;
-
-	// SysEx events
-	// (uses `data` above)
-
-	finger?: number; // custom field for note finger number
-}
-
-export type MIDITrack = MIDIEvent[];
+export class MidiFile implements MidiData {
+	header: MidiHeader;
+	tracks: MidiTrack[];
 
 
-export interface MIDIObject {
-	header: MIDIHeader;
-	tracks: MIDITrack[];
-};
-
-
-export class MidiFile implements MIDIObject {
-	header: MIDIHeader;
-	tracks: MIDITrack[];
-
-
-	constructor (fields: MIDIObject) {
+	constructor (fields: MidiData) {
 		Object.assign(this, fields);
 	}
 
@@ -92,7 +33,7 @@ export class MidiFile implements MIDIObject {
 		let lastEventTypeByte: any;
 
 		function readEvent (stream: any) {
-			const event: MIDIEvent = {
+			const event: MidiEvent = {
 				deltaTime: null,
 				type: null,
 			};

@@ -4,7 +4,7 @@ import * as MIDI from "./MIDI";
 
 interface TickEvent {
 	ticksToEvent: number;
-	event: MIDI.MIDIEvent;
+	event: MIDI.MidiEvent;
 	track: number;
 };
 
@@ -19,7 +19,7 @@ interface TrackState {
 };
 
 
-export const midiToSequence = (midiFile: MIDI.MIDIObject, {timeWarp = 1} = {}): MIDISequence => {
+export const midiToSequence = (midiFile: MIDI.MidiData, {timeWarp = 1} = {}): MIDISequence => {
 	const trackStates: TrackState[] = [];
 	let beatsPerMinute = 120;
 	const ticksPerBeat = midiFile.header.ticksPerBeat;
@@ -110,7 +110,7 @@ export const midiToSequence = (midiFile: MIDI.MIDIObject, {timeWarp = 1} = {}): 
 
 
 export const trimSequence = (seq: MIDISequence): MIDISequence => {
-	const status = new Map<string, MIDI.MIDIEvent>();
+	const status = new Map<string, MIDI.MidiEvent>();
 
 	return seq.filter(([{event, ticksToEvent}]) => {
 		if (ticksToEvent > 0)

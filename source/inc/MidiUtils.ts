@@ -4,7 +4,7 @@ import { Notation } from "./MusicNotation";
 
 
 
-interface MIDIEventEx extends Partial<MIDI.MIDIEvent> {
+interface MIDIEventEx extends Partial<MIDI.MidiEvent> {
 	tick?: number;
 	time?: number;
 };
@@ -52,7 +52,7 @@ const sliceTrack = (track: MIDIEventEx[], startTick: number, endTick: number) =>
 		}
 	});
 
-	Object.values(status).forEach((event: MIDI.MIDIEvent) => events.push(Object.assign({}, event, { tick: 0 })));
+	Object.values(status).forEach((event: MIDI.MidiEvent) => events.push(Object.assign({}, event, { tick: 0 })));
 
 	events.push({
 		tick: endTick - startTick,
@@ -80,13 +80,13 @@ const EXCLUDE_MIDI_EVENT_SUBTYPES = [
 ];
 
 
-function encodeToMIDIData(notation: Notation, {startTime, unclosedNoteDuration = 30e+3}: any = {}): MIDI.MIDIObject {
+function encodeToMIDIData(notation: Notation, {startTime, unclosedNoteDuration = 30e+3}: any = {}): MIDI.MidiData {
 	notation.microsecondsPerBeat = notation.microsecondsPerBeat || 500000;
 
 	const ticksPerBeat = TICKS_PER_BEATS;
 	const msToTicks = ticksPerBeat * 1000 / notation.microsecondsPerBeat;
 
-	const header: MIDI.MIDIHeader = { formatType: 0, ticksPerBeat, trackCount: 1 };
+	const header: MIDI.MidiHeader = { formatType: 0, ticksPerBeat, trackCount: 1 };
 	const track: MIDIEventEx[] = [];
 
 	if (!Number.isFinite(startTime)) {
@@ -167,7 +167,7 @@ function encodeToMIDIData(notation: Notation, {startTime, unclosedNoteDuration =
 	track.forEach((event: MIDIEventEx) => event.tick = Math.round((event.time - startTime) * msToTicks));
 	track.forEach((event: MIDIEventEx, i: number) => event.deltaTime = (event.tick - (i > 0 ? track[i - 1].tick : 0)));
 
-	return {header, tracks: [track as MIDI.MIDITrack]};
+	return {header, tracks: [track as MIDI.MidiTrack]};
 };
 
 
