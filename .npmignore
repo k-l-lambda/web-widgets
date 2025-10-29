@@ -1,5 +1,5 @@
 source/components
-source/MidiAudio/*.js
+source/MidiAudio
 source/views
 tests/
 .eslintrc.js
