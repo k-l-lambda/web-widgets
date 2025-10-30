@@ -965,3 +965,60 @@ The `navigator.ts` differences represent a **valid architectural improvement**, 
 **Result**: ✅ **All TypeScript files are consistent with master**. No missing logic or functionality. The Navigator refactoring is an intentional and valid architectural improvement.
 
 </details>
+
+
+## 2025/10/30
+
+
+> Based on the usage of Matcher in lotus, what do you think about its design motivation?
+>
+> Good, write some test cases for Matcher in music-widgets.
+
+<details>
+<summary>Comprehensive Test Suite for Matcher Module</summary>
+
+Milestone: Created comprehensive test suite for Matcher module
+- Created `tests/matcher.test.ts` with 11 test groups covering all Matcher functionality
+- Created `tests/matcher.test.README.md` with detailed documentation
+- All tests pass successfully
+
+Test Coverage:
+1. **normalizeInterval**: Tests tanh-based interval normalization to (0,1) range
+2. **makeNoteSoftIndex**: Tests soft index calculation for individual notes with different `softIndexFactor` values
+3. **genNotationContext**: Tests batch soft index generation for complete notations
+4. **makeMatchNodes**: Tests candidate match generation (single/multiple/no matches)
+5. **MatchNode class**: Tests node construction, cost calculation, path reconstruction
+6. **Simple matching**: Perfect alignment workflow (C-D-E → C-D-E)
+7. **Offset matching**: Robustness to timing variations (notes slightly early/late)
+8. **Missing notes**: Sample missing criterion notes (C-D-E-F-G → C-E-F-G)
+9. **Extra notes**: Sample with additional notes (C-E-G → C-D-E-F-G)
+10. **Edge cases**: Empty sample, single note, no pitch matches
+11. **SoftIndexFactor effects**: Timing sensitivity tuning (soft vs hard timing)
+
+Design insights documented:
+- Three-phase matching: context generation → candidate generation → optimal path finding
+- Asymmetric design: sample → criterion (performance to score matching)
+- Graph navigation with dynamic programming for optimal alignment
+- Support for both fuzzy (imperfect performance) and exact (machine-generated) matching modes
+- Cost function balances step attenuation, skip penalty, and offset cost
+- SoftIndexFactor controls timing tolerance (larger = stricter timing requirements)
+
+Files created:
+- `third-party/music-widgets/tests/matcher.test.ts` (520 lines)
+- `third-party/music-widgets/tests/matcher.test.README.md` (comprehensive documentation)
+
+Run tests:
+```bash
+cd third-party/music-widgets
+npm run ts-dev:inspect -- tests/matcher.test.ts
+```
+
+Benefits:
+- Validates core Matcher algorithm correctness
+- Documents expected behavior for all scenarios
+- Provides regression testing for future changes
+- Helps developers understand Matcher design and usage
+- Demonstrates handling of real-world performance variations
+</details>
+
+---
