@@ -96,7 +96,7 @@ const testMakeNoteSoftIndex = () => {
 	];
 	Matcher.makeNoteSoftIndex(notes2, 0);
 	Matcher.makeNoteSoftIndex(notes2, 1, {softIndexFactor: 1});
-	const deltaSi1 = notes2[1].deltaSi;
+	const deltaSi1 = notes2[1].deltaSi!;
 
 	const notes3 = [
 		createMockNote(0, 60, 0, 0),
