@@ -1,6 +1,6 @@
 {
   "name": "@k-l-lambda/music-widgets",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "A package contains some music utility modules.",
   "keywords": [
     "midi",
@@ -10,6 +10,15 @@
   "types": "lib/index.d.ts",
   "browser": "dist/musicWidgetsBrowser.es.js",
   "module": "dist/musicWidgetsBrowser.es.js",
+  "files": [
+    "lib",
+    "dist",
+    "source/inc",
+    "index.ts",
+    "index.browser.ts",
+    "tsconfig.json",
+    "vite.config.ts"
+  ],
   "directories": {
     "test": "tests"
   },
