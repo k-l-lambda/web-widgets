@@ -124,6 +124,7 @@ if (window.AudioContext || window.webkitAudioContext) {
 			pendingInstruments: {},
 		};
 		let ctx;
+		let resumePromise = null;
 		const sources = {};
 		let masterVolume = 127;
 		const audioBuffers = {};
@@ -161,6 +162,26 @@ if (window.AudioContext || window.webkitAudioContext) {
 
 		const performanceTimeToCtx = timestamp => Math.max((timestamp - performance.now()) * 1e-3 + ctx.currentTime, 0);
 
+		root.getContextState = function () {
+			return ctx ? ctx.state : null;
+		};
+
+		root.needsWarmup = function () {
+			return !!ctx && ctx.state !== "running";
+		};
+
+		root.awaitWarmup = function () {
+			if (!ctx || ctx.state === "running" || typeof ctx.resume !== "function")
+				return Promise.resolve();
+
+			if (!resumePromise)
+				resumePromise = Promise.resolve(ctx.resume()).catch(() => null).then(() => {
+					resumePromise = null;
+				});
+
+			return resumePromise;
+		};
+
 		root.setVolume = function (channel, volume) {
 			masterVolume = volume;
 		};
@@ -177,7 +198,7 @@ if (window.AudioContext || window.webkitAudioContext) {
 			MIDI.channels[channel].instrument = program;
 		};
 
-		root.noteOn = function (channel, note, velocity, timestamp = 0) {
+		const playNoteOn = function (channel, note, velocity, timestamp = 0) {
 			/// check whether the note exists
 			if (!MIDI.channels[channel])
 				return;
@@ -214,7 +235,7 @@ if (window.AudioContext || window.webkitAudioContext) {
 			return source;
 		};
 
-		root.noteOff = function (channel, note, timestamp = 0) {
+		const playNoteOff = function (channel, note, timestamp = 0) {
 			const when = performanceTimeToCtx(timestamp);
 
 			const source = sources[channel + "" + note];
@@ -235,6 +256,14 @@ if (window.AudioContext || window.webkitAudioContext) {
 
 			///
 			delete sources[channel + "" + note];
+		};
+
+		root.noteOn = function (channel, note, velocity, timestamp = 0) {
+			return playNoteOn(channel, note, velocity, timestamp);
+		};
+
+		root.noteOff = function (channel, note, timestamp = 0) {
+			return playNoteOff(channel, note, timestamp);
 		};
 
 		root.chordOn = function (channel, chord, velocity, delay) {

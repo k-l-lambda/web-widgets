@@ -93,13 +93,21 @@
 			},
 
 
-			togglePlayer () {
-				if (this.player) {
-					if (this.player.isPlaying)
-						this.player.pause();
-					else
-						this.player.play();
+			async togglePlayer () {
+				if (!this.player)
+					return;
+
+				if (this.player.isPlaying) {
+					this.player.pause();
+					return;
 				}
+
+				if (MidiAudio.WebAudio.needsWarmup && MidiAudio.WebAudio.needsWarmup()) {
+					await MidiAudio.WebAudio.awaitWarmup();
+					await new Promise(resolve => setTimeout(resolve, 120));
+				}
+
+				this.player.play();
 			},
 		},
 

@@ -2,6 +2,9 @@
 interface Plugin {
 	empty (): boolean;
 	hasPending (): boolean;
+	getContextState? (): string | null;
+	needsWarmup? (): boolean;
+	awaitWarmup? (): Promise<void>;
 	setVolume (channel: number, volume: number): void;
 	programChange (channel: number, program: number): void;
 	noteOn (channel: number, note: number, velocity: number, timestamp: number): void;
