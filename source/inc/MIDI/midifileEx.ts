@@ -8,7 +8,19 @@ import type { MidiData, MidiEvent } from "./types";
 
 
 
-export default function OMidiFile ({ header, tracks }: MidiData): Uint8Array {
+const channelEventTypes: Record<string, number> = {
+	noteOff: 0x08,
+	noteOn: 0x09,
+	noteAftertouch: 0x0a,
+	controller: 0x0b,
+	programChange: 0x0c,
+	channelAftertouch: 0x0d,
+	pitchBend: 0x0e,
+};
+
+
+
+export default function OMidiFile ({ header, tracks, trailingData }: MidiData): Uint8Array {
 	function writeChunk (stream: OStream, id: string, data: string): void {
 		console.assert(id.length === 4, "chunk id must be 4 byte");
 
@@ -18,9 +30,6 @@ export default function OMidiFile ({ header, tracks }: MidiData): Uint8Array {
 	}
 
 	function writeEvent (stream: OStream, event: MidiEvent): void {
-		if (event.subtype === "unknown")
-			return;
-
 		stream.writeVarInt(event.deltaTime);
 
 		switch (event.type) {
@@ -137,7 +146,7 @@ export default function OMidiFile ({ header, tracks }: MidiData): Uint8Array {
 
 				break;
 			default:
-				stream.writeInt8(0x7f);
+				stream.writeInt8(event.metaSubtypeByte ?? 0x7f);
 
 				stream.writeVarInt(event.data.length);
 
@@ -162,43 +171,41 @@ export default function OMidiFile ({ header, tracks }: MidiData): Uint8Array {
 
 			break;
 		case "channel":
+			if (!channelEventTypes[event.subtype])
+				throw new Error("Unrecognised MIDI event type: " + event.subtype);
+			if (!event.running)
+				stream.writeInt8(event.channel | ((event.channelEventType ?? channelEventTypes[event.subtype]) << 4));
+
 			switch (event.subtype) {
 			case "noteOff":
-				stream.writeInt8(0x90 | event.channel);
 				stream.writeInt8(event.noteNumber);
 				stream.writeInt8(event.velocity);
 
 				break;
 			case "noteOn":
-				stream.writeInt8(0x80 | event.channel);
 				stream.writeInt8(event.noteNumber);
 				stream.writeInt8(event.velocity);
 
 				break;
 			case "noteAftertouch":
-				stream.writeInt8(0xa0 | event.channel);
 				stream.writeInt8(event.noteNumber);
 				stream.writeInt8(event.amount);
 
 				break;
 			case "controller":
-				stream.writeInt8(0xb0 | event.channel);
 				stream.writeInt8(event.controllerType);
 				stream.writeInt8(event.value);
 
 				break;
 			case "programChange":
-				stream.writeInt8(0xc0 | event.channel);
 				stream.writeInt8(event.programNumber);
 
 				break;
 			case "channelAftertouch":
-				stream.writeInt8(0xd0 | event.channel);
 				stream.writeInt8(event.amount);
 
 				break;
 			case "pitchBend":
-				stream.writeInt8(0xe0 | event.channel);
 				stream.writeInt8(event.value & 0x7f);
 				stream.writeInt8((event.value >> 7) & 0x7f);
 
@@ -230,6 +237,9 @@ export default function OMidiFile ({ header, tracks }: MidiData): Uint8Array {
 
 		writeChunk(stream, "MTrk", trackChunk.getBuffer());
 	}
+
+	if (trailingData)
+		trailingData.forEach(byte => stream.writeInt8(byte));
 
 	return stream.getArrayBuffer();
 };

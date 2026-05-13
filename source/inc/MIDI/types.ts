@@ -49,6 +49,10 @@ interface MidiEvent {
 	value?: number;
 
 	finger?: number;
+
+	running?: boolean;
+	metaSubtypeByte?: number;
+	channelEventType?: number;
 }
 
 
@@ -58,6 +62,7 @@ type MidiTrack = MidiEvent[];
 interface MidiData {
 	header: MidiHeader;
 	tracks: MidiTrack[];
+	trailingData?: Uint8Array;
 }
 
 

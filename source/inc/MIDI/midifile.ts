@@ -11,6 +11,7 @@ import MidiStream from "./stream";
 export class MidiFile implements MidiData {
 	header: MidiHeader;
 	tracks: MidiTrack[];
+	trailingData?: Uint8Array;
 
 
 	constructor (fields: MidiData) {
@@ -43,6 +44,7 @@ export class MidiFile implements MidiData {
 				if (eventTypeByte === 0xff) {
 					event.type = "meta";
 					const subtypeByte = stream.readInt8();
+					event.metaSubtypeByte = subtypeByte;
 					const length = stream.readVarInt();
 
 					switch (subtypeByte) {
@@ -180,6 +182,7 @@ export class MidiFile implements MidiData {
 			if ((eventTypeByte & 0x80) === 0) {
 				param1 = eventTypeByte;
 				eventTypeByte = lastEventTypeByte;
+				event.running = true;
 			}
 			else {
 				param1 = stream.readInt8();
@@ -187,6 +190,7 @@ export class MidiFile implements MidiData {
 			}
 
 			const eventType = eventTypeByte >> 4;
+			event.channelEventType = eventType;
 			event.channel = eventTypeByte & 0x0f;
 			event.type = "channel";
 
@@ -243,7 +247,7 @@ export class MidiFile implements MidiData {
 		if (typeof data === "string")
 			source = new Uint8Array(data.split("").map((c: string) => c.charCodeAt(0))).buffer;
 		else if (source instanceof Uint8Array)
-			source = source.buffer;
+			source = source.buffer.slice(source.byteOffset, source.byteOffset + source.byteLength);
 
 		const stream = new MidiStream(source);
 		const headerChunk = readChunk(stream);
@@ -287,7 +291,9 @@ export class MidiFile implements MidiData {
 			tracks.push(track);
 		}
 
-		return new MidiFile({header, tracks});
+		const trailingData = stream.read(stream.array.length - stream.position);
+
+		return new MidiFile({header, tracks, trailingData});
 	}
 }
 

@@ -29,6 +29,8 @@ class OStream {
 
 	writeVarInt (value: number) {
 		const stack = [];
+		if (!value)
+			stack.push(0);
 		while (value) {
 			stack.push(value & 0x7f);
 			value >>= 7;
