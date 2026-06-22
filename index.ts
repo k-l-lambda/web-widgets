@@ -4,6 +4,7 @@ import * as MusicNotation from "./source/inc/MusicNotation";
 import MidiPlayer from"./source/inc/MidiPlayer";
 import * as Matcher from "./source/inc/Matcher";
 import * as MidiUtils from "./source/inc/MidiUtils";
+import * as MidiText from "./source/inc/MidiText";
 
 
 
@@ -13,4 +14,5 @@ export {
 	MidiPlayer,
 	Matcher,
 	MidiUtils,
+	MidiText,
 };
