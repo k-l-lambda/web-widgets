@@ -41,7 +41,13 @@ class OStream {
 	}
 
 	getBuffer (): string {
-		return String.fromCharCode(...this.data);
+		// chunked to avoid "Maximum call stack size exceeded" from spreading a
+		// large byte array as function arguments (long tracks exceed the arg limit)
+		const CHUNK = 0x8000;
+		let result = "";
+		for (let i = 0; i < this.data.length; i += CHUNK)
+			result += String.fromCharCode.apply(null, this.data.slice(i, i + CHUNK));
+		return result;
 	}
 
 	getArrayBuffer () {
