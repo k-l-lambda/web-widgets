@@ -214,24 +214,51 @@ function mergeTracks (tracks: MidiTrack[]): MidiTrack {
 }
 
 
+// Rescale a track's delta-times to a new ticks-per-beat. Works in ABSOLUTE ticks
+// (delta→abs, scale by factor, round, abs→delta) so rounding error stays local to
+// each event instead of accumulating across the track.
+function rescaleTrack (track: MidiTrack, factor: number): MidiTrack {
+	const out: MidiTrack = [];
+	let absTick = 0;
+	let lastScaled = 0;
+	for (const event of track) {
+		absTick += event.deltaTime ?? 0;
+		const scaled = Math.round(absTick * factor);
+		out.push({ ...event, deltaTime: scaled - lastScaled });
+		lastScaled = scaled;
+	}
+	return out;
+}
+
+
 // --- public API -----------------------------------------------------------
 
 interface MidiToTextOptions {
 	mix?: boolean;          // merge all tracks into one absolute-time stream (mido merged_track)
 	header?: boolean;       // emit ticks_per_beat/format_type header lines (default true)
+	target_ticks_per_beat?: number;   // rescale all delta-times to this target ticks_per_beat (rounded)
 }
 
 /** Encode a parsed MidiData into mido-style text. */
 function midiToText (midi: MidiData, options: MidiToTextOptions = {}): string {
-	const { mix = false, header = true } = options;
+	const { mix = false, header = true, target_ticks_per_beat } = options;
 	const lines: string[] = [];
 
+	// when a target tpb is requested, rescale delta-times from the source tpb to the target
+	const srcTpb = midi.header.ticksPerBeat;
+	const tgtTpb = target_ticks_per_beat;
+	const doScale = !!tgtTpb && tgtTpb > 0 && srcTpb > 0 && tgtTpb !== srcTpb;
+	const factor = doScale ? tgtTpb / srcTpb : 1;
+	const outTpb = doScale ? tgtTpb : srcTpb;
+
 	if (header) {
-		lines.push(`ticks_per_beat ${numToHex(midi.header.ticksPerBeat)}`);
+		lines.push(`ticks_per_beat ${numToHex(outTpb)}`);
 		lines.push(`format_type ${numToHex(midi.header.formatType ?? 1)}`);
 	}
 
-	const tracks = mix ? [mergeTracks(midi.tracks)] : midi.tracks;
+	let tracks = mix ? [mergeTracks(midi.tracks)] : midi.tracks;
+	if (doScale)
+		tracks = tracks.map(t => rescaleTrack(t, factor));
 	tracks.forEach((track, i) => {
 		if (!mix)
 			lines.push(`track ${numToHex(i)}`);
