@@ -116,6 +116,10 @@ function eventToLine (event: MidiEvent): string | null {
 		const parts = [spec.token, delta];
 		for (const f of spec.fields)
 			parts.push(numToHex((event as any)[f] ?? 0));
+		// note_off velocity is almost always 0 — drop the trailing 0 (decode restores it
+		// via the `?? 0` fill, so this is lossless). Only when it is exactly 0.
+		if (sub === "noteOff" && parts[parts.length - 1] === "0")
+			parts.pop();
 		return parts.join(" ");
 	}
 
