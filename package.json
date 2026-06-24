@@ -1,6 +1,6 @@
 {
   "name": "@k-l-lambda/music-widgets",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A package contains some music utility modules.",
   "keywords": [
     "midi",
