@@ -1,6 +1,6 @@
 {
   "name": "@k-l-lambda/music-widgets",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A package contains some music utility modules.",
   "keywords": [
     "midi",
@@ -42,7 +42,7 @@
     "url": "git+https://github.com/k-l-lambda/web-widgets.git"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "author": "K.L.",
   "license": "ISC"

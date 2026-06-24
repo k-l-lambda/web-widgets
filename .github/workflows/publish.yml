@@ -13,6 +13,7 @@ jobs:
     permissions:
       contents: read
       packages: write  # required to publish to GitHub Packages (npm.pkg.github.com)
+      id-token: write  # required for npm Trusted Publishing (OIDC) to npmjs.org
 
     steps:
       - name: Checkout
@@ -46,24 +47,40 @@ jobs:
         if: steps.version-check.outputs.changed == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
           scope: '@k-l-lambda'
-          package-manager-cache: false
+
+      - name: Upgrade npm (Trusted Publishing requires npm >= 11.5.1)
+        if: steps.version-check.outputs.changed == 'true'
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         if: steps.version-check.outputs.changed == 'true'
-        run: npm install
+        run: npm install --legacy-peer-deps
 
-      # npm publish triggers prepublishOnly (npm run build = tsc && vite build).
-      # GitHub Packages auth uses the workflow's GITHUB_TOKEN (packages: write).
+      # Build runs once via prepublishOnly (npm run build = tsc && vite build)
+      # on the first publish below; the second publish reuses the built artifacts.
+      - name: Publish to npmjs.org (Trusted Publishing / OIDC)
+        if: steps.version-check.outputs.changed == 'true'
+        run: npm publish --provenance --access public --registry https://registry.npmjs.org
+
       - name: Publish to GitHub Packages
         if: steps.version-check.outputs.changed == 'true'
-        run: npm publish
+        run: |
+          # Project-level .npmrc overrides setup-node's npmjs config, so the
+          # scoped package resolves to GitHub Packages with the right auth host.
+          cat > .npmrc <<'EOF'
+          @k-l-lambda:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          EOF
+          npm publish --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Summary
         if: steps.version-check.outputs.changed == 'true'
         run: |
-          echo "## 📦 Published @k-l-lambda/music-widgets@${{ steps.version-check.outputs.version }} to GitHub Packages" >> $GITHUB_STEP_SUMMARY
+          echo "## 📦 Published @k-l-lambda/music-widgets@${{ steps.version-check.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- npmjs.org (Trusted Publishing)" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub Packages" >> $GITHUB_STEP_SUMMARY
